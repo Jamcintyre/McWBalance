@@ -7,78 +7,108 @@ package com.mcwbalance;
 import java.awt.Rectangle;
 
 /**
- *
+ * This class is used to generate an interger polyline array representing flow
+ * line connections between two objects. 
  * @author amcintyre
  */
 public class FlowChartLines {
-    
-    int[] xPoints = new int[6];
-    int[] yPoints = new int[6];
+    /**
+     * Array of pixel locations of x points for flow polyline
+     */
+    int[] xPoints = new int[7];
+    /**
+     * Array of pixel locations of y points for flow polyline
+     */
+    int[] yPoints = new int[7];
+    /**
+     * number of points in the flow polyline
+     */
     int nPoints;
     
-    
+    /**
+     * Array of pixel location x points needed to draw the flow direction arrow
+     */
     int[] arwxPoints = new int[3];
+    /**
+     * Array of pixel location y points needed to draw the flow direction arrow 
+     */
     int[] arwyPoints = new int[3];
-    int arwnPoints; 
-    private final int arwsize = 10; // sets size of arrow. 
+    /**
+     * number of Points in the Arrow array.
+     */
+    final int ARROW_NPOINTS = 3; 
+    /**
+     * Pixel Dimensions of the Arrow
+     */
+    private final int ARROW_SIZE = 10; // sets size of arrow. 
     
-    FlowChartLines(){ // constructs a blank Polyline 5 segments long
+    /**
+     * Sets null value of Polyline to 0,0 for all 5 line segments (6 points)
+     */
+    FlowChartLines(){
         nPoints = 0;
-        for (int i=0; i < 6; i++){
+        for (int i=0; i < 7; i++){
             xPoints[i] = 0;
             yPoints[i] = 0; 
         }
-        arwnPoints = 3;
         for (int i=0; i < 3; i++){
             arwxPoints[i] = 0;
             arwyPoints[i] = 0; 
         }
         
     }
-    
-    public void SetRoute(Rectangle sRec, String sSide,int sOset, Rectangle eRec, String eSide, int eOset, int minLength){
+    /**
+     * Method is used to set the beginning and end points of the flow polyline and
+     * and populate the Points arrays
+     * @param sRec Starting rectangle
+     * @param sSide Side of rectangle to start flow line
+     * @param sOset Offset from midpoint of starting side
+     * @param eRec Ending rectangle
+     * @param eSide Side of rectangle to end flow line
+     * @param eOset Offset from midpoint of ending side
+     * @param minLength Distance flow line should protrude and or offset from object 
+     */
+    public void setRoute(Rectangle sRec, String sSide,int sOset, Rectangle eRec, String eSide, int eOset, int minLength){
         Rectangle fRec = sRec; // Used to flip direction!
         String fSide = sSide; // Used to flip direction!
         int fOset = sOset; // Used to flip direction!
-
-        //Arrow Drawing COmes First, because for Line Drawing the s and e variables can be swapped for mirrored cases (i.e. LEFT to TOP is just backwards TOP to LEFT)
+        
+        //Arrow Drawing Comes First, because for Line Drawing the start and end rectangles can be swapped for mirrored cases (i.e. LEFT to TOP is just backwards TOP to LEFT)
         switch(eSide){
             case "LEFT":
                 arwxPoints[0] = eRec.x; // sets arrow start on side of box
                 arwyPoints[0] = eRec.y + eRec.height/2 + eOset; // offset applies up down in this case
-                arwxPoints[1] = arwxPoints[0] - arwsize;
-                arwyPoints[1] = arwyPoints[0] + arwsize/2; // draws down 1/2 of arrow size  
+                arwxPoints[1] = arwxPoints[0] - ARROW_SIZE;
+                arwyPoints[1] = arwyPoints[0] + ARROW_SIZE/2; // draws down 1/2 of arrow size  
                 arwxPoints[2] = arwxPoints[1];
-                arwyPoints[2] = arwyPoints[1] - arwsize; // pops back up.
+                arwyPoints[2] = arwyPoints[1] - ARROW_SIZE; // pops back up.
                 break;
             case "RIGHT":
                 arwxPoints[0] = eRec.x + eRec.width; // sets arrow start on side of box
                 arwyPoints[0] = eRec.y + eRec.height/2 + eOset; // offset applies up down in this case
-                arwxPoints[1] = arwxPoints[0] + arwsize;
-                arwyPoints[1] = arwyPoints[0] + arwsize/2; // draws down 1/2 of arrow size  
+                arwxPoints[1] = arwxPoints[0] + ARROW_SIZE;
+                arwyPoints[1] = arwyPoints[0] + ARROW_SIZE/2; // draws down 1/2 of arrow size  
                 arwxPoints[2] = arwxPoints[1];
-                arwyPoints[2] = arwyPoints[1] - arwsize; // pops back up.
+                arwyPoints[2] = arwyPoints[1] - ARROW_SIZE; // pops back up.
                 break;
             case "TOP": // Note this oen goes through the lable 
                 arwxPoints[0] = eRec.x + eRec.width/2 + eOset;
                 arwyPoints[0] = eRec.y; // top plane of object
-                arwxPoints[1] = arwxPoints[0] + arwsize/2;
-                arwyPoints[1] = arwyPoints[0] - arwsize; // goes up
-                arwxPoints[2] = arwxPoints[1] - arwsize;
+                arwxPoints[1] = arwxPoints[0] + ARROW_SIZE/2;
+                arwyPoints[1] = arwyPoints[0] - ARROW_SIZE; // goes up
+                arwxPoints[2] = arwxPoints[1] - ARROW_SIZE;
                 arwyPoints[2] = arwyPoints[1];
                 break;
             case "BOTTOM":
                 arwxPoints[0] = eRec.x + eRec.width/2 + eOset;
                 arwyPoints[0] = eRec.y + eRec.height; // top plane of object
-                arwxPoints[1] = arwxPoints[0] + arwsize/2;
-                arwyPoints[1] = arwyPoints[0] + arwsize; // Draws Down
-                arwxPoints[2] = arwxPoints[1] - arwsize;
+                arwxPoints[1] = arwxPoints[0] + ARROW_SIZE/2;
+                arwyPoints[1] = arwyPoints[0] + ARROW_SIZE; // Draws Down
+                arwxPoints[2] = arwxPoints[1] - ARROW_SIZE;
                 arwyPoints[2] = arwyPoints[1];
                 break;
         }
-        
-        
-        
+
         // Line Routing
         // Checks to see if Case should be flipped (i.e left to right is just reverse of right to left)
         switch(sSide){
@@ -152,12 +182,164 @@ public class FlowChartLines {
                 }
                 break;            
             case "RIGHT":
+                xPoints[0] = sRec.x + sRec.width;
+                yPoints[0] = sRec.y + sRec.height/2 + sOset;
+                yPoints[1] = yPoints[0];
                 switch(eSide){
                     case "LEFT":
                         break;
                     case "RIGHT":
+                        if(eRec.x + eRec.width >= sRec.x + sRec.width){ //to the right
+                            if(eRec.y + eRec.height + minLength <= yPoints[0]){ // right and well above
+                                xPoints[1] = eRec.x + eRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width;
+                                nPoints = 4;
+                            }
+                            else if(eRec.y + eRec.height/2 + eOset <= yPoints[0]){ // right and slightly above
+                                xPoints[1] = (xPoints[0] + eRec.x)/2;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height + minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width + minLength;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[5] = yPoints[4];
+                                xPoints[5] = eRec.x + eRec.width;
+                                nPoints = 6;
+                            }
+                            else if(eRec.y - minLength <= yPoints[0]){ // right and slightly below
+                                xPoints[1] = (xPoints[0] + eRec.x)/2;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y - minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width + minLength;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[5] = yPoints[4];
+                                xPoints[5] = eRec.x + eRec.width;
+                                nPoints = 6;
+                            }
+                            else { // right and well below (same as right and well up, but want this as a catch all
+                                xPoints[1] = eRec.x + eRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width;
+                                nPoints = 4;
+                            }
+                        }
+                        else{ // left
+                            if(eRec.y + eRec.height/2 + eOset <= sRec.y - minLength){ // left and well above
+                                xPoints[1] = sRec.x + sRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width;
+                                nPoints = 4;
+                            }
+                            else if(eRec.y + eRec.height/2 + eOset <= yPoints[0]){ // left and slightly above
+                                xPoints[1] = sRec.x + sRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = sRec.y - minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = (eRec.x + eRec.width + sRec.x)/2;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[5] = yPoints[4];
+                                xPoints[5] = eRec.x + eRec.width;
+                                nPoints = 6;
+                            }
+                            else if(eRec.y + eRec.height/2 + eOset  <= sRec.y + sRec.height + minLength){ // right and slightly below
+                                xPoints[1] = sRec.x + sRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = sRec.y + sRec.height + minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = (eRec.x + eRec.width + sRec.x)/2;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[5] = yPoints[4];
+                                xPoints[5] = eRec.x + eRec.width;
+                                nPoints = 6;
+                            }
+                            else { // left and well below 
+                                xPoints[1] = sRec.x + sRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height/2 + eOset;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width;
+                                nPoints = 4;
+                            }                            
+                        }
+         
                         break; 
                     case "BOTTOM":
+                        if(eRec.y + eRec.height <= yPoints[0]){ // above
+                            if(eRec.x + eRec.width/2 + eOset >= xPoints[0] + minLength){ // above and right
+                                xPoints[1] = eRec.x + eRec.width/2 + eOset;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height;
+                                nPoints = 3;
+                            }
+                            else if(eRec.y + eRec.height <= sRec.y - minLength*2){ // well above centre or left
+                                xPoints[1] = xPoints[0] + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = (eRec.y + eRec.height + sRec.y)/2; // midpoint between rectangles
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width/2 + eOset;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height;
+                                nPoints = 5;
+                            }
+                            else{
+                                xPoints[1] = xPoints[0] + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = sRec.y - minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = (eRec.x + eRec.width + sRec.x)/2; // midpoint between rectangles
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height + minLength;
+                                yPoints[5] = yPoints[4];
+                                xPoints[5] = eRec.x + eRec.width/2 + eOset;
+                                xPoints[6] = xPoints[5];
+                                yPoints[6] = eRec.y + eRec.height;
+                                nPoints = 7;
+                            }
+                        }
+                        else{ //below
+                            if(eRec.x >= sRec.x + sRec.width + minLength*2){
+                                xPoints[1] = (sRec.x + sRec.width + eRec.x)/2; // midpoint between rectangles
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height + minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width/2 + eOset;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height;
+                                nPoints = 5;
+                            }
+                            else if(eRec.x + eRec.width >= sRec.x + sRec.width){ // below and right
+                                xPoints[1] = eRec.x + eRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height + minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width/2 + eOset;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height;
+                                nPoints = 5;
+                            }
+                            else{
+                                xPoints[1] = sRec.x + sRec.width + minLength;
+                                xPoints[2] = xPoints[1];
+                                yPoints[2] = eRec.y + eRec.height + minLength;
+                                yPoints[3] = yPoints[2];
+                                xPoints[3] = eRec.x + eRec.width/2 + eOset;
+                                xPoints[4] = xPoints[3];
+                                yPoints[4] = eRec.y + eRec.height;
+                                nPoints = 5;
+                            }
+                        }
                         break;
                 }
                 break;
@@ -477,14 +659,5 @@ public class FlowChartLines {
                 }
                 break;
         } // End of Line Routing
-        // Arrow Drawing
-        
-     
-        
-        
     }  
-    
-    
-    
-    
 }

@@ -220,10 +220,10 @@ public class FlowChartCAD extends JComponent{
                 eLMy = elmList.eLMs[tRNList.tRNs[i].inObjNumber].y; // only used to make code easier to read,
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
-                fpline.SetRoute(eLMrect, tRNList.tRNs[i].inSideFrom, tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo, 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
+                fpline.setRoute(eLMrect, tRNList.tRNs[i].inSideFrom, tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo, 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
                 g.setColor(Color.BLACK);
                 g.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints); // draws line
-                g.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.arwnPoints); // draws Arrow; 
+                g.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
 
             }
             // Draws outflow line
@@ -233,10 +233,10 @@ public class FlowChartCAD extends JComponent{
                 eLMy = elmList.eLMs[tRNList.tRNs[i].outObjNumber].y; // only used to make code easier to read,
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
-                fpline.SetRoute(tRNrect, tRNList.tRNs[i].outSideFrom, 0, eLMrect, tRNList.tRNs[i].outSideTo, tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
+                fpline.setRoute(tRNrect, tRNList.tRNs[i].outSideFrom, 0, eLMrect, tRNList.tRNs[i].outSideTo, tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
                 g.setColor(Color.BLACK);// Placeholder of using colour until end arrow is drawn
                 g.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints);
-                g.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.arwnPoints); // draws Arrow; 
+                g.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
             }
             // Draws text Lable
             g.setColor(Color.WHITE);
