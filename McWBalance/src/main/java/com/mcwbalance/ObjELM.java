@@ -29,8 +29,14 @@ class ObjELM {
     public int indexRunoffTracker;
     public Boolean hasSolids;
     public int indexSolidsTracker;
+    public int oSetXVoids;
+    public int oSetYVoids;
     public Boolean hasStorage;
+    public Boolean showStorage;
     public int indexStorageTracker; // used to also index Direct Precips and Evaps; 
+    public int oSetXStorage;
+    public int oSetYStorage;
+    
     public Boolean hasStorageEvapandPrecip; // used to indicate storage is exposed (as opposed to a closed top tank)
     public DataDAC dAC; // note will only be constructed if boolean hasStorage is selected; 
 
@@ -110,7 +116,12 @@ class ObjELM {
         indexRunoffTracker = -1; // used when building the run settings to track output
         hasStorageEvapandPrecip = false;
         hasSolids = false;
+        oSetXVoids = 0;
+        oSetYVoids = 0; 
         hasStorage = false;
+        showStorage = false;
+        oSetXStorage = 0;
+        oSetYStorage = 0;
         dAC = new DataDAC(1);
 
         targetOperatingVol = new DataTimeIntSeries(1);
@@ -159,7 +170,12 @@ class ObjELM {
         indexRunoffTracker = -1; // used when building the run settings to track output
         hasStorageEvapandPrecip = false;
         hasSolids = false;
+        oSetXVoids = 0;
+        oSetYVoids = 0; 
         hasStorage = false;
+        showStorage = false;
+        oSetXStorage = 0;
+        oSetYStorage = 0;
         dAC = new DataDAC(1);
 
         targetOperatingVol = new DataTimeIntSeries(1);

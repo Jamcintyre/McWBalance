@@ -164,8 +164,6 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         JButton tab2buttonAddFixedInput = new JButton("<");
         tab2buttonAddFixedInput.addActionListener(e -> {
-            
-            
             int tRNIndex = buffObjELM.inflows.getObjIndex(tab2listInputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
@@ -741,16 +739,51 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tab1CheckBoxhasCatchment.addActionListener(e-> {
             buffObjELM.hasCatchment = tab1CheckBoxhasCatchment.isSelected();
         });
+        
         JCheckBox tab1CheckBoxhasSolids = new JCheckBox("Include Solids Deposition");
         tab1CheckBoxhasSolids.setSelected(buffObjELM.hasSolids);
         tab1CheckBoxhasSolids.addActionListener(e-> {
             buffObjELM.hasSolids = tab1CheckBoxhasSolids.isSelected();
         });
+        JLabel tab1LabelVoidsXoSet = new JLabel("Flowbox Offset Horz:  ");
+        SpinnerModel tab1SpinnerModelVoidsXoSet = new SpinnerNumberModel(buffObjELM.oSetXVoids, -100, 100, 5);
+        JSpinner tab1SpinnerVoidsXoSet = new JSpinner(tab1SpinnerModelVoidsXoSet);
+        tab1SpinnerVoidsXoSet.addChangeListener(e->{
+            buffObjELM.oSetXVoids = (int)tab1SpinnerVoidsXoSet.getValue();
+        });
+        JLabel tab1LabelVoidsYoSet = new JLabel("Vert:");
+        SpinnerModel tab1SpinnerModelVoidsYoSet = new SpinnerNumberModel(buffObjELM.oSetYVoids, -100, 100, 5);
+        JSpinner tab1SpinnerVoidsYoSet = new JSpinner(tab1SpinnerModelVoidsYoSet);
+        tab1SpinnerVoidsYoSet.addChangeListener(e->{
+            buffObjELM.oSetYVoids = (int)tab1SpinnerVoidsXoSet.getValue();
+        });
+                
         JCheckBox tab1CheckBoxhasStorage = new JCheckBox("Include Depth Area Capacity");
         tab1CheckBoxhasStorage.setSelected(buffObjELM.hasStorage);
         tab1CheckBoxhasStorage.addActionListener(e-> {
             buffObjELM.hasStorage = tab1CheckBoxhasStorage.isSelected();
         });
+        
+        JCheckBox tab1CheckBoxshowStorage = new JCheckBox("Show Net Storage on Flowsheet");
+        tab1CheckBoxshowStorage.setSelected(buffObjELM.showStorage);
+        tab1CheckBoxshowStorage.addActionListener(e-> {
+            buffObjELM.showStorage = tab1CheckBoxshowStorage.isSelected();
+        });
+        JLabel tab1LabelStorageXoSet = new JLabel("Flowbox Offset Horz:  ");
+        SpinnerModel tab1SpinnerModelStorageXoSet = new SpinnerNumberModel(buffObjELM.oSetXStorage, -100, 100, 5);
+        JSpinner tab1SpinnerStorageXoSet = new JSpinner(tab1SpinnerModelStorageXoSet);
+        tab1SpinnerStorageXoSet.addChangeListener(e->{
+            buffObjELM.oSetXStorage = (int)tab1SpinnerStorageXoSet.getValue();
+        });
+        JLabel tab1LabelStorageYoSet = new JLabel("Vert:");
+        SpinnerModel tab1SpinnerModelStorageYoSet = new SpinnerNumberModel(buffObjELM.oSetYStorage, -100, 100, 5);
+        JSpinner tab1SpinnerStorageYoSet = new JSpinner(tab1SpinnerModelStorageYoSet);
+        tab1SpinnerStorageYoSet.addChangeListener(e->{
+            buffObjELM.oSetYStorage = (int)tab1SpinnerStorageXoSet.getValue();
+        });
+        
+        
+        
         JCheckBox tab1CheckBoxhasStorageEvapandPrecip = new JCheckBox("Include Direct Evaporation and Precipitation");
         tab1CheckBoxhasStorageEvapandPrecip.setSelected(buffObjELM.hasStorageEvapandPrecip);
         tab1CheckBoxhasStorageEvapandPrecip.addActionListener(e-> {
@@ -803,7 +836,21 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         tab1.add(tab1CheckBoxhasCatchment);
         tab1.add(tab1CheckBoxhasSolids);
+
+        tab1.add(tab1LabelVoidsXoSet);
+        tab1.add(tab1SpinnerVoidsXoSet);
+        tab1.add(tab1LabelVoidsYoSet);
+        tab1.add(tab1SpinnerVoidsYoSet);
+        
         tab1.add(tab1CheckBoxhasStorage);
+        tab1.add(tab1CheckBoxshowStorage);
+        tab1.add(tab1LabelStorageXoSet);
+        tab1.add(tab1SpinnerStorageXoSet);
+        tab1.add(tab1LabelStorageYoSet);
+        tab1.add(tab1SpinnerStorageYoSet);
+        
+        
+        
         tab1.add(tab1CheckBoxhasStorageEvapandPrecip);
         tab1.add(bSave);
         
@@ -836,11 +883,34 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasSolids, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasSolids, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasCatchment); 
         
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelVoidsXoSet, hPadLabels,SpringLayout.EAST, tab1CheckBoxhasSolids);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelVoidsXoSet, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasSolids);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerVoidsXoSet, hPadLabels,SpringLayout.EAST, tab1LabelVoidsXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsXoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelVoidsXoSet);
+
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelVoidsYoSet, hPadLabels,SpringLayout.EAST, tab1SpinnerVoidsXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelVoidsYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsXoSet);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerVoidsYoSet, hPadLabels,SpringLayout.EAST, tab1LabelVoidsYoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelVoidsYoSet);
+                
         layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorage, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasSolids); 
         
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxshowStorage, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxshowStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorage); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelStorageXoSet, hPadLabels,SpringLayout.EAST, tab1CheckBoxshowStorage);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelStorageXoSet, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxshowStorage);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerStorageXoSet, hPadLabels,SpringLayout.EAST, tab1LabelStorageXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageXoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelStorageXoSet);
+
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelStorageYoSet, hPadLabels,SpringLayout.EAST, tab1SpinnerStorageXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelStorageYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageXoSet);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerStorageYoSet, hPadLabels,SpringLayout.EAST, tab1LabelStorageYoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelStorageYoSet);
+        
         layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorageEvapandPrecip, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorageEvapandPrecip, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorage); 
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorageEvapandPrecip, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxshowStorage); 
         
         layoutTab1.putConstraint(SpringLayout.WEST, bSave, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorageEvapandPrecip);
