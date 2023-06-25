@@ -166,30 +166,33 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
                 pumpCapacity = pumpRateDay[i];
             }
         }
-        
-        switch(subType){
-            case "FIXED RATE PUMPING": // transfer rate based on pump rates // these will be first to solve
-                return pumpCapacity;
-            case "ON DEMAND SUPPLY":
-                if(outflowSurplus >= 0){
-                    return 0;
+        double out = 0;
+        switch (subType) {
+            case "FIXED RATE PUMPING" -> // transfer rate based on pump rates // these will be first to solve
+                out = pumpCapacity;
+            case "ON DEMAND SUPPLY" -> {
+                if (outflowSurplus >= 0) {
+                    out = 0;
+                } else if (-outflowSurplus >= pumpCapacity) {
+                    out = pumpCapacity;
+                } else {
+                    out = -outflowSurplus;
                 }
-                if (-outflowSurplus >= pumpCapacity){
-                    return pumpCapacity;
+            }
+            case "ON DEMAND DISCHARGE" -> {
+                if (inflowSurplus <= 0) {
+                    out = 0;
+                } else if (inflowSurplus >= pumpCapacity) {
+                    out = pumpCapacity;
+                } else {
+                    out = inflowSurplus;
                 }
-                return -outflowSurplus;                     
-            case "ON DEMAND DISCHARGE":
-                if(inflowSurplus <= 0){
-                    return 0;
-                }
-                if (inflowSurplus >= pumpCapacity){
-                    return pumpCapacity;
-                }
-                return inflowSurplus;                     
-            case "OVERFLOW":
-                return pumpCapacity;
+            }
+            case "OVERFLOW" ->
+                out = pumpCapacity;
         }
-    return 0; 
+
+        return out;
     }
     /**
      * if ELM object is referenced this method replaces that reference with a "-1" null value. ELMs of higher index values then the rELM are 
