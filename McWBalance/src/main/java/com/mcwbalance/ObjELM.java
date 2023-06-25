@@ -8,9 +8,7 @@ import java.awt.image.BufferedImage;
  * @author amcintyre
  */
 class ObjELM {
-    
-    static int maxLevels = 30;
-    static int maxDepoRates = 10;
+    static final int MAX_DEPO_RATES = 10;
     public int x;
     public int y;
     public Rectangle hitBox;
@@ -20,7 +18,6 @@ class ObjELM {
     public BufferedImage objSprite; 
     public double scaleX;
     public double scaleY;
-    
      
     public Boolean hasCatchment;
     public int nCatchments;
@@ -36,12 +33,6 @@ class ObjELM {
     public IndexList inflows;
     public IndexList outflows;
 
-    //Target Operating Level
-    /**
-     * @deprecated 
-     */
-    public int[] targetOperatingDayIndex;
-  
     public DataTimeIntSeries targetOperatingVol;
     public DataTimeDoubleSeries minDepth;
     public DataTimeDoubleSeries maxOpLevel;
@@ -50,20 +41,17 @@ class ObjELM {
     
     public DataTailingsDepositionRateList depositionRates;
     
-    
-
-    // These lists are resolved first/ Strings needed here since button action does not allow modification of local variables
     public IndexList inflowFixedTRN;
     public IndexList outflowFixedTRN;
-    
     public IndexList inflowOnDemandTRN;
     public IndexList outflowOnDemandTRN;
-    
+    public IndexList tailsTRNOptions;
+    public int tailsTRN; //index of inflow transfer linked to tailings solids deposition
     public IndexList overflowOptions;
     public int overflowTRN; // index of transfer used to handle spillway overflows
 
     /**
-     * Chooses what symbol set to use 
+     * Allows imageLib to determine which sprite sheet to use 
      */
     public static String[] objSubTypesAllowed = { // Note list also exitss in IconLibrary
         "DAM_PADDOCK",
@@ -75,9 +63,7 @@ class ObjELM {
         "PLANT",
         "STOCKPILE",
         "UNDERGROUND",
-        "WELL"
-
-            
+        "WELL"    
     };
     /**
      * Used for selecting symbol on flowchart, will not be used in the calculations directly
@@ -99,8 +85,6 @@ class ObjELM {
     public int stateTime[] = new int[ProjSetting.MAX_STATES];
     public String state[] = new String[ProjSetting.MAX_STATES];
       
-      
-      
     ObjELM(){// constructor
         x = 0;
         y = 0;
@@ -110,8 +94,12 @@ class ObjELM {
         objSubType = "DEFAULT";
         scaleX = 1.0;
         scaleY = 1.0;
-        setSubType("DEFAULT","ACTIVE");
-        
+        objSubType = "DEFAULT";
+        objSprite = ProjSetting.imageLib.getImage(objSubType, "ACTIVE", scaleX, scaleY);
+        hitBox.x = x - objSprite.getWidth()/2;
+        hitBox.y = y - objSprite.getHeight()/2;
+        hitBox.width = objSprite.getWidth();
+        hitBox.height = objSprite.getHeight();
         hasCatchment = false;
         nCatchments = 0;
         indexRunoffTracker = -1; // used when building the run settings to track output
@@ -129,6 +117,8 @@ class ObjELM {
         
         inflows = new IndexList(ProjSetting.MAX_TRNS);
         outflows = new IndexList(ProjSetting.MAX_TRNS);
+        tailsTRNOptions = new IndexList(ProjSetting.MAX_TRNS);
+        tailsTRN = -1;
 
         inflowFixedTRN = new IndexList(ProjSetting.MAX_TRNS);
         outflowFixedTRN = new IndexList(ProjSetting.MAX_TRNS);
@@ -150,7 +140,7 @@ class ObjELM {
             return state[0];
         }
         for (int i = 1; i < state.length; i ++){
-            if (day <= stateTime[i]){
+            if (day < stateTime[i]){
                 if(state[i-1] != null){
                     return state[i-1];
                 }
@@ -160,7 +150,8 @@ class ObjELM {
     }
     
     /**
-     * 
+     * Used to set sprite and dimensions of object for flowChartCad whenever 
+     * object Subtype is changed
      */
     public void setSubType(String inSubType, String inState){
         objSubType = inSubType;
@@ -170,6 +161,10 @@ class ObjELM {
         hitBox.width = objSprite.getWidth();
         hitBox.height = objSprite.getHeight();
     }
+    /**
+     * Sets sprite image for the element from the imageLib class
+     * @param inState state from eLMStatesAllowed, if no match is found then imageLib returns a default sprite
+     */
     public void setSpriteState(String inState){
         objSprite = ProjSetting.imageLib.getImage(objSubType, inState, scaleX, scaleY);
     }

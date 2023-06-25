@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
- * Static container for loading and storing all png images that are used within the program including the program Icon
+ * Static container for loading and storing all png images that are used within the program excluding the program Icon
  * @author amcintyre
  */
 public class ImageLib {
@@ -35,124 +35,113 @@ public class ImageLib {
             UNDERGROUNDSPRITE = ImageIO.read(new File("bin/UnderGroundSprite.png"));
         }
         catch (IOException e){
-            System.out.println("IconFile Not Found");
+            System.out.println("Sprite png file Not Found, check that the bin directory exists");
         }
     }
     public BufferedImage getImage(String objSubType, String state, double scaleX, double scaleY){
-        int assetColRight = 0;
-        int assetColLeft = 0 ;
-        int assetRow = 0;
-        boolean singleSide = false; 
+        int assetColRight;
+        int assetColLeft;
+        int assetRow;
         BufferedImage leftSide;
         BufferedImage rightSide;
         BufferedImage compSprite; 
-        BufferedImage scaledSprite;// = new BufferedImage(10,10,BufferedImage.TYPE_INT_ARGB);
+        BufferedImage scaledSprite;
         AffineTransform at = new AffineTransform();
         at.setToScale(scaleX, scaleY);
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
         
-        
-        switch (state){ // state switch is completed first since some objects pull from other spritesheets. 
-            case "ACTIVE":
-                assetRow = 0;
-                break;
-            case "UNDERCONSTRUCTION":
-                assetRow = 1;
-                break;
-            case "CONSTRUCTEDEMPTY":
-                assetRow = 2;
-                break;                
-            case "HALFWATER":
-                assetRow = 3;
-                break;        
-            case "FULLWATER":
-                assetRow = 4;
-                break;        
-            case "TAILINGS":
-                assetRow = 5;
-                break;                
-            case "TAILINGSWATERCOVER":
-                assetRow = 6;
-                break;        
-            case "TAILINGSDRY":
-                assetRow = 7;
-                break;            
-            case "CLOSEDDRYCOVER":
-                assetRow = 8;
-                break;
-            case "CLOSEDWETCOVER":
-                assetRow = 9;
-                break;     
-            default:
-                assetRow = 0;
-        }
-        
+        // state switch is completed first since some objects pull from other spritesheets. 
+        assetRow
+                = switch (state) {
+            case "ACTIVE" ->
+                0;
+            case "UNDERCONSTRUCTION" ->
+                1;
+            case "CONSTRUCTEDEMPTY" ->
+                2;
+            case "HALFWATER" ->
+                3;
+            case "FULLWATER" ->
+                4;
+            case "TAILINGS" ->
+                5;
+            case "TAILINGSWATERCOVER" ->
+                6;
+            case "TAILINGSDRY" ->
+                7;
+            case "CLOSEDDRYCOVER" ->
+                8;
+            case "CLOSEDWETCOVER" ->
+                9;
+            default ->
+                0;
+        };
         
         switch (objSubType){
-            case "DAM_PADDOCK":
+            case "DAM_PADDOCK" -> {
                 assetColLeft = 0;
                 assetColRight = 0;
                 leftSide = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 rightSide = MAINSPRITES.getSubimage(assetColRight * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 compSprite = stitch(leftSide, mirror(rightSide));
-                break;
-            case "DAM_VALLEY_LEFT":
+            }
+            case "DAM_VALLEY_LEFT" -> {
                 assetColLeft = 0;
                 assetColRight = 1;
                 leftSide = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 rightSide = MAINSPRITES.getSubimage(assetColRight * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 compSprite = stitch(leftSide, mirror(rightSide));
-                break;
-            case "DAM_VALLEY_RIGHT":
+            }
+            case "DAM_VALLEY_RIGHT" -> {
                 assetColLeft = 1;
                 assetColRight = 0;
                 leftSide = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 rightSide = MAINSPRITES.getSubimage(assetColRight * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 compSprite = stitch(leftSide, mirror(rightSide));
-                break;
-            case "LAKE":
+            }
+            case "LAKE" -> {
                 assetColLeft = 1;
                 assetColRight = 1;
                 leftSide = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 rightSide = MAINSPRITES.getSubimage(assetColRight * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 compSprite = stitch(leftSide, mirror(rightSide));
-                break;
-            case "OPENPIT":
+            }
+            case "OPENPIT" -> {
                 assetColLeft = 2;
                 compSprite = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
-                break;
-            case "PLANT":
+            }
+            case "PLANT" -> {
                 if (assetRow > 1){
                     compSprite = PLANTSPRITE.getSubimage(0, 0, PLANTSPRITE_WIDTH, PLANTSPRITE_HEIGHT);
                     break;
                 }
                 compSprite = PLANTSPRITE.getSubimage(0, assetRow * PLANTSPRITE_HEIGHT, PLANTSPRITE_WIDTH, PLANTSPRITE_HEIGHT);
-                break;
-            case "STOCKPILE":
+            }
+            case "STOCKPILE" -> {
                 assetColLeft = 3;
                 compSprite = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
-                break;
-            case "UNDERGROUND":
+            }
+            case "UNDERGROUND" -> {
                 compSprite = UNDERGROUNDSPRITE.getSubimage(0, assetRow * UNDERGROUNDSPRITE_HEIGHT, UNDERGROUNDSPRITE_WIDTH, UNDERGROUNDSPRITE_HEIGHT);
-                break;
-            case "WELL":
+            }
+            case "WELL" -> {
                 if (assetRow > 2){
                     compSprite = WELLSPRITE.getSubimage(0, 0, WELLSPRITE_WIDTH, WELLSPRITE_HEIGHT);
-                    break;
                 }
-                if (assetRow == 0){
+                else if (assetRow == 0){
                     compSprite = WELLSPRITE.getSubimage(0, 0, WELLSPRITE_WIDTH, WELLSPRITE_HEIGHT);
-                    break;
-                }else{ // debug,  this did not fix the problem.  for some reason getSubImage is trowing an error about the height being off. 
-                    compSprite = WELLSPRITE.getSubimage(0, assetRow * WELLSPRITE_HEIGHT -1, WELLSPRITE_WIDTH, WELLSPRITE_HEIGHT);
-                    break;
                 }
-            default:
+                else{
+                    compSprite = WELLSPRITE.getSubimage(0, assetRow * WELLSPRITE_HEIGHT -1, WELLSPRITE_WIDTH, WELLSPRITE_HEIGHT);
+                }
+            }
+            default -> {
                 assetColRight = 0;
                 assetColLeft = 0;
                 leftSide = MAINSPRITES.getSubimage(assetColLeft * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 rightSide = MAINSPRITES.getSubimage(assetColRight * MAINSPRITE_WIDTH, assetRow * MAINSPRITE_HEIGHT, MAINSPRITE_WIDTH, MAINSPRITE_HEIGHT);
                 compSprite = stitch(leftSide, mirror(rightSide));
+            }
         }
         scaledSprite = new BufferedImage((int)(compSprite.getWidth()*scaleX), (int)(compSprite.getHeight()*scaleY),BufferedImage.TYPE_INT_ARGB);
         scaleOp.filter(compSprite, scaledSprite);
@@ -161,11 +150,10 @@ public class ImageLib {
     /**
      * Pixel by Pixel method for mirroring and image
      * will need to figure out how to also copy the alpha values,... its not clear how java handles it... 
-     * 
-     * @param orgImage
+     * @param orgImage image to be mirrored
      * @return Returns mirror of the provided image buffer
      */
-    public BufferedImage mirror(BufferedImage orgImage){
+    private BufferedImage mirror(BufferedImage orgImage){
         int width = orgImage.getWidth();
         int height = orgImage.getHeight();
         BufferedImage mirrorImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); 
@@ -176,7 +164,13 @@ public class ImageLib {
         }
         return mirrorImage;
     }
-    public BufferedImage stitch(BufferedImage leftImage, BufferedImage rightImage){
+    /**
+     * Pixel by pixel method for stitching two images together side by side
+     * @param leftImage left side image
+     * @param rightImage right side image
+     * @return combination of left and right images side by side
+     */
+    private BufferedImage stitch(BufferedImage leftImage, BufferedImage rightImage){
         int lwidth = leftImage.getWidth();
         int rwidth = rightImage.getWidth();
         int height;

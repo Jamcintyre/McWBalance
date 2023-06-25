@@ -19,7 +19,7 @@ import javax.swing.table.AbstractTableModel;
 public class DataTableTailingsDepositionRate extends AbstractTableModel{
         
     private static final String[] columnNames = {"Model Day", "Rate (tonnes/day)","Solids Content (by mass)","Specific Gravity","Final Settled Density (tonne/cu.m)","Water with Solids (cu.m./day)", "Voidloss (cu.m./day)","Volume of Settled Solids (cu.m./day)"};
-    private final Object[][] data = new Object[ObjELM.maxDepoRates][8];
+    private final Object[][] data = new Object[ObjELM.MAX_DEPO_RATES][8];
     
     public static final int MAX_LENGTH = 10;
     public static final int MAX_RATES = 20;    
