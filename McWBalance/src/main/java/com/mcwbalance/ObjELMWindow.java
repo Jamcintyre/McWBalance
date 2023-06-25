@@ -7,8 +7,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.DefaultCellEditor;
@@ -415,8 +413,6 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         layoutTab2.putConstraint(SpringLayout.WEST, tab2comboOverflow, hPadSpacing, SpringLayout.EAST, tab2lableOverflow);
         layoutTab2.putConstraint(SpringLayout.VERTICAL_CENTER, tab2comboOverflow, 0, SpringLayout.VERTICAL_CENTER, tab2lableOverflow);
         
-
-        
         // TAB 3 for handelling Depth Area Capacity
         JPanel tab3 = new JPanel();
  
@@ -426,34 +422,22 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         JPopupMenu popupMenuDACTable = new JPopupMenu();
         JMenuItem popupMenuItemDACSelectAll = new JMenuItem("Select All");
-        popupMenuItemDACSelectAll.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemDACSelectAll.addActionListener(e->{
                 tab3TableDAC.setColumnSelectionInterval(0, 2);
                 tab3TableDAC.setRowSelectionInterval(0, tab3TableDAC.getRowCount()-1);
-            }
         });
         JMenuItem popupMenuItemDACDelete = new JMenuItem("Delete Selection");
-        popupMenuItemDACDelete.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemDACDelete.addActionListener(e->{
                 tab3TableModelDAC.removeData(tab3TableDAC.getSelectedRows(),tab3TableDAC.getSelectedColumns());
-            }
         });
         JMenuItem popupMenuItemDACCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemDACCopy.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemDACCopy.addActionListener(e->{
                 System.out.println("popup menu Copy button hit");
-            }
         });
 
         JMenuItem popupMenuItemDACPaste = new JMenuItem("Paste (All 3 Columns El. A V)");
-        popupMenuItemDACPaste.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemDACPaste.addActionListener(e->{
                 tab3TableModelDAC.pasteFromClipboard(tab3TableDAC.getSelectedRows(),tab3TableDAC.getSelectedColumns());
-            }
         });
         
         popupMenuDACTable.add(popupMenuItemDACSelectAll);
@@ -603,34 +587,22 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         JPopupMenu popupMenuTailsTable = new JPopupMenu();
         JMenuItem popupMenuItemTailsSelectAll = new JMenuItem("Select All");
-        popupMenuItemTailsSelectAll.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemTailsSelectAll.addActionListener(e->{
                 tab5TableTails.setColumnSelectionInterval(0, 2);
                 tab5TableTails.setRowSelectionInterval(0, tab5TableTails.getRowCount()-1);
-            }
         });
         JMenuItem popupMenuItemTailsDelete = new JMenuItem("Delete Selection");
-        popupMenuItemTailsDelete.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemTailsDelete.addActionListener(e->{
                 tab5TableModelTails.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
-            }
         });
         JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemTailsCopy.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemTailsCopy.addActionListener(e->{
                 System.out.println("popup menu Copy button hit");
-            }
         });
 
         JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste (All 3 Columns El. A V)");
-        popupMenuItemTailsPaste.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemTailsPaste.addActionListener(e->{
                 tab5TableModelTails.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
-            }
         });
         
         popupMenuTailsTable.add(popupMenuItemTailsSelectAll);
@@ -660,34 +632,21 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         JPopupMenu popupMenuStateTable = new JPopupMenu();
         JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
-        popupMenuItemStateSelectAll.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemStateSelectAll.addActionListener(e->{
                 tab6TableState.setColumnSelectionInterval(0, 1);
                 tab6TableState.setRowSelectionInterval(0, tab6TableState.getRowCount()-1);
-            }
         });
         JMenuItem popupMenuItemStateDelete = new JMenuItem("Delete Selection");
-        popupMenuItemStateDelete.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemStateDelete.addActionListener(e->{
                 tab6TableModelState.removeData(tab6TableState.getSelectedRows(),tab6TableState.getSelectedColumns());
-            }
         });
         JMenuItem popupMenuItemStateCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemStateCopy.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemStateCopy.addActionListener(e ->{
                 System.out.println("popup menu Copy button hit");
-            }
         });
-
         JMenuItem popupMenuItemStatePaste = new JMenuItem("Paste");
-        popupMenuItemStatePaste.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                tab6TableModelState.pasteFromClipboard(tab6TableState.getSelectedRows(),tab6TableState.getSelectedColumns());
-            }
+        popupMenuItemStatePaste.addActionListener(e -> {
+            tab6TableModelState.pasteFromClipboard(tab6TableState.getSelectedRows(), tab6TableState.getSelectedColumns());
         });
         
         popupMenuStateTable.add(popupMenuItemStateSelectAll);
