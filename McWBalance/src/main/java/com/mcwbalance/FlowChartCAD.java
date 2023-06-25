@@ -44,12 +44,7 @@ public class FlowChartCAD extends JComponent{
     
     static boolean titleBlockVisible = true; 
     
-    int successflag = 0; 
-    
-    /**
-     * @Depreciated
-     */
-    ImageLib imageLib = new ImageLib(); // pulls in library of Icons; 
+   
     ObjELMList elmList = new ObjELMList();
     ObjTRNList tRNList = new ObjTRNList();
     
@@ -61,7 +56,10 @@ public class FlowChartCAD extends JComponent{
     private int eLMy =0;
     private Rectangle eLMrect = new Rectangle(); // used in flow line drawing
     
-    private Dimension tRNdim = new Dimension(20,20); // placeholder sizing
+    public final static int TRN_BOX_WIDTH = 60;
+    public final static int TRN_BOX_HEIGHT = 60;
+    
+    private Dimension tRNdim = new Dimension(TRN_BOX_WIDTH,TRN_BOX_HEIGHT); // placeholder sizing
     private int tRNx =0;
     private int tRNy =0;
     private Rectangle tRNrect = new Rectangle(); // used in flow line drawing
@@ -283,10 +281,10 @@ public class FlowChartCAD extends JComponent{
     }
     
    public void addObjELM (int inX, int inY){
-       successflag = elmList.AddELM(inX, inY);
+       elmList.addELM(inX, inY);
    }
    public void addObjTRN (int inX, int inY){
-       successflag = tRNList.AddTRN(inX, inY);
+       tRNList.addTRN(inX, inY);
    }
     public void addSelectionELM(int inNumber){
         if(inNumber >=0 && inNumber <= ProjSetting.MAX_ELMS){
@@ -313,35 +311,40 @@ public class FlowChartCAD extends JComponent{
         }
     }
    
-   public void removeObjELM (int inNumber){
-       successflag = elmList.RemoveELM(inNumber);
+   public void removeELM (int inNumber){
+       elmList.removeELM(inNumber);
        tRNList.removeELM(inNumber);
    }
-   public void MoveObjELM (int inX, int inY, int inNumber){
+   public void removeTRN (int tRNNumber){
+       elmList.removeTRN(tRNNumber);
+       tRNList.removeTRN(tRNNumber);
+   }
+   
+   public void moveObjELM (int inX, int inY, int inNumber){
        elmList.eLMs[inNumber].x = inX;
        elmList.eLMs[inNumber].y = inY;
        elmList.eLMs[inNumber].hitBox.setLocation(inX - elmList.eLMs[inNumber].hitBox.getSize().width/2, inY - elmList.eLMs[inNumber].hitBox.getSize().height/2);
    }
-   public void MoveObjTRN(int inX, int inY, int inNumber){
+   public void moveObjTRN(int inX, int inY, int inNumber){
        tRNList.tRNs[inNumber].x = inX;
        tRNList.tRNs[inNumber].y = inY;
        tRNList.tRNs[inNumber].hitBox.setLocation(inX - tRNList.tRNs[inNumber].hitBox.getSize().width/2, inY - tRNList.tRNs[inNumber].hitBox.getSize().height/2);
    }
    
-   public ObjELM GetObjELM (int inNumber){
+   public ObjELM getObjELM (int inNumber){
        return elmList.eLMs[inNumber];
    }
-   public ObjTRN GetObjTRN (int inNumber){
+   public ObjTRN getObjTRN (int inNumber){
        return tRNList.tRNs[inNumber];
    }
 
-   public void SetObjELM (int inNumber, ObjELM inObjELM){
+   public void setObjELM (int inNumber, ObjELM inObjELM){
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
        inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width/2, inObjELM.y - inObjELM.hitBox.getSize().height/2);  
-       elmList.SetObjELM (inNumber, inObjELM); // passes command to active object list; 
+       elmList.setObjELM (inNumber, inObjELM); // passes command to active object list; 
    }
-   public void SetObjTRN (int inNumber, ObjTRN inObjTRN){
-       tRNList.SetObjTRN (inNumber, inObjTRN);
+   public void setObjTRN (int inNumber, ObjTRN inObjTRN){
+       tRNList.setObjTRN (inNumber, inObjTRN);
    }
    
 

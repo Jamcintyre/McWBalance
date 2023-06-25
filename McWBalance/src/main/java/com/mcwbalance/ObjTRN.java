@@ -72,7 +72,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     ObjTRN(){
         x = 0;
         y = 0;
-        hitBox = new Rectangle(x,y,60,60);
+        hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
         isSelected = false;
         objname = "None";
         subType = "Pump";
@@ -98,7 +98,35 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         plotVolperAnnum = 0; 
 
     }
-    
+        ObjTRN(int inX, int inY, int number){
+        x = inX;
+        y = inY;
+        hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
+        hitBox.setLocation(inX - hitBox.getSize().width/2, inY - hitBox.getSize().height/2); // centers the hitbox
+        isSelected = false;
+        objname = "NEW TRANSFER " + number;
+        subType = "Pump";
+        inObjNumber = -1;
+        inSideFrom = "TOP";
+        inSideFromOset = 0;
+        inSideTo = "RIGHT";
+        outObjNumber = -1;
+        outSideFrom = "LEFT";
+        outSideTo = "TOP";
+        outSideToOset = 0;
+        
+        pumpTime[0] = 0; 
+        pumpRateDay[0] = 100;
+        pumpRateCount = 0;
+        
+        stateTime[0] = 0;
+        state[0] = "ACTIVE";
+        
+        plotVolperDay = 0.0;
+        plotVolperHr = 0.00;
+        plotVolperAnnum = 0; 
+
+    }
     
     
     /**

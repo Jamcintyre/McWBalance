@@ -20,17 +20,12 @@ public class ObjTRNList {
             tRNs[i].outObjNumber = -1; // -1 is used as Null, first object number is 0; 
         }
     } 
-    public int AddTRN(int inX, int inY){
+    public void addTRN(int inX, int inY){
         if (count - 1 == ProjSetting.MAX_TRNS){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
             System.err.println("Max Number of Tranfers Reached");
-        return -1; // returns -1 as error code, object could not be added
         }
-        tRNs[count].x = inX; // center of object
-        tRNs[count].y = inY; // center of object        
-        tRNs[count].hitBox.setLocation(inX - tRNs[count].hitBox.getSize().width/2, inY - tRNs[count].hitBox.getSize().height/2); // centers the hitbox
-        
+        tRNs[count] = new ObjTRN(inX, inY, count +1); 
         count ++; // increments to next element, only allowed if not at maximum
-        return 0;
     } 
     /**
      * Provides an array of strings containing the name of each transfer object.  If not list is given then all names are returned
@@ -205,15 +200,15 @@ public class ObjTRNList {
         return nameListIndex;
     }
     
-   public void SetInflow(int inELM, int inTRN){
+   public void setInflow(int inELM, int inTRN){
         tRNs[inTRN].inObjNumber = inELM;
     }
-   public void SetObjTRN(int inNumber, ObjTRN inObjTRN){
+   public void setObjTRN(int inNumber, ObjTRN inObjTRN){
        tRNs[inNumber] = inObjTRN; 
    }
    
    
-   public void SetOutflow(int outELM, int inTRN){
+   public void setOutflow(int outELM, int inTRN){
         tRNs[inTRN].outObjNumber = outELM;
     }
 
@@ -275,11 +270,29 @@ public class ObjTRNList {
        return saveString;
    }
    
+   /**
+    * removes all links from a each transfer to and from a specified ELM
+    * @param rELM 
+    */
    public void removeELM (int rELM){
        for (int i = 0; i < count; i ++){
            tRNs[i].removeELM(rELM);
        }
    }
+   
+   /**
+     * Removes the requested transfer from the TRN list and shifts all following elements up 1 index. Method does not modify
+     * Linking in the ELM list.  i.e. if TRN 4 is deleted the any Transfers to or from an element are not automatically updated, the method removeTRN must be called from
+     * both the ELM list and TRN list
+     * @param inNumber Index value of the element to be removed from the list
+     */
+    public void removeTRN(int inNumber){// removes object from list and shifts proceeding objects up
+        for (int i = inNumber; i < count; i ++){
+            tRNs[i] = tRNs[i+1];
+        }
+        count --;
+    }
+   
            
            
            

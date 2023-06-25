@@ -30,14 +30,12 @@ public class ObjELMList {
       * @param inY Midpoint of the ELM draw location used in FlowChartCAD class
       * @return 0 is returned of successful, -1 if unsuccessful
       */
-    public int AddELM(int inX, int inY){
+    public int addELM(int inX, int inY){
         if (count - 1 == ProjSetting.MAX_ELMS){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
             System.out.println("Max Number of Objects");
         return -1; // returns -1 as error code, object could not be added
         }
-        eLMs[count].x = inX;
-        eLMs[count].y = inY;
-        eLMs[count].hitBox.setLocation(inX - eLMs[count].hitBox.getSize().width/2, inY - eLMs[count].hitBox.getSize().height/2); // centers the hitbox
+        eLMs[count] = new ObjELM(inX, inY, count + 1);
         count ++; // increments to next element, only allowed if not at maximum
         return 0;
     }
@@ -46,7 +44,7 @@ public class ObjELMList {
      * @return A list of all ELMs currently active in the ELM list. "None" is included as a first entry for cases where the user would 
      * prefer to select no ELM.
      */
-    public String[] GetNameList(){  
+    public String[] getNameList(){  
         String[] nameList = new String [count+1];
         nameList[0] = "None"; // null value required for edit menu
         for (int i = 0; i < count; i++){
@@ -58,19 +56,22 @@ public class ObjELMList {
      * Removes the requested element from the ELM list and shifts all following elements up 1 index. Method does not modify
      * Linking in the TRN list.  i.e. if ELM 4 is deleted the any Transfers to ELM 4, 5, 6 etc.. are not automatically updated
      * @param inNumber Index value of the element to be removed from the list
-     * @return 0 if successful. no error throwing added yet
      */
-    public int RemoveELM(int inNumber){// removes object from list and shifts proceeding objects up
+    public void removeELM(int inNumber){// removes object from list and shifts proceeding objects up
         for (int i = inNumber; i < count; i ++){
-            eLMs[i].x = eLMs[i+1].x;
-            eLMs[i].y = eLMs[i+1].y;
-            eLMs[i].objname = eLMs[i+1].objname;
-            eLMs[i].objSubType = eLMs[i+1].objSubType; // defaults to basin
-            count --; 
+            eLMs[i] = eLMs[i+1];
         }
-        return 0;
+        count --;
     }
-    
+    /**
+    * removes all links from a each Element to and from a specified TRN
+    * @param rTRN 
+    */
+   public void removeTRN (int rTRN){
+       for (int i = 0; i < count; i ++){
+           eLMs[i].removeTRN(rTRN);
+       }
+   }
   
     /**
      * Used to set the values of an ELM entry, typically with data passed back from ObjELMWindow. Method does not modify the number
@@ -79,13 +80,8 @@ public class ObjELMList {
      * @param inNumber Index number of element to be 
      * @param inObjELM Populated ELM data to be used to overwrite the selected index
      */
-    public void SetObjELM(int inNumber, ObjELM inObjELM){
-        eLMs[inNumber].x = inObjELM.x;
-        eLMs[inNumber].y = inObjELM.y;
-        eLMs[inNumber].objname = inObjELM.objname; 
-        eLMs[inNumber].objSubType = inObjELM.objSubType;
-        // Note that dimensions of the box are set in FlowChartCAD
-        eLMs[inNumber].hitBox = inObjELM.hitBox;
+    public void setObjELM(int inNumber, ObjELM inObjELM){
+        eLMs[inNumber] = inObjELM;
     }
     /**
      * This Method defines and populates the format of the Portion of the Save file containing the ELM list.

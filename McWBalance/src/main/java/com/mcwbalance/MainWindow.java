@@ -269,8 +269,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public void mouseClicked(MouseEvent me){
         int mx = (int)(me.getX() / FlowChartCAD.zoomscale);
         int my = (int)(me.getY() / FlowChartCAD.zoomscale);
-        int mELMHit = -1; // cannot set to 0 as object 0 is an object
-        int mTRNHit = -1;
+        int mELMHit;
+        int mTRNHit;
        
         if(me.getButton() == MouseEvent.BUTTON1){ // Left Click Action Menu
             switch(requestedAction){
@@ -287,12 +287,11 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 case "DeleteObj":
                     requestedAction = "None"; // assumes object hit. on miss will need to re-try
                     // Note TRNS should be first, since they will draw on top. 
-                    
                     mTRNHit = flowChart.checkTRNHit(mx, my);
-                    // flowChart.removeObjTRN(mTRNHit); 
-                    if (mTRNHit == -1){ // if no Elements were hit, try for Pipelines
+                    flowChart.removeTRN(mTRNHit); 
+                    if (mTRNHit == -1){
                         mELMHit = flowChart.checkELMHit(mx, my);
-                        flowChart.removeObjELM(mELMHit);
+                        flowChart.removeELM(mELMHit);
                     }
                     break;
                 default:
@@ -302,7 +301,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if(flowChart.checkSelectionTRN(mTRNHit)){
                             if (!editorIsActive){
                                 ObjTRNWindow objTRNWindow = new ObjTRNWindow();
-                                objTRNWindow.ObjTRNWindowFunct(flowChart.GetObjTRN(mTRNHit), flowChart.elmList.GetNameList());
+                                objTRNWindow.ObjTRNWindowFunct(flowChart.getObjTRN(mTRNHit), flowChart.elmList.getNameList());
                             }
                             break;
                         }else{
@@ -314,7 +313,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if(flowChart.checkSelectionELM(mELMHit)){
                             if (!editorIsActive){
                                 ObjELMWindow objELMWindow = new ObjELMWindow();
-                                objELMWindow.ObjELMWindowFunct(flowChart.GetObjELM(mELMHit), mELMHit, flowChart.tRNList);
+                                objELMWindow.ObjELMWindowFunct(flowChart.getObjELM(mELMHit), mELMHit, flowChart.tRNList);
                             }
                             break;
                         }else{
@@ -380,11 +379,11 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         int mx = (int)(mme.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
         int my = (int)(mme.getY()/ FlowChartCAD.zoomscale);
         if (eLMOnTheMove > -1){
-            flowChart.MoveObjELM(mx, my, eLMOnTheMove);
+            flowChart.moveObjELM(mx, my, eLMOnTheMove);
             flowChartPanel.repaint(); 
         }
         else if (tRNOnTheMove > -1){
-            flowChart.MoveObjTRN(mx, my, tRNOnTheMove);
+            flowChart.moveObjTRN(mx, my, tRNOnTheMove);
             flowChartPanel.repaint();
         }
     }
