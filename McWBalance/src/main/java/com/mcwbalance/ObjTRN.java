@@ -86,8 +86,8 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         outSideToOset = 0;
         
         pumpTime[0] = 0; 
-        pumpRateDay[0] = 100;
-        pumpRateCount = 0;
+        pumpRateDay[0] = 0;
+        pumpRateCount = 1;
         
         stateTime[0] = 0;
         state[0] = "ACTIVE";
@@ -116,8 +116,8 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         outSideToOset = 0;
         
         pumpTime[0] = 0; 
-        pumpRateDay[0] = 100;
-        pumpRateCount = 0;
+        pumpRateDay[0] = 0;
+        pumpRateCount = 1;
         
         stateTime[0] = 0;
         state[0] = "ACTIVE";
@@ -140,7 +140,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         plotVolperAnnum = (int)volPerDay*365; 
     }
     
-    public double GetMaxPumpRate(int day){
+    public double getMaxPumpRate(int day){
         if(day < pumpTime[0]){
             return 0;
         }
@@ -152,7 +152,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         return -1;
     }
     
-    public double GetPreferredRate(int day, String caller, double inflowSurplus, double outflowSurplus){
+    public double getPreferredRate(int day, String caller, double inflowSurplus, double outflowSurplus){
         double pumpCapacity = 0; 
         
         if(day < pumpTime[0]){
@@ -194,6 +194,77 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
 
         return out;
     }
+    
+    /**
+     * Builds a tab delimited string of all key data from the TRN,  inlcudes in
+     * and ouflow links
+     * @return 
+     */
+    public StringBuilder getSaveString(){
+        String nextLine = System.getProperty("line.separator");// used instead of /n for cross platform compatibility
+        StringBuilder saveString = new StringBuilder();
+        saveString.append("Transfer Name" + "\t");
+        saveString.append(objname);
+        saveString.append(nextLine); 
+        saveString.append("SubType" + "\t");
+        saveString.append(subType);
+        saveString.append(nextLine);
+        saveString.append("XYCoords" + "\t");
+        saveString.append(x);
+        saveString.append("\t");
+        saveString.append(y);
+        saveString.append(nextLine);
+        saveString.append("Inflow From" + "\t");
+        saveString.append(inObjNumber);
+        saveString.append(nextLine);
+        saveString.append("Inflow Line" + "\t");
+        saveString.append(inSideFrom);
+        saveString.append("\t");
+        saveString.append(inSideFromOset);
+        saveString.append("\t");
+        saveString.append(inSideTo);
+        saveString.append("\t");
+        saveString.append(nextLine);
+        saveString.append("Outflow To" + "\t");
+        saveString.append(outObjNumber);
+        saveString.append(nextLine);
+        saveString.append("Outflow Line" + "\t");
+        saveString.append(outSideFrom);
+        saveString.append("\t");
+        saveString.append(outSideTo);
+        saveString.append("\t");
+        saveString.append(outSideToOset);
+        saveString.append("\t");
+        saveString.append(nextLine);
+        saveString.append("Pump Rate");
+        saveString.append(nextLine);
+        saveString.append("Time(day)" +"\t"+"Rate(vol/day)");
+        saveString.append(nextLine);
+        for (int i = 0; i < pumpRateCount; i++){
+            saveString.append(pumpTime[i]);
+            saveString.append("\t");
+            saveString.append(pumpRateDay[i]);
+            saveString.append(nextLine);
+        }
+        saveString.append(ProjSetting.LIST_TERMINATOR);
+        saveString.append(nextLine);
+        saveString.append("Object State");
+        saveString.append(nextLine);
+        saveString.append("Time(day)" +"\t"+"State");
+        saveString.append(nextLine);
+        for (int i = 0; i < stateTime.length; i++){
+            saveString.append(stateTime[i]);
+            saveString.append("\t");
+            saveString.append(state[i]);
+            saveString.append(nextLine);
+        }
+        saveString.append(ProjSetting.LIST_TERMINATOR);
+        saveString.append(nextLine);
+        return saveString;
+    }
+    
+    
+    
     /**
      * if ELM object is referenced this method replaces that reference with a "-1" null value. ELMs of higher index values then the rELM are 
      * downshifted 1 space

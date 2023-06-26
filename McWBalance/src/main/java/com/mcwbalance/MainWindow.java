@@ -238,7 +238,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 // builds the version info. 
                 StringBuilder sverInfoFile = new StringBuilder();
                 sverInfoFile.append(ProjSetting.verInfo);
-                StringBuilder tRNListFile = flowChart.tRNList.getSaveString();
                 StringBuilder eLMListFile = flowChart.elmList.getSaveString();
                 try {
                     FileOutputStream sfileos = new FileOutputStream(ProjSetting.pathfolder + ProjSetting.saveFileName);
@@ -246,8 +245,34 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
 
                     // initializes ZipEntry info for files to include
                     ZipEntry zEntVersion = new ZipEntry("Version.txt");
-                    ZipEntry zEntTRNList = new ZipEntry("TransferList.csv");
-                    ZipEntry zEntELMList = new ZipEntry("ElementList.csv");
+                    
+                    ZipEntry zEntTRN[] = new ZipEntry[flowChart.tRNList.count];
+                    for (int i = 0; i < flowChart.tRNList.count; i++){
+                        if(i < 10){
+                            zEntTRN[i] = new ZipEntry("TRN00"+i+".dat");
+                        }
+                        else if (i < 100){
+                            zEntTRN[i] = new ZipEntry("TRN0"+i+".dat");
+                        }
+                        else {
+                            zEntTRN[i] = new ZipEntry("TRN"+i+".dat");
+                        }
+                        
+                    }
+                    ZipEntry zEntELM[] = new ZipEntry[flowChart.elmList.count];
+                    for (int i = 0; i < flowChart.elmList.count; i++){
+                        if(i < 10){
+                            zEntELM[i] = new ZipEntry("ELM00"+i+".dat");
+                        }
+                        else if (i < 100){
+                            zEntELM[i] = new ZipEntry("ELM0"+i+".dat");
+                        }
+                        else {
+                            zEntELM[i] = new ZipEntry("ELM"+i+".dat");
+                        }
+                        
+                    }
+                    
 
                     // Write Version Information
                     sfilezos.putNextEntry(zEntVersion);
@@ -255,17 +280,21 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     sfilezos.write(bytedata, 0, bytedata.length);
                     sfilezos.closeEntry();
 
-                    // Write TransferList Information
-                    sfilezos.putNextEntry(zEntTRNList);
-                    bytedata = tRNListFile.toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                    sfilezos.write(bytedata, 0, bytedata.length);
-                    sfilezos.closeEntry();
+                    // Write Transfer Information
+                    for (int i = 0; i < zEntTRN.length; i ++){
+                        sfilezos.putNextEntry(zEntTRN[i]);
+                        bytedata = flowChart.tRNList.tRNs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
+                        sfilezos.write(bytedata, 0, bytedata.length);
+                        sfilezos.closeEntry();
+                    }
 
-                    // Write ElementList Information
-                    sfilezos.putNextEntry(zEntELMList);
-                    bytedata = eLMListFile.toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                    sfilezos.write(bytedata, 0, bytedata.length);
-                    sfilezos.closeEntry();
+                    // Write ElementInformation
+                    for (int i = 0; i < zEntELM.length; i ++){
+                        sfilezos.putNextEntry(zEntELM[i]);
+                        bytedata = flowChart.elmList.eLMs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
+                        sfilezos.write(bytedata, 0, bytedata.length);
+                        sfilezos.closeEntry();
+                    }
 
                     //writeToZipFile()
                     sfilezos.close();

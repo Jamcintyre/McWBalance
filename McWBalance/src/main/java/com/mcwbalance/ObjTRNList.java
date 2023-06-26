@@ -203,73 +203,14 @@ public class ObjTRNList {
    public void setInflow(int inELM, int inTRN){
         tRNs[inTRN].inObjNumber = inELM;
     }
+   
    public void setObjTRN(int inNumber, ObjTRN inObjTRN){
        tRNs[inNumber] = inObjTRN; 
    }
-   
-   
+
    public void setOutflow(int outELM, int inTRN){
         tRNs[inTRN].outObjNumber = outELM;
     }
-
-   public StringBuilder getSaveString(){
-        StringBuilder saveString = new StringBuilder();
-       
-        saveString.append("List of Transfers");
-        saveString.append(System.getProperty("line.separator")); // used instead of /n for cross platform compatibility
-        saveString.append("No of Transfers,");
-        saveString.append(count);
-        saveString.append(System.getProperty("line.separator"));
-       
-        for(int i = 0; i < count; i++){
-           
-            saveString.append(tRNs[i].objname);
-            saveString.append(System.getProperty("line.separator"));
-            saveString.append(tRNs[i].subType);
-            saveString.append(System.getProperty("line.separator"));
-            saveString.append((String)("coord xy," + tRNs[i].x + "," + tRNs[i].y));
-            saveString.append(System.getProperty("line.separator"));
-           
-            saveString.append("Inflow,");
-            saveString.append(tRNs[i].inObjNumber);
-            saveString.append(",");
-            saveString.append(tRNs[i].inSideFrom);
-            saveString.append(",");
-            saveString.append(tRNs[i].inSideTo);
-            saveString.append(",");
-            saveString.append(tRNs[i].inSideFromOset);
-            saveString.append(System.getProperty("line.separator"));
-           
-            saveString.append("Outflow,");
-            saveString.append(tRNs[i].outObjNumber);
-            saveString.append(",");
-            saveString.append(tRNs[i].outSideFrom);
-            saveString.append(",");
-            saveString.append(tRNs[i].outSideTo);
-            saveString.append(",");
-            saveString.append(tRNs[i].outSideToOset);
-            saveString.append(System.getProperty("line.separator"));
-           
-            saveString.append("TranferRates day rate,");
-            saveString.append(tRNs[i].pumpRateCount);
-            saveString.append(System.getProperty("line.separator"));
-           
-            for(int j = 0; j < tRNs[i].pumpRateCount; j++){
-                saveString.append(tRNs[i].pumpTime[j]);
-                saveString.append(",");
-                saveString.append(tRNs[i].pumpRateDay[j]);
-                saveString.append(System.getProperty("line.separator"));
-           }
-           
-           /*
-           public Rectangle hitBox; will be generated after loading since Icons could change size
-           
-           */
-       }
-       
-       return saveString;
-   }
-   
    /**
     * removes all links from a each transfer to and from a specified ELM
     * @param rELM 

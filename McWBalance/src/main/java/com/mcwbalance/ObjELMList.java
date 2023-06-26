@@ -84,6 +84,7 @@ public class ObjELMList {
         eLMs[inNumber] = inObjELM;
     }
     /**
+     * @deprecated Superceeded by ObjELM individual save strings
      * This Method defines and populates the format of the Portion of the Save file containing the ELM list.
      * @return A full String containing all key information from the ELMList formatted 
      * as TAB delimted and ready to be output directly to a .txt file or copied into the clipboard. 
@@ -97,6 +98,7 @@ public class ObjELMList {
         return getCopyString(eLMIndicies);
        }
     /**
+     * @deprecated Superceeded by ObjELM individual save strings
      * This Method defines and populates the format save or copy data pulled from the ELM list. Method allow individual
      * selection of ELMs to be copied to allow future implentation of ctrl+C and ctrl+V between this program and Excel or even
      * 2 instances of this program. 

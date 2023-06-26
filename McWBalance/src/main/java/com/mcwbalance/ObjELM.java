@@ -221,6 +221,32 @@ class ObjELM {
         }
         return state[0];
     }
+    
+    public StringBuilder getSaveString(){
+        String nextLine = System.getProperty("line.separator");// used instead of /n for cross platform compatibility
+        StringBuilder saveString = new StringBuilder();
+        saveString.append("Element Name" + "\t");
+        saveString.append(objname);
+        saveString.append(nextLine); 
+        saveString.append("SubType" + "\t");
+        saveString.append(objSubType);
+        saveString.append(nextLine);
+        saveString.append("XYCoords" + "\t");
+        saveString.append(x);
+        saveString.append("\t");
+        saveString.append(y);
+        saveString.append(nextLine);
+        
+        //TO BE COMPLETED
+        
+        
+        
+        
+        return saveString;
+    }
+    
+    
+    
 
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever

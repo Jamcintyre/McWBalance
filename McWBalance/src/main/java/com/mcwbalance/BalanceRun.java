@@ -90,7 +90,7 @@ String result;
                 obj = runSolveOrdIndex[i];
                 switch(runSolveOrdType[i]){
                     case"TRN": // Transfers solved by themselves assume max pumping rate. otherwise must be resolved by element; 
-                        transfer[obj].daily[day] = tRN.tRNs[obj].GetMaxPumpRate(day);
+                        transfer[obj].daily[day] = tRN.tRNs[obj].getMaxPumpRate(day);
                         
                         // if Contains Solids need to add a tonnage of solids
                         
