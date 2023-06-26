@@ -197,6 +197,7 @@ public class FlowChartCAD extends JComponent{
         
         g2.setStroke(FLOW_LINE);
         for (int i = 0; i < tRNList.count; i++){
+            g.setFont(mfont); // need to re-set font every loop
             nameWidthDouble = g.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g).getWidth();
             nameWidth = (int)nameWidthDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
             tRNdim = tRNList.tRNs[i].hitBox.getSize();
@@ -310,6 +311,32 @@ public class FlowChartCAD extends JComponent{
            tRNList.tRNs[i].isSelected = false;
         }
     }
+    /**
+     * Not written,  intend to copy selected ELMS and TRNS to clipboard in sacii (unicode) format tab delimited
+     */
+    public void copySelectiontoClipboard(){
+        
+        
+    }
+    
+    
+    /**
+     * only single delete tested to date
+     * should remove all selected ELMS and TRNS. will be called from main window
+     * using delete key
+     */
+    public void deleteSelection(){
+        for (int i = 0; i < elmList.count; i ++){
+           if (checkSelectionELM(i)){
+               removeELM(i);
+           }
+        }
+        for (int i = 0; i < tRNList.count; i ++){
+           if (checkSelectionTRN(i)){
+               removeTRN(i);
+           }
+        }
+    }
    
    public void removeELM (int inNumber){
        elmList.removeELM(inNumber);
@@ -329,6 +356,13 @@ public class FlowChartCAD extends JComponent{
        tRNList.tRNs[inNumber].x = inX;
        tRNList.tRNs[inNumber].y = inY;
        tRNList.tRNs[inNumber].hitBox.setLocation(inX - tRNList.tRNs[inNumber].hitBox.getSize().width/2, inY - tRNList.tRNs[inNumber].hitBox.getSize().height/2);
+   }
+   /**
+    * method for adding ELMs and TRNs direct from clipboard, indended to allow
+    * transfer between 2 instances of McWBalance
+    */
+   public void pasteFromClipBoard(){
+       
    }
    
    public ObjELM getObjELM (int inNumber){

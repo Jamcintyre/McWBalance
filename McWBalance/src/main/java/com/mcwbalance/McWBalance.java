@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * McWBalance is intended to function as a deterministic daily time step mine 
@@ -21,13 +23,31 @@ import javax.imageio.ImageIO;
  */
 public class McWBalance {
     static BufferedImage mainIcon30;
+
     public static void main(String[] args) {
-         try {    
+        try {
             mainIcon30 = ImageIO.read(new File("bin/Icon30.png"));
-         }
-         catch (IOException e){
+        } catch (IOException e) {
             System.out.println("IconFile Not Found");
         }
+        try {
+            // Set System L&F
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+        } catch (ClassNotFoundException e) {
+            // handle exception
+        } catch (InstantiationException e) {
+            // handle exception
+        } catch (IllegalAccessException e) {
+            // handle exception
+        }
+
+         
+         
+         
+         
         System.out.println("McBalance Version " + ProjSetting.verInfo + " is loading");
         MainWindow mainWin = new MainWindow();
         mainWin.MainWindowFunct(); 
