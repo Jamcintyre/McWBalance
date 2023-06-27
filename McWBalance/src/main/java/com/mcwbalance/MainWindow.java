@@ -20,6 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -59,8 +60,13 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
     
     public void MainWindowFunct() {
-    
-
+        ImageIcon iconSave = new ImageIcon("bin/icons/save.png");
+        ImageIcon iconNewFile = new ImageIcon("bin/icons/newfile.png");
+        ImageIcon iconSettings = new ImageIcon("bin/icons/settings.png");
+        ImageIcon iconDelete = new ImageIcon("bin/icons/delete.png");
+        ImageIcon iconNewELM = new ImageIcon("bin/icons/newELM.png");
+        ImageIcon iconNewTRN = new ImageIcon("bin/icons/newTRN.png");
+        
         mainframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainframe.setSize(1150, 850);
 
@@ -73,6 +79,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenuItem menufilenew = new JMenuItem("New Project", KeyEvent.VK_N); 
         menufilenew.setActionCommand("New"); // Event trigger to make new project
         menufilenew.addActionListener(this);
+        menufilenew.setIcon(iconNewFile);
         menufile.add(menufilenew);
            
         JMenuItem menufileopen = new JMenuItem("Open Existing Project", KeyEvent.VK_O);
@@ -83,11 +90,14 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenuItem menufilesave = new JMenuItem("Save Project", KeyEvent.VK_O);
         menufilesave.setActionCommand("Save"); // Event trigger to change project path
         menufilesave.addActionListener(this);
+        menufilesave.setIcon(iconSave);
+        
         menufile.add(menufilesave);
         
         JMenuItem menufileProjSettings = new JMenuItem("Project Settings", KeyEvent.VK_S);
         menufileProjSettings.setActionCommand("PSettings"); // Event trigger to change project path
         menufileProjSettings.addActionListener(this);
+        menufileProjSettings.setIcon(iconSettings);
         menufile.add(menufileProjSettings);
         
         menubar.add(menufile);
@@ -97,24 +107,23 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenu menuedit = new JMenu("Edit");
         menuedit.setMnemonic(KeyEvent.VK_E);
         
-        JMenuItem menueditedit = new JMenuItem("Edit Object", KeyEvent.VK_E);
-        menueditedit.setActionCommand("EditObj");
-        menueditedit.addActionListener(this);
-        menuedit.add(menueditedit);
         
         JMenuItem menueditdelete = new JMenuItem("Delete Object", KeyEvent.VK_D);
         menueditdelete.setActionCommand("DeleteObj");
         menueditdelete.addActionListener(this);
+        menueditdelete.setIcon(iconDelete);
         menuedit.add(menueditdelete);
  
         JMenuItem menueditaddELM = new JMenuItem("Add Element", KeyEvent.VK_L);
         menueditaddELM.setActionCommand("AddObjELM");
         menueditaddELM.addActionListener(this);
+        menueditaddELM.setIcon(iconNewELM);
         menuedit.add(menueditaddELM);
         
         JMenuItem menueditaddTRN = new JMenuItem("Add Transfer", KeyEvent.VK_T);
         menueditaddTRN.setActionCommand("AddObjTRN");
         menueditaddTRN.addActionListener(this);
+        menueditaddTRN.setIcon(iconNewTRN);
         menuedit.add(menueditaddTRN);
         
         menubar.add(menuedit);
