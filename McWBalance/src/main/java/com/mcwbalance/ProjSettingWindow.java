@@ -41,7 +41,7 @@ public class ProjSettingWindow extends JDialog{
         tab1PathFolderLabelConstr.gridy = 0;
         tab1PathFolderLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1PathFolderLabel,tab1PathFolderLabelConstr);
-        JTextField tab1PathFolderField = new JTextField(ProjSetting.pathfolder.getPath());
+        JTextField tab1PathFolderField = new JTextField(ProjSetting.pathFolder.getPath());
         tab1PathFolderField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1PathFolderFieldConstr = new GridBagConstraints();
         tab1PathFolderFieldConstr.gridx = 1;
@@ -58,7 +58,7 @@ public class ProjSettingWindow extends JDialog{
         tab1FileNameLabelConstr.gridy = 1;
         tab1FileNameLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1FileNameLabel,tab1FileNameLabelConstr);
-        JTextField tab1FileNameField = new JTextField(ProjSetting.fileName.getName());
+        JTextField tab1FileNameField = new JTextField(ProjSetting.pathFile.getName());
         tab1FileNameField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1FileNameFieldConstr = new GridBagConstraints();
         tab1FileNameFieldConstr.gridx = 1;

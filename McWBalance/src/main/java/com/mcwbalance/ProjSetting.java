@@ -17,14 +17,17 @@ public class ProjSetting {
      * will add an info file that will save beside the Program for this kind of thing
      * 
      */
-    static File pathfolder = new File("C:\\Temp\\McBalance\\"); 
-    static File fileName = new File("TestFile.mcbl");
+    static File pathFolder = new File("C:\\Temp\\McBalance\\"); 
+    static File pathFile = new File("TestFile.mcbl");
     static String clientName = "CLIENT NAME";
     static String projectName = "PROJECT NAME";
     static String projectNumber = "NB101-###_#";
     static String balanceName = "SITE WATER BALANCE";
     
     static ImageLib imageLib = new ImageLib(); 
+    
+
+    
     
     /**
      * Total model time in days from start to finish for each run. Each day will generate 1 result. 

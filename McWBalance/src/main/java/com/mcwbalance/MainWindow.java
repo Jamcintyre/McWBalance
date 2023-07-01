@@ -233,39 +233,39 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 // builds the version info. 
                 StringBuilder sverInfoFile = new StringBuilder();
                 sverInfoFile.append(ProjSetting.verInfo);
-                StringBuilder eLMListFile = flowChart.elmList.getSaveString();
+                StringBuilder eLMListFile = flowChart.eLMList.getSaveString();
                 try {
                     
                     
-                    FileOutputStream sfileos = new FileOutputStream(ProjSetting.fileName);
+                    FileOutputStream sfileos = new FileOutputStream(ProjSetting.pathFile);
                     ZipOutputStream sfilezos = new ZipOutputStream(sfileos);
 
                     // initializes ZipEntry info for files to include
-                    ZipEntry zEntVersion = new ZipEntry("Version.txt");
+                    ZipEntry zEntVersion = new ZipEntry("Version.ver");
                     
                     ZipEntry zEntTRN[] = new ZipEntry[flowChart.tRNList.count];
                     for (int i = 0; i < flowChart.tRNList.count; i++){
                         if(i < 10){
-                            zEntTRN[i] = new ZipEntry("TRN00"+i+".dat");
+                            zEntTRN[i] = new ZipEntry("TRN00"+i+".trn");
                         }
                         else if (i < 100){
-                            zEntTRN[i] = new ZipEntry("TRN0"+i+".dat");
+                            zEntTRN[i] = new ZipEntry("TRN0"+i+".trn");
                         }
                         else {
-                            zEntTRN[i] = new ZipEntry("TRN"+i+".dat");
+                            zEntTRN[i] = new ZipEntry("TRN"+i+".trn");
                         }
                         
                     }
-                    ZipEntry zEntELM[] = new ZipEntry[flowChart.elmList.count];
-                    for (int i = 0; i < flowChart.elmList.count; i++){
+                    ZipEntry zEntELM[] = new ZipEntry[flowChart.eLMList.count];
+                    for (int i = 0; i < flowChart.eLMList.count; i++){
                         if(i < 10){
-                            zEntELM[i] = new ZipEntry("ELM00"+i+".dat");
+                            zEntELM[i] = new ZipEntry("ELM00"+i+".elm");
                         }
                         else if (i < 100){
-                            zEntELM[i] = new ZipEntry("ELM0"+i+".dat");
+                            zEntELM[i] = new ZipEntry("ELM0"+i+".elm");
                         }
                         else {
-                            zEntELM[i] = new ZipEntry("ELM"+i+".dat");
+                            zEntELM[i] = new ZipEntry("ELM"+i+".elm");
                         }
                         
                     }
@@ -288,7 +288,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     // Write ElementInformation
                     for (int i = 0; i < zEntELM.length; i ++){
                         sfilezos.putNextEntry(zEntELM[i]);
-                        bytedata = flowChart.elmList.eLMs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
+                        bytedata = flowChart.eLMList.eLMs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
                         sfilezos.write(bytedata, 0, bytedata.length);
                         sfilezos.closeEntry();
                     }
@@ -358,7 +358,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowChart.checkSelectionTRN(mTRNHit)) {
                             if (!editorIsActive) {
                                 ObjTRNWindow objTRNWindow = new ObjTRNWindow();
-                                objTRNWindow.ObjTRNWindowFunct(flowChart.getObjTRN(mTRNHit), flowChart.elmList.getNameList());
+                                objTRNWindow.ObjTRNWindowFunct(flowChart.getObjTRN(mTRNHit), flowChart.eLMList.getNameList());
                             }
                             break;
                         } else {

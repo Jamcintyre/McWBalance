@@ -263,6 +263,19 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         return saveString;
     }
     
+    /**
+     * Populates the element from a tab delmited list of data 
+     * @return 
+     *
+     * @param inData Recieves a string that is formatted identically to the getString method
+     */
+    public void setFromString(String inData){
+        
+        
+        
+        
+        
+    }
     
     
     /**

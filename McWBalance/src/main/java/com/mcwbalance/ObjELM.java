@@ -245,6 +245,12 @@ class ObjELM {
         return saveString;
     }
     
+    public void setFromString(String indata){
+        
+        
+    }
+    
+    
     
     
 

@@ -44,9 +44,14 @@ public class FlowChartCAD extends JComponent{
     
     static boolean titleBlockVisible = true; 
     
-   
-    ObjELMList elmList = new ObjELMList();
-    ObjTRNList tRNList = new ObjTRNList();
+    /**
+     * This is the active list of Elements
+     */
+    static ObjELMList eLMList = new ObjELMList();
+    /**
+     * This is the active list of Transfers
+     */
+    static ObjTRNList tRNList = new ObjTRNList();
     
     private int drawX = 0;
     private int drawY = 0;
@@ -162,33 +167,33 @@ public class FlowChartCAD extends JComponent{
         // draws the Elements
         g2.setStroke(THIN_LINE);
         g.setFont(lfont); // sets font for Element Names so it isn't repeated in the loop.
-        for (int i = 0; i < elmList.count; i++){// draws all elements in ELM list
-            if(elmList.eLMs[i].getState(drawdate) != "INACTIVE"){
-                drawX = elmList.eLMs[i].hitBox.x;
-                drawY = elmList.eLMs[i].hitBox.y;
-                elmList.eLMs[i].setSpriteState(elmList.eLMs[i].getState(drawdate));
-                g2.drawImage(elmList.eLMs[i].objSprite, elmList.eLMs[i].hitBox.x, elmList.eLMs[i].hitBox.y, null);
+        for (int i = 0; i < eLMList.count; i++){// draws all elements in ELM list
+            if(eLMList.eLMs[i].getState(drawdate) != "INACTIVE"){
+                drawX = eLMList.eLMs[i].hitBox.x;
+                drawY = eLMList.eLMs[i].hitBox.y;
+                eLMList.eLMs[i].setSpriteState(eLMList.eLMs[i].getState(drawdate));
+                g2.drawImage(eLMList.eLMs[i].objSprite, eLMList.eLMs[i].hitBox.x, eLMList.eLMs[i].hitBox.y, null);
                 
-                if(elmList.eLMs[i].isSelected){
+                if(eLMList.eLMs[i].isSelected){
                     g2.setStroke(THICK_LINE);
                     g2.setColor(SELECTED);
-                    g2.drawRect(drawX, drawY, elmList.eLMs[i].hitBox.width, elmList.eLMs[i].hitBox.height);
+                    g2.drawRect(drawX, drawY, eLMList.eLMs[i].hitBox.width, eLMList.eLMs[i].hitBox.height);
                     g2.setColor(DEFAULT);
                     g2.setStroke(THIN_LINE);
                 }
                 
-                nameWidthDouble = g.getFontMetrics().getStringBounds(elmList.eLMs[i].objname, g).getWidth();
+                nameWidthDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g).getWidth();
                 nameWidth = (int)nameWidthDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
-                nameHeightDouble = g.getFontMetrics().getStringBounds(elmList.eLMs[i].objname, g).getHeight();
+                nameHeightDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g).getHeight();
                 nameHeight = (int)nameHeightDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
                 // Draws text Lable
                 g.setColor(Color.BLACK); // Draws Shadow that will be drawn over
-                g.fillRect( elmList.eLMs[i].x - nameWidth/2 - lpadding + lshadow, drawY + elmList.eLMs[i].objSprite.getHeight() + vlableoffset + lshadow, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout
+                g.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding + lshadow, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset + lshadow, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout
                 g.setColor(Color.WHITE); // whiteout behind text
-                g.fillRect( elmList.eLMs[i].x - nameWidth/2 - lpadding, drawY + elmList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
+                g.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
                 g.setColor(Color.BLACK); // border around text
-                g.drawRect( elmList.eLMs[i].x - nameWidth/2 - lpadding, drawY + elmList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
-                g.drawString(elmList.eLMs[i].objname, elmList.eLMs[i].x - nameWidth/2, drawY + elmList.eLMs[i].objSprite.getHeight() + nameHeight + vlableoffset); // Strings draw up from the bottom, opposite of rectangles and images... 
+                g.drawRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
+                g.drawString(eLMList.eLMs[i].objname, eLMList.eLMs[i].x - nameWidth/2, drawY + eLMList.eLMs[i].objSprite.getHeight() + nameHeight + vlableoffset); // Strings draw up from the bottom, opposite of rectangles and images... 
             }
             
         }
@@ -214,9 +219,9 @@ public class FlowChartCAD extends JComponent{
             
             // draws inflow line
             if (tRNList.tRNs[i].inObjNumber > -1){ // checks to see if inflow line should be drawn
-                eLMdim = elmList.eLMs[tRNList.tRNs[i].inObjNumber].hitBox.getSize();
-                eLMx = elmList.eLMs[tRNList.tRNs[i].inObjNumber].x; // only used to make code easier to read,
-                eLMy = elmList.eLMs[tRNList.tRNs[i].inObjNumber].y; // only used to make code easier to read,
+                eLMdim = eLMList.eLMs[tRNList.tRNs[i].inObjNumber].hitBox.getSize();
+                eLMx = eLMList.eLMs[tRNList.tRNs[i].inObjNumber].x; // only used to make code easier to read,
+                eLMy = eLMList.eLMs[tRNList.tRNs[i].inObjNumber].y; // only used to make code easier to read,
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
                 fpline.setRoute(eLMrect, tRNList.tRNs[i].inSideFrom, tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo, 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
@@ -227,9 +232,9 @@ public class FlowChartCAD extends JComponent{
             }
             // Draws outflow line
             if (tRNList.tRNs[i].outObjNumber > -1){ // checks to see if outflow line should be drawn
-                eLMdim = elmList.eLMs[tRNList.tRNs[i].outObjNumber].hitBox.getSize(); //pulls the dimension of the icon that will be used to draw the in object
-                eLMx = elmList.eLMs[tRNList.tRNs[i].outObjNumber].x; // only used to make code easier to read,
-                eLMy = elmList.eLMs[tRNList.tRNs[i].outObjNumber].y; // only used to make code easier to read,
+                eLMdim = eLMList.eLMs[tRNList.tRNs[i].outObjNumber].hitBox.getSize(); //pulls the dimension of the icon that will be used to draw the in object
+                eLMx = eLMList.eLMs[tRNList.tRNs[i].outObjNumber].x; // only used to make code easier to read,
+                eLMy = eLMList.eLMs[tRNList.tRNs[i].outObjNumber].y; // only used to make code easier to read,
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
                 fpline.setRoute(tRNrect, tRNList.tRNs[i].outSideFrom, 0, eLMrect, tRNList.tRNs[i].outSideTo, tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
@@ -282,14 +287,14 @@ public class FlowChartCAD extends JComponent{
     }
     
    public void addObjELM (int inX, int inY){
-       elmList.addELM(inX, inY);
+       eLMList.addELM(inX, inY);
    }
    public void addObjTRN (int inX, int inY){
        tRNList.addTRN(inX, inY);
    }
     public void addSelectionELM(int inNumber){
         if(inNumber >=0 && inNumber <= ProjSetting.MAX_ELMS){
-            elmList.eLMs[inNumber].isSelected = true; 
+            eLMList.eLMs[inNumber].isSelected = true; 
         }
     }
     public void addSelectionTRN(int inNumber){
@@ -298,14 +303,14 @@ public class FlowChartCAD extends JComponent{
         }
     }
     public boolean checkSelectionELM(int inNumber){
-        return elmList.eLMs[inNumber].isSelected;
+        return eLMList.eLMs[inNumber].isSelected;
     }
     public boolean checkSelectionTRN(int inNumber){
         return tRNList.tRNs[inNumber].isSelected;
     }
     public void clearSelection(){
         for (int i = 0; i < ProjSetting.MAX_ELMS; i ++){
-           elmList.eLMs[i].isSelected = false;
+           eLMList.eLMs[i].isSelected = false;
         }
         for (int i = 0; i < ProjSetting.MAX_TRNS; i ++){
            tRNList.tRNs[i].isSelected = false;
@@ -326,7 +331,7 @@ public class FlowChartCAD extends JComponent{
      * using delete key
      */
     public void deleteSelection(){
-        for (int i = 0; i < elmList.count; i ++){
+        for (int i = 0; i < eLMList.count; i ++){
            if (checkSelectionELM(i)){
                removeELM(i);
            }
@@ -339,18 +344,18 @@ public class FlowChartCAD extends JComponent{
     }
    
    public void removeELM (int inNumber){
-       elmList.removeELM(inNumber);
+       eLMList.removeELM(inNumber);
        tRNList.removeELM(inNumber);
    }
    public void removeTRN (int tRNNumber){
-       elmList.removeTRN(tRNNumber);
+       eLMList.removeTRN(tRNNumber);
        tRNList.removeTRN(tRNNumber);
    }
    
    public void moveObjELM (int inX, int inY, int inNumber){
-       elmList.eLMs[inNumber].x = inX;
-       elmList.eLMs[inNumber].y = inY;
-       elmList.eLMs[inNumber].hitBox.setLocation(inX - elmList.eLMs[inNumber].hitBox.getSize().width/2, inY - elmList.eLMs[inNumber].hitBox.getSize().height/2);
+       eLMList.eLMs[inNumber].x = inX;
+       eLMList.eLMs[inNumber].y = inY;
+       eLMList.eLMs[inNumber].hitBox.setLocation(inX - eLMList.eLMs[inNumber].hitBox.getSize().width/2, inY - eLMList.eLMs[inNumber].hitBox.getSize().height/2);
    }
    public void moveObjTRN(int inX, int inY, int inNumber){
        tRNList.tRNs[inNumber].x = inX;
@@ -366,7 +371,7 @@ public class FlowChartCAD extends JComponent{
    }
    
    public ObjELM getObjELM (int inNumber){
-       return elmList.eLMs[inNumber];
+       return eLMList.eLMs[inNumber];
    }
    public ObjTRN getObjTRN (int inNumber){
        return tRNList.tRNs[inNumber];
@@ -375,7 +380,7 @@ public class FlowChartCAD extends JComponent{
    public void setObjELM (int inNumber, ObjELM inObjELM){
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
        inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width/2, inObjELM.y - inObjELM.hitBox.getSize().height/2);  
-       elmList.setObjELM (inNumber, inObjELM); // passes command to active object list; 
+       eLMList.setObjELM (inNumber, inObjELM); // passes command to active object list; 
    }
    public void setObjTRN (int inNumber, ObjTRN inObjTRN){
        tRNList.setObjTRN (inNumber, inObjTRN);
@@ -383,9 +388,9 @@ public class FlowChartCAD extends JComponent{
    
 
     public int checkELMHit (int inX, int inY){ // will need updating to allow for TRNs... 
-        for (int i = 0; i < elmList.count; i++){
-            if(elmList.eLMs[i].hitBox.x <= inX && elmList.eLMs[i].hitBox.x + elmList.eLMs[i].hitBox.width >= inX){
-                    if(elmList.eLMs[i].hitBox.y <= inY && elmList.eLMs[i].hitBox.y + elmList.eLMs[i].hitBox.height >= inY){
+        for (int i = 0; i < eLMList.count; i++){
+            if(eLMList.eLMs[i].hitBox.x <= inX && eLMList.eLMs[i].hitBox.x + eLMList.eLMs[i].hitBox.width >= inX){
+                    if(eLMList.eLMs[i].hitBox.y <= inY && eLMList.eLMs[i].hitBox.y + eLMList.eLMs[i].hitBox.height >= inY){
                     return i;  
                 }
             }
