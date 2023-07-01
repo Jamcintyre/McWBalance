@@ -61,6 +61,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     
     public void MainWindowFunct() {
         ImageIcon iconSave = new ImageIcon("bin/icons/save.png");
+        ImageIcon iconSaveAs = new ImageIcon("bin/icons/saveAs.png");
         ImageIcon iconNewFile = new ImageIcon("bin/icons/newfile.png");
         ImageIcon iconSettings = new ImageIcon("bin/icons/settings.png");
         ImageIcon iconDelete = new ImageIcon("bin/icons/delete.png");
@@ -87,12 +88,17 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         menufileopen.addActionListener(this);
         menufile.add(menufileopen);
         
-        JMenuItem menufilesave = new JMenuItem("Save Project", KeyEvent.VK_O);
-        menufilesave.setActionCommand("Save"); // Event trigger to change project path
-        menufilesave.addActionListener(this);
-        menufilesave.setIcon(iconSave);
+        JMenuItem menufileSave = new JMenuItem("Save Project", KeyEvent.VK_O);
+        menufileSave.setActionCommand("Save"); // Event trigger to change project path
+        menufileSave.addActionListener(this);
+        menufileSave.setIcon(iconSave);
+        menufile.add(menufileSave);
         
-        menufile.add(menufilesave);
+        JMenuItem menufileSaveAs = new JMenuItem("Save As Project", KeyEvent.VK_O);
+        menufileSaveAs.setActionCommand("SaveAs"); // Event trigger to change project path
+        menufileSaveAs.addActionListener(this);
+        menufileSaveAs.setIcon(iconSaveAs);
+        menufile.add(menufileSaveAs);
         
         JMenuItem menufileProjSettings = new JMenuItem("Project Settings", KeyEvent.VK_S);
         menufileProjSettings.setActionCommand("PSettings"); // Event trigger to change project path
@@ -220,28 +226,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         switch (e.getActionCommand()) {
             case "Open" -> {
                 ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow();
-                projOpenExistingWindow.ProjNewWindowFunc();
-                try {
-                    ZipFile ifile = new ZipFile(ProjSetting.pathfolder + ProjSetting.saveFileName); // will need to replace with selected file
+                projOpenExistingWindow.ProjNewWindowFunc(); // all of the loading happends in the window
 
-                    ZipEntry zEntVersion = ifile.getEntry("Version.txt");
-                    InputStream istream = ifile.getInputStream(zEntVersion);
-                    String inbuffer = new String(istream.readAllBytes(), "UTF-8");
-
-                    ZipEntry zEntTRNList = ifile.getEntry("TransferList.csv");
-                    ZipEntry zEntELMList = ifile.getEntry("ElementList.csv");
-
-                    System.out.println(zEntVersion.toString());
-                    System.out.print(inbuffer);
-                } catch (FileNotFoundException fe) {
-                    JDialog warningDialog = new JDialog(mainframe, "Error File Not Found",Dialog.ModalityType.DOCUMENT_MODAL);
-                    // to add OK button and more descriptive text
-                    warningDialog.setVisible(true);
-                } catch (IOException fe) {
-                    JDialog warningDialog = new JDialog(mainframe, "Error IO Exception",Dialog.ModalityType.DOCUMENT_MODAL);
-                    // to add OK button and more descriptive text
-                    warningDialog.setVisible(true);
-                }
             }
             case "Save" -> {
                 // builds the version info. 
@@ -249,7 +235,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 sverInfoFile.append(ProjSetting.verInfo);
                 StringBuilder eLMListFile = flowChart.elmList.getSaveString();
                 try {
-                    FileOutputStream sfileos = new FileOutputStream(ProjSetting.pathfolder + ProjSetting.saveFileName);
+                    
+                    
+                    FileOutputStream sfileos = new FileOutputStream(ProjSetting.fileName);
                     ZipOutputStream sfilezos = new ZipOutputStream(sfileos);
 
                     // initializes ZipEntry info for files to include

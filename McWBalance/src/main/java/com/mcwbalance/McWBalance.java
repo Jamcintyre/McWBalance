@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * McWBalance is intended to function as a deterministic daily time step mine 
@@ -23,6 +24,9 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class McWBalance {
     static BufferedImage mainIcon30;
+    public static String FILE_EXTENSION = "mcbl";
+    
+    public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File",FILE_EXTENSION);
 
     public static void main(String[] args) {
         try {

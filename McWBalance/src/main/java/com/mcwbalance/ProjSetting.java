@@ -1,5 +1,6 @@
 package com.mcwbalance;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 
@@ -12,11 +13,12 @@ import java.time.format.DateTimeFormatter;
 public class ProjSetting {
     static String verInfo ="0.2023.06.24";
     /**
-     * Note this is a placeholder, it needs to be updated to match something like a current user directory.. 
-     * @deprecated 
+     * Note this is a placeholder, should set this on project start to whatever the previous save was
+     * will add an info file that will save beside the Program for this kind of thing
+     * 
      */
-    static String pathfolder = ("C:\\Temp\\McBalance\\"); 
-    static String saveFileName = "TestFile.mcbl";
+    static File pathfolder = new File("C:\\Temp\\McBalance\\"); 
+    static File fileName = new File("TestFile.mcbl");
     static String clientName = "CLIENT NAME";
     static String projectName = "PROJECT NAME";
     static String projectNumber = "NB101-###_#";
