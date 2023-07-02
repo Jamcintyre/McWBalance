@@ -303,9 +303,18 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     mELMHit = flowChart.checkELMHit(mx, my);
                     if (mTRNHit != -1) {
                         if (flowChart.checkSelectionTRN(mTRNHit)) {
-                            if (!editorIsActive) {
-                                ObjTRNWindow objTRNWindow = new ObjTRNWindow();
-                                objTRNWindow.ObjTRNWindowFunct(flowChart.getObjTRN(mTRNHit), FlowChartCAD.eLMList.getNameList());
+                            if (!editorIsActive) { 
+                                
+                                ObjTRNWindow objTRNWindow = new ObjTRNWindow(flowChart.getObjTRN(mTRNHit), FlowChartCAD.eLMList.getNameList());
+                                objTRNWindow.addWindowListener(new WindowAdapter(){
+                                    @Override
+                                    public void windowClosed(WindowEvent e){
+                                        //NOT CLEAR HOW DATA IS TRANSFERED FROM buffOBJ into the active list. 
+                                        //will want to add a step here to confirm changes and set has changed flag
+                                        
+                                    }
+                                
+                                });
                             }
                             break;
                         } else {

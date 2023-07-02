@@ -2,8 +2,6 @@
 package com.mcwbalance;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -30,23 +28,17 @@ import javax.swing.table.TableColumn;
  * @author Alex
  */
 public class ObjTRNWindow extends JDialog {
-       //int objELMNumber = -1;
-    ObjTRN buffObjTRN = new ObjTRN(); // container for storing and modifying object used for return at end
-    static ObjTRN returnedObjTRN = new ObjTRN(); // container for allowing mainwindow access to returned value since return doesnt work in Jdialog
-    
-    
-    public void ObjTRNWindowFunct(ObjTRN inObjTRN, String[] eLMList){ // requires object number to edit
+    private ObjTRN buffObjTRN = new ObjTRN(); // container for storing and modifying object used for return at end
+        
+    ObjTRNWindow(ObjTRN inObjTRN, String[] eLMList){ // requires object number to edit
+        super(MainWindow.mainframe, "Transfer Properties", true); // was orginally a frame but changed to dialog
         ProjSetting.hasChangedSinceSave = true; // assumes if this dialog is called then a change has been made
         buffObjTRN = inObjTRN; // sets buffered object to in object
-        returnedObjTRN = inObjTRN; // sets default return to whatever was provided
         int fmtTFColumnsDEF = 30; // number of columns used for Name fields
         
-        
-        JDialog subframe = new JDialog(MainWindow.mainframe, "Transfer Properties", true); // was orginally a frame but changed to dialog
-        
-        subframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        subframe.setSize(400, 300);
-        subframe.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setSize(400, 300);
+        this.setLocationRelativeTo(null);
         
         JTabbedPane tabPane = new JTabbedPane();
         
@@ -59,8 +51,7 @@ public class ObjTRNWindow extends JDialog {
             tab2TableModelRate.setValueAt((int)buffObjTRN.pumpTime[i], i, 0);
             tab2TableModelRate.setValueAt((double)buffObjTRN.pumpRateDay[i], i, 1);
         }
-        
-        
+
         JTable tab2TableRate = new JTable(tab2TableModelRate);
         
         JPopupMenu popupMenuRateTable = new JPopupMenu();
@@ -99,14 +90,12 @@ public class ObjTRNWindow extends JDialog {
         // Tab 3
         JPanel tab3 = new JPanel();
         ObjStateTableModel tab3TableModelState = new ObjStateTableModel();
-        //tab3TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
         JTable tab3TableState = new JTable(tab3TableModelState);
         
         for(int i = 0; i < ProjSetting.MAX_STATES; i++){
             tab3TableModelState.setValueAt((int)buffObjTRN.stateTime[i], i, 0);
             tab3TableModelState.setValueAt((String)buffObjTRN.state[i], i, 1);
         }
-        
         
         JPopupMenu popupMenuStateTable = new JPopupMenu();
         JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
@@ -217,9 +206,7 @@ public class ObjTRNWindow extends JDialog {
                 buffObjTRN.stateTime[i] = (int)tab3TableModelState.getValueAt(i, 0);
                 buffObjTRN.state[i] = (String)tab3TableModelState.getValueAt(i, 1);
             }
-            
-                       
-            returnedObjTRN = buffObjTRN; // sets returned value to 
+             
             
         });
 
@@ -305,23 +292,22 @@ public class ObjTRNWindow extends JDialog {
         tab1layout.putConstraint(SpringLayout.WEST, bSave, hPadLabels, SpringLayout.WEST, this);
         tab1layout.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, lcbOutSideFrom);
         
-        
         //END OF TAB 1
-
         tabPane.addTab("General", tab1);
         tabPane.addTab("Maximum Transfer Rate",tab2);
         tabPane.addTab("Object State",tab3);
 
-        subframe.add(tabPane);
+        this.add(tabPane);
         
-        subframe.setBackground(Color.GRAY);
-        subframe.pack();
-        subframe.setVisible(true);
-        
-        
+        this.setBackground(Color.GRAY);
+        this.pack();
+        this.setVisible(true);
         
     }
     
+    public ObjTRN getObjTRN(){
+        return buffObjTRN;
+    } 
 
     
     

@@ -206,6 +206,8 @@ public class ObjTRNList {
    
    public void setObjTRN(int inNumber, ObjTRN inObjTRN){
        tRNs[inNumber] = inObjTRN; 
+       System.out.println("ObjTRNList.setObjTRN has been called on TRN " + inNumber); // DEBUG
+       
    }
 
    public void setOutflow(int outELM, int inTRN){
