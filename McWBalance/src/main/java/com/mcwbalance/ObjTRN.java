@@ -273,8 +273,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
      * @param inData Recieves a string that is formatted identically to the getString method
      */
     public void setFromString(String inData){
-        
-        
+
         String nextLine = System.getProperty("line.separator");
         String lines[] = inData.split(nextLine);
         if(lines.length < MIN_FILE_LENGTH){
@@ -329,8 +328,18 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
                 state[i] = lines[lc].split("\t")[1];
             }
         }
+        setHitBox();
+        
     }
-    
+    /**
+     * updates object hitbox, called during a setFromString or other
+     * 
+     */
+    public void setHitBox(){
+        hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
+        hitBox.setLocation(x - hitBox.getSize().width/2, y - hitBox.getSize().height/2);
+
+    }
     
     /**
      * if ELM object is referenced this method replaces that reference with a "-1" null value. ELMs of higher index values then the rELM are 

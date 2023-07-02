@@ -67,7 +67,7 @@ public class ProjOpenExistingWindow extends JDialog{
                                     }
                                     case "trn" -> {
                                         System.out.println(entryName[0]);
-                                        objNumber = Integer.getInteger(entryName[0]); //
+                                        objNumber = Integer.parseInt(entryName[0]); //
                                         if(objNumber < ProjSetting.MAX_TRNS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
@@ -79,7 +79,7 @@ public class ProjOpenExistingWindow extends JDialog{
                                         System.out.println("found TRN"); // DEBUG PRINTING
                                     }
                                     case "elm" -> {
-                                        objNumber = Integer.getInteger(entryName[0]); //
+                                        objNumber = Integer.parseInt(entryName[0]); //
                                         if(objNumber < ProjSetting.MAX_ELMS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
