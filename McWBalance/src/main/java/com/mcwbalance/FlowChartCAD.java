@@ -288,19 +288,23 @@ public class FlowChartCAD extends JComponent{
     
    public void addObjELM (int inX, int inY){
        eLMList.addELM(inX, inY);
+       ProjSetting.hasChangedSinceSave = true;
    }
    public void addObjTRN (int inX, int inY){
        tRNList.addTRN(inX, inY);
+       ProjSetting.hasChangedSinceSave = true;
    }
     public void addSelectionELM(int inNumber){
         if(inNumber >=0 && inNumber <= ProjSetting.MAX_ELMS){
             eLMList.eLMs[inNumber].isSelected = true; 
         }
+        ProjSetting.hasChangedSinceSave = true;
     }
     public void addSelectionTRN(int inNumber){
         if(inNumber >=0 && inNumber <= ProjSetting.MAX_TRNS){
             tRNList.tRNs[inNumber].isSelected = true; 
         }
+        ProjSetting.hasChangedSinceSave = true;
     }
     public boolean checkSelectionELM(int inNumber){
         return eLMList.eLMs[inNumber].isSelected;
@@ -341,26 +345,31 @@ public class FlowChartCAD extends JComponent{
                removeTRN(i);
            }
         }
+        ProjSetting.hasChangedSinceSave = true;
     }
    
    public void removeELM (int inNumber){
        eLMList.removeELM(inNumber);
        tRNList.removeELM(inNumber);
+       ProjSetting.hasChangedSinceSave = true;
    }
    public void removeTRN (int tRNNumber){
        eLMList.removeTRN(tRNNumber);
        tRNList.removeTRN(tRNNumber);
+       ProjSetting.hasChangedSinceSave = true;
    }
    
    public void moveObjELM (int inX, int inY, int inNumber){
        eLMList.eLMs[inNumber].x = inX;
        eLMList.eLMs[inNumber].y = inY;
        eLMList.eLMs[inNumber].hitBox.setLocation(inX - eLMList.eLMs[inNumber].hitBox.getSize().width/2, inY - eLMList.eLMs[inNumber].hitBox.getSize().height/2);
+       ProjSetting.hasChangedSinceSave = true;
    }
    public void moveObjTRN(int inX, int inY, int inNumber){
        tRNList.tRNs[inNumber].x = inX;
        tRNList.tRNs[inNumber].y = inY;
        tRNList.tRNs[inNumber].hitBox.setLocation(inX - tRNList.tRNs[inNumber].hitBox.getSize().width/2, inY - tRNList.tRNs[inNumber].hitBox.getSize().height/2);
+       ProjSetting.hasChangedSinceSave = true;
    }
    /**
     * method for adding ELMs and TRNs direct from clipboard, indended to allow
@@ -368,6 +377,7 @@ public class FlowChartCAD extends JComponent{
     */
    public void pasteFromClipBoard(){
        
+       ProjSetting.hasChangedSinceSave = true;
    }
    
    public ObjELM getObjELM (int inNumber){
@@ -381,9 +391,11 @@ public class FlowChartCAD extends JComponent{
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
        inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width/2, inObjELM.y - inObjELM.hitBox.getSize().height/2);  
        eLMList.setObjELM (inNumber, inObjELM); // passes command to active object list; 
+       ProjSetting.hasChangedSinceSave = true;
    }
    public void setObjTRN (int inNumber, ObjTRN inObjTRN){
        tRNList.setObjTRN (inNumber, inObjTRN);
+       ProjSetting.hasChangedSinceSave = true;
    }
    
 

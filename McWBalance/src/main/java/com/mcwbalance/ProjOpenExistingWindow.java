@@ -52,11 +52,13 @@ public class ProjOpenExistingWindow extends JDialog{
                             int objNumber;
                             FlowChartCAD.eLMList = new ObjELMList(); // wipes existing list data
                             FlowChartCAD.tRNList = new ObjTRNList(); // wipes existing list data
-                            
+                            System.out.println(ProjSetting.pathFile.getName() + " has been opened");
 
                             for (int i = 0; ifEntries.hasMoreElements() && i < 100; i++) {
                                 entry = ifEntries.nextElement();
-                                entryName = entry.getName().split(".",2); // splits into Name and extension
+                                entryName = entry.getName().split("\\.",2); // splits into Name and extension
+                                
+                                System.out.println("file " + entryName[0] + " found with extension " + entryName[1]); // DEBUG
                                 switch (entryName[1]) {
                                     case "ver" -> {
                                         istream = ifile.getInputStream(entry);
@@ -64,7 +66,8 @@ public class ProjOpenExistingWindow extends JDialog{
                                         System.out.print(inbuffer); // debug only should remove and replace with a check version method
                                     }
                                     case "trn" -> {
-                                        objNumber = Integer.getInteger(entryName[0].substring(entryName[0].length()-3));
+                                        System.out.println(entryName[0]);
+                                        objNumber = Integer.getInteger(entryName[0]); //
                                         if(objNumber < ProjSetting.MAX_TRNS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
@@ -73,9 +76,10 @@ public class ProjOpenExistingWindow extends JDialog{
                                                 FlowChartCAD.tRNList.count = objNumber +1;
                                             }
                                         }
+                                        System.out.println("found TRN"); // DEBUG PRINTING
                                     }
                                     case "elm" -> {
-                                        objNumber = Integer.getInteger(entryName[0].substring(entryName[0].length()-3));
+                                        objNumber = Integer.getInteger(entryName[0]); //
                                         if(objNumber < ProjSetting.MAX_ELMS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");

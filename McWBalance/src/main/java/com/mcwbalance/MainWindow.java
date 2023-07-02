@@ -2,7 +2,6 @@ package com.mcwbalance;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -12,17 +11,16 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -60,9 +58,10 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
     
     public void MainWindowFunct() {
+        ImageIcon iconOpen = new ImageIcon("bin/icons/open.png");
         ImageIcon iconSave = new ImageIcon("bin/icons/save.png");
         ImageIcon iconSaveAs = new ImageIcon("bin/icons/saveAs.png");
-        ImageIcon iconNewFile = new ImageIcon("bin/icons/newfile.png");
+        ImageIcon iconNewProject = new ImageIcon("bin/icons/newProject.png");
         ImageIcon iconSettings = new ImageIcon("bin/icons/settings.png");
         ImageIcon iconDelete = new ImageIcon("bin/icons/delete.png");
         ImageIcon iconNewELM = new ImageIcon("bin/icons/newELM.png");
@@ -80,12 +79,13 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenuItem menufilenew = new JMenuItem("New Project", KeyEvent.VK_N); 
         menufilenew.setActionCommand("New"); // Event trigger to make new project
         menufilenew.addActionListener(this);
-        menufilenew.setIcon(iconNewFile);
+        menufilenew.setIcon(iconNewProject);
         menufile.add(menufilenew);
            
         JMenuItem menufileopen = new JMenuItem("Open Existing Project", KeyEvent.VK_O);
         menufileopen.setActionCommand("Open"); // Event trigger to change project path
         menufileopen.addActionListener(this);
+        menufileopen.setIcon(iconOpen);
         menufile.add(menufileopen);
         
         JMenuItem menufileSave = new JMenuItem("Save Project", KeyEvent.VK_O);
@@ -222,90 +222,37 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     }
     
     @Override
-    public void actionPerformed(ActionEvent e){
+    public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
+            case "New" -> {
+                if (ProjSetting.hasChangedSinceSave) {
+                    ConfirmSaveDialog dialog = new ConfirmSaveDialog(mainframe);
+                    dialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        @SuppressWarnings("empty-statement")
+                        public void windowClosed(WindowEvent e) {
+                            switch (dialog.getSelection()) {
+                                case ConfirmSaveDialog.SELECTION_SAVE ->
+                                    saveProject();
+                                case ConfirmSaveDialog.SELECTION_NOSAVE ->
+                                    resetProject();
+                            };
+                        }
+                    });
+                } else {
+                    resetProject();
+                }
+            }
+
             case "Open" -> {
+
                 ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow();
                 projOpenExistingWindow.ProjNewWindowFunc(); // all of the loading happends in the window
+                flowChart.repaint();
 
             }
             case "Save" -> {
-                // builds the version info. 
-                StringBuilder sverInfoFile = new StringBuilder();
-                sverInfoFile.append(ProjSetting.verInfo);
-                StringBuilder eLMListFile = flowChart.eLMList.getSaveString();
-                try {
-                    
-                    
-                    FileOutputStream sfileos = new FileOutputStream(ProjSetting.pathFile);
-                    ZipOutputStream sfilezos = new ZipOutputStream(sfileos);
-
-                    // initializes ZipEntry info for files to include
-                    ZipEntry zEntVersion = new ZipEntry("Version.ver");
-                    
-                    ZipEntry zEntTRN[] = new ZipEntry[flowChart.tRNList.count];
-                    for (int i = 0; i < flowChart.tRNList.count; i++){
-                        if(i < 10){
-                            zEntTRN[i] = new ZipEntry("TRN00"+i+".trn");
-                        }
-                        else if (i < 100){
-                            zEntTRN[i] = new ZipEntry("TRN0"+i+".trn");
-                        }
-                        else {
-                            zEntTRN[i] = new ZipEntry("TRN"+i+".trn");
-                        }
-                        
-                    }
-                    ZipEntry zEntELM[] = new ZipEntry[flowChart.eLMList.count];
-                    for (int i = 0; i < flowChart.eLMList.count; i++){
-                        if(i < 10){
-                            zEntELM[i] = new ZipEntry("ELM00"+i+".elm");
-                        }
-                        else if (i < 100){
-                            zEntELM[i] = new ZipEntry("ELM0"+i+".elm");
-                        }
-                        else {
-                            zEntELM[i] = new ZipEntry("ELM"+i+".elm");
-                        }
-                        
-                    }
-                    
-
-                    // Write Version Information
-                    sfilezos.putNextEntry(zEntVersion);
-                    byte[] bytedata = sverInfoFile.toString().getBytes(); // converts string data to byte data
-                    sfilezos.write(bytedata, 0, bytedata.length);
-                    sfilezos.closeEntry();
-
-                    // Write Transfer Information
-                    for (int i = 0; i < zEntTRN.length; i ++){
-                        sfilezos.putNextEntry(zEntTRN[i]);
-                        bytedata = flowChart.tRNList.tRNs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                        sfilezos.write(bytedata, 0, bytedata.length);
-                        sfilezos.closeEntry();
-                    }
-
-                    // Write ElementInformation
-                    for (int i = 0; i < zEntELM.length; i ++){
-                        sfilezos.putNextEntry(zEntELM[i]);
-                        bytedata = flowChart.eLMList.eLMs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                        sfilezos.write(bytedata, 0, bytedata.length);
-                        sfilezos.closeEntry();
-                    }
-
-                    //writeToZipFile()
-                    sfilezos.close();
-                    sfileos.close();
-                } catch (FileNotFoundException fe) {
-                    JDialog warningDialog = new JDialog(mainframe, "Error File Not Found",Dialog.ModalityType.DOCUMENT_MODAL);
-                    // to add OK button and more descriptive text
-                    warningDialog.setVisible(true);
-                } catch (IOException fe) {
-                    JDialog warningDialog = new JDialog(mainframe, "Error IO Exception",Dialog.ModalityType.DOCUMENT_MODAL);
-                    // to add OK button and more descriptive text
-                    warningDialog.setVisible(true);
-                }
-
+                saveProject();
             }
 
             case "PSettings" -> {
@@ -358,7 +305,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowChart.checkSelectionTRN(mTRNHit)) {
                             if (!editorIsActive) {
                                 ObjTRNWindow objTRNWindow = new ObjTRNWindow();
-                                objTRNWindow.ObjTRNWindowFunct(flowChart.getObjTRN(mTRNHit), flowChart.eLMList.getNameList());
+                                objTRNWindow.ObjTRNWindowFunct(flowChart.getObjTRN(mTRNHit), FlowChartCAD.eLMList.getNameList());
                             }
                             break;
                         } else {
@@ -369,7 +316,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowChart.checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
                                 ObjELMWindow objELMWindow = new ObjELMWindow();
-                                objELMWindow.ObjELMWindowFunct(flowChart.getObjELM(mELMHit), mELMHit, flowChart.tRNList);
+                                objELMWindow.ObjELMWindowFunct(flowChart.getObjELM(mELMHit), mELMHit, FlowChartCAD.tRNList);
                             }
                             break;
                         } else {
@@ -492,6 +439,67 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             
             flowChart.repaint();
         }
+    }
+    
+    public void resetProject(){
+        ProjSetting.resetDefaults();
+                FlowChartCAD.tRNList = new ObjTRNList();
+                FlowChartCAD.eLMList = new ObjELMList();
+                flowChart.repaint();
+    }
+        
+    public void saveProject() {
+        StringBuilder sverInfoFile = new StringBuilder();
+        sverInfoFile.append(ProjSetting.verInfo);
+        try (FileOutputStream sfileos = new FileOutputStream(ProjSetting.pathFile);
+            ZipOutputStream sfilezos = new ZipOutputStream(sfileos)){
+
+            // initializes ZipEntry info for files to include
+            ZipEntry zEntVersion = new ZipEntry("Version.ver");
+
+            ZipEntry zEntTRN[] = new ZipEntry[FlowChartCAD.tRNList.count];
+            for (int i = 0; i < FlowChartCAD.tRNList.count; i++) {
+                zEntTRN[i] = new ZipEntry(i + ".trn");
+            }
+            ZipEntry zEntELM[] = new ZipEntry[FlowChartCAD.eLMList.count];
+            for (int i = 0; i < FlowChartCAD.eLMList.count; i++) {
+                zEntELM[i] = new ZipEntry(i + ".elm");
+                
+            }
+
+            // Write Version Information
+            sfilezos.putNextEntry(zEntVersion);
+            byte[] bytedata = sverInfoFile.toString().getBytes(); // converts string data to byte data
+            sfilezos.write(bytedata, 0, bytedata.length);
+            sfilezos.closeEntry();
+
+            // Write Transfer Information
+            for (int i = 0; i < zEntTRN.length; i++) {
+                sfilezos.putNextEntry(zEntTRN[i]);
+                bytedata = FlowChartCAD.tRNList.tRNs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
+                sfilezos.write(bytedata, 0, bytedata.length);
+                sfilezos.closeEntry();
+            }
+
+            // Write ElementInformation
+            for (int i = 0; i < zEntELM.length; i++) {
+                sfilezos.putNextEntry(zEntELM[i]);
+                bytedata = FlowChartCAD.eLMList.eLMs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
+                sfilezos.write(bytedata, 0, bytedata.length);
+                sfilezos.closeEntry();
+            }
+
+            //writeToZipFile()
+            sfilezos.close();
+            sfileos.close();
+            ProjSetting.hasChangedSinceSave = false; // Debug - does not confirm successful save
+            new WarningDialog(mainframe, "Save Successful");
+        } catch (FileNotFoundException fe) {
+            new WarningDialog(mainframe, fe.getMessage());
+        } catch (IOException fe) {
+            new WarningDialog(mainframe, fe.getMessage());
+        }
+
     }
 
             

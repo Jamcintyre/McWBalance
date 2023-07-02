@@ -35,6 +35,10 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     public double[] pumpRateDay = new double[MAX_PUMP_RATES]; // rate must be in m3 per day
     public int pumpRateCount;
     
+    //Misc Limits
+    private static final int MAX_READLOOP_ITERATIONS = 100; // sets a limit in event inData has too many lines
+    private static final int MIN_FILE_LENGTH = 13; // this is the minimum number of lines for a save string to be completed
+    
     // Note that Results will be stored to a seperate class, that will be Sized and Generated at Solve Time
     /**
      * Used to select what side the flow arrow gets drawn from
@@ -265,16 +269,66 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     
     /**
      * Populates the element from a tab delmited list of data 
-     * @return 
      *
      * @param inData Recieves a string that is formatted identically to the getString method
      */
     public void setFromString(String inData){
         
         
+        String nextLine = System.getProperty("line.separator");
+        String lines[] = inData.split(nextLine);
+        if(lines.length < MIN_FILE_LENGTH){
+            return;
+        }
         
-        
-        
+        int lc = 0;
+        objname = lines[lc].split("\t")[1];
+        lc++;
+        subType = lines[lc].split("\t")[1];
+        lc++;
+        x = Integer.parseInt(lines[lc].split("\t")[1]);
+        y = Integer.parseInt(lines[lc].split("\t")[2]);
+        lc++;
+        inObjNumber = Integer.parseInt(lines[lc].split("\t")[1]);
+        lc++;
+        inSideFrom = lines[lc].split("\t")[1];
+        inSideFromOset = Integer.parseInt(lines[lc].split("\t")[2]);
+        inSideTo = lines[lc].split("\t")[3];
+        lc++;
+        outObjNumber = Integer.parseInt(lines[lc].split("\t")[1]);
+        lc++;
+        outSideFrom = lines[lc].split("\t")[1];
+        outSideTo = lines[lc].split("\t")[2];
+        outSideToOset = Integer.parseInt(lines[lc].split("\t")[3]);
+        lc++; 
+        lc++; // 2 line header
+        lc++;
+        for (int i = 0; i < MAX_READLOOP_ITERATIONS; i++, lc++){
+            if (lines.length <= lc){
+                return;
+            }
+            if (lines[lc].equals(ProjSetting.LIST_TERMINATOR)){
+                break; 
+            }else if (i < MAX_PUMP_RATES){
+                pumpTime[i] = Integer.parseInt(lines[lc].split("\t")[0]);
+                pumpRateDay[i] = Double.parseDouble(lines[lc].split("\t")[1]);
+                pumpRateCount = i; 
+            }
+        }
+        lc++;
+        lc++;
+        lc++;
+        for (int i = 0; i < MAX_READLOOP_ITERATIONS; i++, lc++){
+            if (lines.length <= lc){
+                break;
+            }
+            if (lines[lc].equals(ProjSetting.LIST_TERMINATOR)){
+                break; 
+            }else if (i < ProjSetting.MAX_STATES){
+                stateTime[i] = Integer.parseInt(lines[lc].split("\t")[0]);
+                state[i] = lines[lc].split("\t")[1];
+            }
+        }
     }
     
     
@@ -294,5 +348,6 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         }else if (outObjNumber > rELM){
             outObjNumber--;
         }
+        ProjSetting.hasChangedSinceSave = true;
     }
 }

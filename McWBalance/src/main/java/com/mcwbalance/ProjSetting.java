@@ -18,7 +18,7 @@ public class ProjSetting {
      * 
      */
     static File pathFolder = new File("C:\\Temp\\McBalance\\"); 
-    static File pathFile = new File("TestFile.mcbl");
+    static File pathFile = new File("C:\\Temp\\McBalance\\TestFile.mcbl");
     static String clientName = "CLIENT NAME";
     static String projectName = "PROJECT NAME";
     static String projectNumber = "NB101-###_#";
@@ -26,20 +26,16 @@ public class ProjSetting {
     
     static ImageLib imageLib = new ImageLib(); 
     
-
-    
+    static boolean hasChangedSinceSave = true; // Debug, will update to false
     
     /**
      * Total model time in days from start to finish for each run. Each day will generate 1 result. 
     */
     static int duration = 25; // 2 years  note this will be 3650 lines for a typical 10 year Mine Life.  
 
-    
-    
     static BalanceRunSetting[] balanceRunSettings; // list of runs
     
-    
-   
+
     /**
      * Variable was intended to allow user to select Annual, Monthly or Daily timestep. Will revist once solver is implement 
      * to see if timesteps greater then 1 day are needed
@@ -72,6 +68,14 @@ public class ProjSetting {
     static DateTimeFormatter fmtdt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     
 
-    
-    
+    /**
+     * This method replaces the constructor as this class is fully static
+     */
+    static void resetDefaults(){
+    clientName = "CLIENT NAME";
+    projectName = "PROJECT NAME";
+    projectNumber = "NB101-###_#";
+    balanceName = "SITE WATER BALANCE";
+        
+    }
 }

@@ -55,6 +55,9 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
      * @return 
      */
     public ObjELM ObjELMWindowFunct(ObjELM inObjELM, int eLMNumber, ObjTRNList ctRNList){ // requires object number to edit
+        
+        ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
+        
         //objELMNumber = inNumber; // sets value for save and loads, needs to be called external to this function in action listener
         MainWindow.editorIsActive = true; 
         buffObjELM = inObjELM; // sets buffered object to in object
@@ -208,19 +211,16 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
             tab2LModelInputs.setAllData(buffObjELM.inflows.getShortNameList());
             buffObjELM.inflowOnDemandTRN.trimFromList(tRNIndex);
             tab2LModelDemandInputs.setAllData(buffObjELM.inflowOnDemandTRN.getShortNameList());
-
         });
         JButton tab2buttonUpDemandInput = new JButton("UP");
         tab2buttonUpDemandInput.addActionListener(e -> {
             buffObjELM.inflowOnDemandTRN.shiftUp(tab2listDemandInputs.getSelectedIndex());
             tab2LModelDemandInputs.setAllData(buffObjELM.inflowOnDemandTRN.getShortNameList());
-
         });
         JButton tab2buttonDownDemandInput = new JButton("DOWN");
         tab2buttonDownDemandInput.addActionListener(e -> {
             buffObjELM.inflowOnDemandTRN.shiftDown(tab2listDemandInputs.getSelectedIndex());
             tab2LModelDemandInputs.setAllData(buffObjELM.inflowOnDemandTRN.getShortNameList());
-
         });
         JButton tab2buttonAddFixedOutput = new JButton("<");
         tab2buttonAddFixedOutput.addActionListener(e -> {
@@ -233,7 +233,6 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
             tab2LModelOutputs.setAllData(buffObjELM.outflows.getShortNameList());
             buffObjELM.outflowFixedTRN.appendToList(tRNIndex, tRNName);
             tab2LModelFixedOutputs.setAllData(buffObjELM.outflowFixedTRN.getShortNameList());
-
         });
         JButton tab2buttonRemFixedOutput = new JButton(">");
         tab2buttonRemFixedOutput.addActionListener(e -> {
@@ -296,8 +295,6 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
                 }
                 tab2LModelOutputs.setAllData(buffObjELM.outflows.getShortNameList());
             }
-            buffObjELM.overflowOptions.debugPrintIndexList();
-            
         });
 
         tab2.add(tab2lableFixedInputs);
@@ -888,6 +885,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         subframe.setVisible(true);
         
         return buffObjELM;
+        
         
     }
     

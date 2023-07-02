@@ -24,7 +24,11 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import javax.swing.table.TableColumn;
 
-
+/**
+ * This window dialog class is for user editing of the active objTRNList 
+ * 
+ * @author Alex
+ */
 public class ObjTRNWindow extends JDialog {
        //int objELMNumber = -1;
     ObjTRN buffObjTRN = new ObjTRN(); // container for storing and modifying object used for return at end
@@ -32,6 +36,7 @@ public class ObjTRNWindow extends JDialog {
     
     
     public void ObjTRNWindowFunct(ObjTRN inObjTRN, String[] eLMList){ // requires object number to edit
+        ProjSetting.hasChangedSinceSave = true; // assumes if this dialog is called then a change has been made
         buffObjTRN = inObjTRN; // sets buffered object to in object
         returnedObjTRN = inObjTRN; // sets default return to whatever was provided
         int fmtTFColumnsDEF = 30; // number of columns used for Name fields
@@ -60,34 +65,24 @@ public class ObjTRNWindow extends JDialog {
         
         JPopupMenu popupMenuRateTable = new JPopupMenu();
         JMenuItem popupMenuItemRateSelectAll = new JMenuItem("Select All");
-        popupMenuItemRateSelectAll.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                tab2TableRate.setColumnSelectionInterval(0, 1);
-                tab2TableRate.setRowSelectionInterval(0, tab2TableRate.getRowCount()-1);
-            }
+        popupMenuItemRateSelectAll.addActionListener(e -> {
+            tab2TableRate.setColumnSelectionInterval(0, 1);
+            tab2TableRate.setRowSelectionInterval(0, tab2TableRate.getRowCount() - 1);
         });
+
         JMenuItem popupMenuItemRateDelete = new JMenuItem("Delete Selection");
-        popupMenuItemRateDelete.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                tab2TableModelRate.removeData(tab2TableRate.getSelectedRows(),tab2TableRate.getSelectedColumns());
-            }
+        popupMenuItemRateDelete.addActionListener(e -> {
+            tab2TableModelRate.removeData(tab2TableRate.getSelectedRows(), tab2TableRate.getSelectedColumns());
         });
+
         JMenuItem popupMenuItemRateCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemRateCopy.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                System.out.println("popup menu Copy button hit");
-            }
+        popupMenuItemRateCopy.addActionListener(e -> {
+            System.out.println("popup menu Copy button hit");
         });
 
         JMenuItem popupMenuItemRatePaste = new JMenuItem("Paste");
-        popupMenuItemRatePaste.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                tab2TableModelRate.pasteFromClipboard(tab2TableRate.getSelectedRows(),tab2TableRate.getSelectedColumns());
-            }
+        popupMenuItemRatePaste.addActionListener(e -> {
+            tab2TableModelRate.pasteFromClipboard(tab2TableRate.getSelectedRows(), tab2TableRate.getSelectedColumns());
         });
         
         popupMenuRateTable.add(popupMenuItemRateSelectAll);
@@ -115,34 +110,24 @@ public class ObjTRNWindow extends JDialog {
         
         JPopupMenu popupMenuStateTable = new JPopupMenu();
         JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
-        popupMenuItemStateSelectAll.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                tab3TableState.setColumnSelectionInterval(0, 1);
-                tab3TableState.setRowSelectionInterval(0, tab3TableState.getRowCount()-1);
-            }
+        popupMenuItemStateSelectAll.addActionListener( e-> {
+            tab3TableState.setColumnSelectionInterval(0, 1);
+            tab3TableState.setRowSelectionInterval(0, tab3TableState.getRowCount()-1);
         });
+        
         JMenuItem popupMenuItemStateDelete = new JMenuItem("Delete Selection");
-        popupMenuItemStateDelete.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                tab3TableModelState.removeData(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());
-            }
+        popupMenuItemStateDelete.addActionListener(e ->{
+            tab3TableModelState.removeData(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());    
         });
+        
         JMenuItem popupMenuItemStateCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemStateCopy.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                System.out.println("popup menu Copy button hit");
-            }
+        popupMenuItemStateCopy.addActionListener(e ->{
+            System.out.println("popup menu Copy button hit");
         });
 
         JMenuItem popupMenuItemStatePaste = new JMenuItem("Paste");
-        popupMenuItemStatePaste.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
+        popupMenuItemStatePaste.addActionListener(e ->{
                 tab3TableModelState.pasteFromClipboard(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());
-            }
         });
         
         popupMenuStateTable.add(popupMenuItemStateSelectAll);

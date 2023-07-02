@@ -265,6 +265,7 @@ class ObjELM {
         hitBox.y = y - objSprite.getHeight() / 2;
         hitBox.width = objSprite.getWidth();
         hitBox.height = objSprite.getHeight();
+        ProjSetting.hasChangedSinceSave = true;
     }
 
     /**
@@ -298,5 +299,6 @@ class ObjELM {
         if (overflowTRN == rTRN) {
             overflowTRN = -1;
         }
+        ProjSetting.hasChangedSinceSave = true;
     }
 }
