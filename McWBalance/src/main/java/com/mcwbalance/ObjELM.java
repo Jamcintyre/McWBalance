@@ -49,7 +49,7 @@ class ObjELM {
     public DataTimeDoubleSeries overflowLevel;
     public DataTimeDoubleSeries crestLevel;
 
-    public DataTailingsDepositionRateList depositionRates;
+    public TableTailingsDepositionRates depositionRates;
 
     public IndexList inflowFixedTRN;
     public IndexList outflowFixedTRN;
@@ -96,61 +96,11 @@ class ObjELM {
     public int stateTime[] = new int[ProjSetting.MAX_STATES];
     public String state[] = new String[ProjSetting.MAX_STATES];
 
-    ObjELM() {// constructor
-        x = 0;
-        y = 0;
-        hitBox = new Rectangle(0, 0, 20, 20);
-        isSelected = false;
-        objname = "None";
-        objSubType = "DEFAULT";
-        scaleX = 1.0;
-        scaleY = 1.0;
-        objSubType = "DEFAULT";
-        objSprite = ProjSetting.imageLib.getImage(objSubType, "ACTIVE", scaleX, scaleY);
-        hitBox.x = x - objSprite.getWidth() / 2;
-        hitBox.y = y - objSprite.getHeight() / 2;
-        hitBox.width = objSprite.getWidth();
-        hitBox.height = objSprite.getHeight();
-        hasCatchment = false;
-        nCatchments = 0;
-        indexRunoffTracker = -1; // used when building the run settings to track output
-        hasStorageEvapandPrecip = false;
-        hasSolids = false;
-        oSetXVoids = 0;
-        oSetYVoids = 0; 
-        hasStorage = false;
-        showStorage = false;
-        oSetXStorage = 0;
-        oSetYStorage = 0;
-        dAC = new DataDAC(1);
-
-        targetOperatingVol = new DataTimeIntSeries(1);
-        minDepth = new DataTimeDoubleSeries(1);
-        maxOpLevel = new DataTimeDoubleSeries(1);
-        overflowLevel = new DataTimeDoubleSeries(1);
-        crestLevel = new DataTimeDoubleSeries(1);
-
-        inflows = new IndexList(ProjSetting.MAX_TRNS);
-        outflows = new IndexList(ProjSetting.MAX_TRNS);
-        tailsTRNOptions = new IndexList(ProjSetting.MAX_TRNS);
-        tailsTRN = -1;
-
-        inflowFixedTRN = new IndexList(ProjSetting.MAX_TRNS);
-        outflowFixedTRN = new IndexList(ProjSetting.MAX_TRNS);
-        inflowOnDemandTRN = new IndexList(ProjSetting.MAX_TRNS);
-        outflowOnDemandTRN = new IndexList(ProjSetting.MAX_TRNS);
-
-        overflowOptions = new IndexList(ProjSetting.MAX_TRNS);
-        overflowTRN = -1;
-
-        stateTime[0] = -1;
-        for (int i = 1; i < ProjSetting.MAX_STATES; i++) {
-            stateTime[i] = ProjSetting.MAX_DURATION;
-        }
-        state[0] = "ACTIVE";
+    ObjELM() {
+        this(0, 0, 0);
     }
 
-    ObjELM(int inX, int inY, int number) {// constructor
+    ObjELM(int inX, int inY, int number) {
         x = inX;
         y = inY;
         hitBox = new Rectangle(0, 0, 20, 20);
@@ -183,6 +133,8 @@ class ObjELM {
         maxOpLevel = new DataTimeDoubleSeries(1);
         overflowLevel = new DataTimeDoubleSeries(1);
         crestLevel = new DataTimeDoubleSeries(1);
+        
+        depositionRates = new TableTailingsDepositionRates();
 
         inflows = new IndexList(ProjSetting.MAX_TRNS);
         outflows = new IndexList(ProjSetting.MAX_TRNS);

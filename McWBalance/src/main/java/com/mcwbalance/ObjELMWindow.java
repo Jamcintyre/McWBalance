@@ -571,16 +571,8 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         // TAB 5 for handelling Tailings Deposition
         JPanel tab5 = new JPanel();
-         
-        DataTableTailingsDepositionRate tab5TableModelTails = new DataTableTailingsDepositionRate();
-        tab5TableModelTails.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
-        
 
-        //tab5TableModelTails.setAllData(buffObjELM.depositionRates); 
-        
-        
-        
-        JTable tab5TableTails = new JTable(tab5TableModelTails);
+        JTable tab5TableTails = new JTable(buffObjELM.depositionRates);
         
         JPopupMenu popupMenuTailsTable = new JPopupMenu();
         JMenuItem popupMenuItemTailsSelectAll = new JMenuItem("Select All");
@@ -590,7 +582,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         });
         JMenuItem popupMenuItemTailsDelete = new JMenuItem("Delete Selection");
         popupMenuItemTailsDelete.addActionListener(e->{
-                tab5TableModelTails.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
+                buffObjELM.depositionRates.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
         });
         JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
         popupMenuItemTailsCopy.addActionListener(e->{
@@ -599,7 +591,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
 
         JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste (All 3 Columns El. A V)");
         popupMenuItemTailsPaste.addActionListener(e->{
-                tab5TableModelTails.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
+                buffObjELM.depositionRates.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
         });
         
         popupMenuTailsTable.add(popupMenuItemTailsSelectAll);
@@ -625,8 +617,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
             tab6TableModelState.setValueAt((int)buffObjELM.stateTime[i], i, 0);
             tab6TableModelState.setValueAt((String)buffObjELM.state[i], i, 1);
         }
-        
-        
+
         JPopupMenu popupMenuStateTable = new JPopupMenu();
         JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
         popupMenuItemStateSelectAll.addActionListener(e->{
@@ -738,8 +729,6 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
             buffObjELM.oSetYStorage = (int)tab1SpinnerStorageXoSet.getValue();
         });
         
-        
-        
         JCheckBox tab1CheckBoxhasStorageEvapandPrecip = new JCheckBox("Include Direct Evaporation and Precipitation");
         tab1CheckBoxhasStorageEvapandPrecip.setSelected(buffObjELM.hasStorageEvapandPrecip);
         tab1CheckBoxhasStorageEvapandPrecip.addActionListener(e-> {
@@ -750,20 +739,18 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
             buffObjELM.objname = tfobjName.getText();
             buffObjELM.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE");
             buffObjELM.dAC.setData(tab3TableModelDAC.getElevColumn(), tab3TableModelDAC.getAreaColumn(), tab3TableModelDAC.getVolColumn());
-            //tab4TableModelTargetVol
+
             buffObjELM.targetOperatingVol.setAllData(tab4TableModelTargetVol.getDayColumn(), tab4TableModelTargetVol.getVolColumn()); // problem seems to lie here
             
-            
-            //tab4TableModelMinDepth
             buffObjELM.minDepth.setAllData(tab4TableModelMinDepth.getDayColumn(), tab4TableModelMinDepth.getLevelColumn()); 
-            //tab4TableModelMaxOpLevel
+
             buffObjELM.minDepth.setAllData(tab4TableModelMaxOpLevel.getDayColumn(), tab4TableModelMaxOpLevel.getLevelColumn()); 
             
             buffObjELM.overflowLevel.setAllData(tab4TableModelOverflowLevel.getDayColumn(), tab4TableModelOverflowLevel.getLevelColumn());
             buffObjELM.crestLevel.setAllData(tab4TableModelCrestLevel.getDayColumn(), tab4TableModelCrestLevel.getLevelColumn());
             
-            //tab5TableModelTails
             
+
             for (int i = 0; i < tab6TableModelState.getRowCount(); i++){
                 if (i >= buffObjELM.stateTime.length){
                     break;
@@ -772,7 +759,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
                 buffObjELM.state[i] = (String)tab6TableModelState.getValueAt(i, 1);
             }
             
-            //tab6TableModelState
+
             
             returnedObjELM = buffObjELM; // sets returned value to 
         });
