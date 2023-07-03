@@ -137,11 +137,11 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
     public void setRowFromString(String lineIn, int row){
         String columns[] = lineIn.split("\t");
         if (columns.length > 5){
-            setValueAt(Integer.parseInt(columns[0]),row,0);
-            setValueAt(Double.parseDouble(columns[1]),row,1);
-            setValueAt(Double.parseDouble(columns[2]),row,2);
-            setValueAt(Double.parseDouble(columns[3]),row,3);
-            setValueAt(Double.parseDouble(columns[4]),row,4);
+            setValueAt(Integer.valueOf(columns[0]),row,0);
+            setValueAt(Double.valueOf(columns[1]),row,1);
+            setValueAt(Double.valueOf(columns[2]),row,2);
+            setValueAt(Double.valueOf(columns[3]),row,3);
+            setValueAt(Double.valueOf(columns[4]),row,4);
             calculateRow(row);
         }
 
@@ -501,12 +501,12 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
     }
     
     public void setFromString(String input){
-        
-        
-        
+         // Not Implemented yet 
     }
     
-    
+    /**
+     * Copies data to clipboard in string format
+     */
     public void copyToClipBoard(){
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         StringSelection content = new StringSelection(toString()); 

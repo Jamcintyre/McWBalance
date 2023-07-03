@@ -24,6 +24,8 @@ public class ProjSetting {
     static String projectNumber = "NB101-###_#";
     static String balanceName = "SITE WATER BALANCE";
     
+    static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
+    
     static ImageLib imageLib = new ImageLib(); 
     
     static boolean hasChangedSinceSave = true; // Debug, will update to false
@@ -54,7 +56,7 @@ public class ProjSetting {
     static final int MAX_ELMS = 20;
     static final int MAX_TRNS = 40;
     static final int MAX_LEVELS = 20;
-    static final int MAX_LAND_COVERS = 10; 
+    static final int MAX_LAND_COVERS = 15; 
     static final int MAX_STATES = 10;
     static final String LIST_TERMINATOR = "---END---";
     
@@ -76,6 +78,7 @@ public class ProjSetting {
     projectName = "PROJECT NAME";
     projectNumber = "NB101-###_#";
     balanceName = "SITE WATER BALANCE";
+    runoffCoefficients = new TableRunoffCoefficients();
         
     }
 }

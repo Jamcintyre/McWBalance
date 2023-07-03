@@ -6,6 +6,7 @@ package com.mcwbalance;
 
 /**
  * @author amcintyre
+ * @deprecated Replaced with TableRunoffCoefficients model
  */
 public class DataRunoffCoeff {
     int nLandCovers;

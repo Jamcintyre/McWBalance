@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
@@ -11,8 +12,10 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
@@ -23,7 +26,12 @@ import javax.swing.SpinnerNumberModel;
  */
 public class ProjSettingWindow extends JDialog{
     private final int TEXTBOX_WIDTH = 25;
+    private final int RC_TABLE_FIRST_COL_WIDTH = 100;
+    private final int RC_TABLE_OTHER_COL_WIDTH = 30;
+    private final int TABLE_ROW_HEIGHT = 20;
+    private final Dimension RC_TABLE_PREF_DIMENSION = new Dimension(RC_TABLE_FIRST_COL_WIDTH+12*RC_TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*10);
     private int closeAction = 1;
+    
 
    ProjSettingWindow(){
         
@@ -163,6 +171,25 @@ public class ProjSettingWindow extends JDialog{
         });
 
         tabPane.addTab("General",tab1);
+        
+        // TAB 2
+        JPanel tab2 = new JPanel();
+        
+        JTable tab2Table = new JTable(ProjSetting.runoffCoefficients);
+        tab2Table.getColumnModel().getColumn(0).setPreferredWidth(RC_TABLE_FIRST_COL_WIDTH);
+        for (int i = 1; i < 13; i ++){
+            tab2Table.getColumnModel().getColumn(i).setPreferredWidth(RC_TABLE_OTHER_COL_WIDTH);
+        }
+        tab2Table.setRowHeight(TABLE_ROW_HEIGHT);
+        tab2Table.setPreferredScrollableViewportSize(RC_TABLE_PREF_DIMENSION);
+        
+        JScrollPane tab2ScrollPane = new JScrollPane(tab2Table); 
+        
+        
+        
+        tab2.add(tab2ScrollPane);
+        tabPane.addTab("Runoff Coefficients", tab2);
+        
         
         this.add(tabPane);
         this.pack();
