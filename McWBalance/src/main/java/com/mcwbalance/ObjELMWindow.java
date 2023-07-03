@@ -577,19 +577,19 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         JPopupMenu popupMenuTailsTable = new JPopupMenu();
         JMenuItem popupMenuItemTailsSelectAll = new JMenuItem("Select All");
         popupMenuItemTailsSelectAll.addActionListener(e->{
-                tab5TableTails.setColumnSelectionInterval(0, 2);
+                tab5TableTails.setColumnSelectionInterval(0, 8);
                 tab5TableTails.setRowSelectionInterval(0, tab5TableTails.getRowCount()-1);
         });
         JMenuItem popupMenuItemTailsDelete = new JMenuItem("Delete Selection");
         popupMenuItemTailsDelete.addActionListener(e->{
                 buffObjELM.depositionRates.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
         });
-        JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
+        JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy All");
         popupMenuItemTailsCopy.addActionListener(e->{
-                System.out.println("popup menu Copy button hit");
+                buffObjELM.depositionRates.copyToClipBoard();
         });
 
-        JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste (All 3 Columns El. A V)");
+        JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste All");
         popupMenuItemTailsPaste.addActionListener(e->{
                 buffObjELM.depositionRates.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
         });
