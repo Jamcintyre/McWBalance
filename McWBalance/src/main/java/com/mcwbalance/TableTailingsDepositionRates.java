@@ -7,6 +7,7 @@ package com.mcwbalance;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
@@ -182,6 +183,7 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
             data[row][6] = (double)0;
             data[row][7] = (double)0;
         }
+        sortAssending();
 
     }
     
@@ -196,22 +198,46 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
         Transferable content = clipboard.getContents(this);
         if (content != null){
             try{
-                String clippedvalue = content.getTransferData(DataFlavor.stringFlavor).toString(); // string flavor seams easiest..  
-                String clippedValueLines[] = clippedvalue.split("\\R"); // the \\R is cross platform for \n new line charactor
+                String clippedValue = content.getTransferData(DataFlavor.stringFlavor).toString(); // string flavor seams easiest..  
+                String clippedValueLines[] = clippedValue.split(System.getProperty("line.separator")); // the \\R is cross platform for \n new line charactor
                 String clippedValueSingleLine[]; // this is the final array of values, used for each line within a loop 
+
+                int startCol;
+                int endCol;
                 
-                for (int i = 0; i < clippedValueLines.length; i++){
-                    clippedValueSingleLine = clippedValueLines[i].split("\\t");
-                    if (clippedValueSingleLine.length == 2){ // if three columns are present then will assume all 2 columns are to be overwritten;
-                        setValueAt(Integer.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 0); // day column
-                        setValueAt(Double.valueOf(clippedValueSingleLine[1]),i+selectedrow[0], 1); // elevation column
+                clippedValueSingleLine = clippedValueLines[0].split("\t");
+                if(columnNames[0].equals(clippedValueSingleLine[0])){
+                        setFromString(clippedValue);
+                        return;
                     }
-                    if (clippedValueSingleLine.length == 1){ // if only 1 column present then will now need to find wich column
-                        if (selectedcol[0] == 0){ // if its 0 it must be date
-                            setValueAt(Integer.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 0);
-                        }
-                        else if (selectedcol[0] == 1){ // if its 1 it must be level
-                            setValueAt(Double.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 1);
+                if(clippedValueSingleLine.length < 5){
+                    startCol = selectedcol[0];
+                    endCol = selectedcol[selectedcol.length-1];
+                    if (endCol > 4){
+                        endCol = 4;
+                    }
+                }
+                else{
+                    startCol = 0;
+                    endCol = 4;
+                }
+                for (int j = 0; j < startCol - endCol; j++){
+                    if (j + startCol == 0) {
+                        setValueAt(Integer.valueOf(clippedValueSingleLine[0]), 0, 0);
+                    } else {
+                        setValueAt(Double.valueOf(clippedValueSingleLine[j]), 0, j+startCol);
+                    }
+                    
+                }
+
+                for (int i = 1; i < clippedValueLines.length; i++) {
+                    clippedValueSingleLine = clippedValueLines[i].split("\t");
+                    for (int j = 0; j < startCol - endCol; j++) {
+                        if (j + startCol == 0) {
+                            setValueAt(Integer.valueOf(clippedValueSingleLine[0]), i, 0);
+                        } else {
+                            setValueAt(Double.valueOf(clippedValueSingleLine[j]), i, j + startCol);
+
                         }
                     }
                 }
@@ -246,9 +272,6 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
             fireTableDataChanged();     
         }
     }
-    
-    
-   
 
     /**
      * Rate tonnes/day data[i][1] Min = 0
@@ -358,12 +381,18 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
         return (double)data[0][7];
     }
     
-    
-     public void sortAssending() {
+    /**
+     * sorts list by day, note that methods require days to be in order
+     * short clear nulls before sortAssending
+     */
+     private void sortAssending() {
         Object swap[] = new Object[NUMBER_OF_COLUMNS];
-        for (int i = 0; i < length; i++) { // may need to move the i++ and j++, want to repeat the step if needed;
-            for (int j = i + 1; j < length; j++) {
-                if ((int)data[j][0] < (int)data[i][0]) { // if it matches leave it alone, the doublicate cleaner will deal with it; 
+        for (int i = 0; i < getRowCount(); i++) { // may need to move the i++ and j++, want to repeat the step if needed;
+            for (int j = i + 1; j < getRowCount(); j++) {
+                if (data[j][0] == null || data[i][0] == null ){
+                    break;
+                }
+                else if ((int)data[j][0] < (int)data[i][0]) { // if it matches leave it alone, the doublicate cleaner will deal with it; 
                     swap = data[j];
                     for (int k = j - 1; k > i - 1; k--) {
                         data[k + 1] = data[k];
@@ -376,32 +405,115 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
         }
         fireTableDataChanged();
     }
-    /*
-    public void removeDoupsAndNulls(){
-        double cDay;
-        for (int i = 0; i < length; i ++){
-            cDay = rates[i].getDay();
-            for (int j = i + 1; j < length; j ++){
-                if (rates[j].getDay() == cDay || rates[j].isNull()){
-                    for (int k = j + 1; k < length; k ++){
-                        rates[k-1] = rates[k];
-                    }
-                    length--;
+    
+    /**
+     * Nulls incomplete rows and shifts all completed rows to top
+     */
+    private void clearNulls() {
+        //first loop ensures if any blanks are present the entire row is nulled out
+        for (int i = 1; i < getRowCount(); i++) {
+            if (data[i][0] == null || (int) data[i][0] < DAY_MIN || data[i][1] == null || data[i][2] == null || data[i][3] == null || data[i][4] == null) {
+                data[i] = new Object[NUMBER_OF_COLUMNS];
+            }
+        }
+        for (int i = getRowCount() - 1; i > 0; i--) {
+            if (data[i][0] != null && data[i - 1][0] == null) {
+                for (int j = i; j < getRowCount(); j++){
+                    data[j-1] = data[j];
                 }
             }
         }
-        if (length != rates.length){
-            DataTailingsDepositionRate newRates[] = new DataTailingsDepositionRate[length];
-             
-            for (int i = 0; i < length; i ++){
-                newRates[i] = rates[i];
-            }
-            rates[0].setDay(0); // ensures first day is 0, since will need to lookup rate for day 0
-            rates = newRates;
-        }    
     }
-    */
+    
+    /**
+     * Removes douplicants from list and shifts up, note data should be sorted
+     * assending and cleared of partial rows prior to using this method
+     * @see clearNulls
+     * @see sortAssending
+     */
+    private void clearDouplicants(){
+        for (int i = 1; i < getRowCount(); i++){
+            if (data[i][0] == null){
+                return;
+            }
+            else if ((int)data[i][0] == (int)data[i-1][0]){
+                for (int j = i; j < getRowCount(); j++){
+                    data[j-1] = data[j];
+                }
+                data[getRowCount()-1] = new Object[NUMBER_OF_COLUMNS];
+            }
+        }
+    }
+    
+    private void updateLength(){
+        length = 1;
+        for (int i = 0; i < getRowCount(); i++){
+            if (data[i][0] == null){
+                length = i;
+                return;
+            }
+        }
+        length = getRowCount();
+    }
+    /**
+     * Method to call cleanup methods in correct order
+     * Clears all null and partial lines
+     * sorts assending
+     * removes douplicated days
+     * updates the length value
+     */
+    public void cleanUp(){
+        clearNulls();
+        sortAssending();
+        clearDouplicants(); 
+        updateLength();
+        fireTableDataChanged();
+    }
+    /**
+     * Converts data into a tab delimited string list suitable for a save file
+     * @return tab delimited data array with headers
+     */
+    @Override
+    public String toString(){
+        String nextLine = System.getProperty("line.separator");
+        StringBuilder saveString = new StringBuilder(); 
+        
+        cleanUp();
 
+        saveString.append(columnNames[0]);
+        for (int i = 1; i < columnNames.length; i++){
+            saveString.append("\t");
+            saveString.append(columnNames[i]);
+            
+        }
+        saveString.append(nextLine);
+        
+        for (int i = 0; i < length; i ++){
+            saveString.append(data[i][0]);
+            for (int j = 1; j < NUMBER_OF_COLUMNS; j++){
+                saveString.append("\t");
+                saveString.append(data[i][j]);
+            }
+            saveString.append(nextLine);
+        }
+        saveString.append(ProjSetting.LIST_TERMINATOR);
+        return saveString.toString();
+    }
+    
+    public void setFromString(String input){
+        
+        
+        
+    }
+    
+    
+    public void copyToClipBoard(){
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection content = new StringSelection(toString()); 
+        clipboard.setContents(content, content);
+        
+        
+    }
     
     
 }
