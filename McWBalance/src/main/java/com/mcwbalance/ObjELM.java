@@ -245,9 +245,28 @@ class ObjELM {
         return saveString;
     }
     
-    public void setFromString(String indata){
+    public void setFromString(String inData){
+        String nextLine = System.getProperty("line.separator");
+        String lines[] = inData.split(nextLine);
+        /*
+        if(lines.length < MIN_FILE_LENGTH){ to be set after getSaveString completed
+            return;
+        }
+        */
+        int lc = 0;
+        objname = lines[lc].split("\t")[1];
+        lc++;
+        objSubType = lines[lc].split("\t")[1];
+        lc++;
+        x = Integer.parseInt(lines[lc].split("\t")[1]);
+        y = Integer.parseInt(lines[lc].split("\t")[2]);
+        lc++;
+        
+        //NOT COMPLETE
         
         
+        
+        setSubType(objSubType, "ACTIVE");
     }
     
     

@@ -166,7 +166,7 @@ public class FlowChartCAD extends JComponent{
         
         // draws the Elements
         g2.setStroke(THIN_LINE);
-        g.setFont(lfont); // sets font for Element Names so it isn't repeated in the loop.
+        g2.setFont(lfont); // sets font for Element Names so it isn't repeated in the loop.
         for (int i = 0; i < eLMList.count; i++){// draws all elements in ELM list
             if(eLMList.eLMs[i].getState(drawdate) != "INACTIVE"){
                 drawX = eLMList.eLMs[i].hitBox.x;
@@ -182,28 +182,28 @@ public class FlowChartCAD extends JComponent{
                     g2.setStroke(THIN_LINE);
                 }
                 
-                nameWidthDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g).getWidth();
+                nameWidthDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g2).getWidth();
                 nameWidth = (int)nameWidthDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
-                nameHeightDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g).getHeight();
+                nameHeightDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g2).getHeight();
                 nameHeight = (int)nameHeightDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
                 // Draws text Lable
-                g.setColor(Color.BLACK); // Draws Shadow that will be drawn over
-                g.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding + lshadow, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset + lshadow, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout
-                g.setColor(Color.WHITE); // whiteout behind text
-                g.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
-                g.setColor(Color.BLACK); // border around text
-                g.drawRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
-                g.drawString(eLMList.eLMs[i].objname, eLMList.eLMs[i].x - nameWidth/2, drawY + eLMList.eLMs[i].objSprite.getHeight() + nameHeight + vlableoffset); // Strings draw up from the bottom, opposite of rectangles and images... 
+                g2.setColor(Color.BLACK); // Draws Shadow that will be drawn over
+                g2.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding + lshadow, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset + lshadow, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout
+                g2.setColor(Color.WHITE); // whiteout behind text
+                g2.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
+                g2.setColor(Color.BLACK); // border around text
+                g2.drawRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
+                g2.drawString(eLMList.eLMs[i].objname, eLMList.eLMs[i].x - nameWidth/2, drawY + eLMList.eLMs[i].objSprite.getHeight() + nameHeight + vlableoffset); // Strings draw up from the bottom, opposite of rectangles and images... 
             }
             
         }
-        g.setFont(mfont); 
+        g2.setFont(mfont); 
         
         
         g2.setStroke(FLOW_LINE);
         for (int i = 0; i < tRNList.count; i++){
-            g.setFont(mfont); // need to re-set font every loop
-            nameWidthDouble = g.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g).getWidth();
+            g2.setFont(mfont); // need to re-set font every loop
+            nameWidthDouble = g2.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g2).getWidth();
             nameWidth = (int)nameWidthDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
             tRNdim = tRNList.tRNs[i].hitBox.getSize();
             tRNx = tRNList.tRNs[i].x;
@@ -212,8 +212,8 @@ public class FlowChartCAD extends JComponent{
             
             
             
-            nameWidthDouble = g.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g).getWidth();
-            nameHeightDouble = g.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g).getHeight();
+            nameWidthDouble = g2.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g2).getWidth();
+            nameHeightDouble = g2.getFontMetrics().getStringBounds(tRNList.tRNs[i].objname, g2).getHeight();
             nameWidth = (int)nameWidthDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
             nameHeight = (int)nameHeightDouble;
             
@@ -225,9 +225,9 @@ public class FlowChartCAD extends JComponent{
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
                 fpline.setRoute(eLMrect, tRNList.tRNs[i].inSideFrom, tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo, 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
-                g.setColor(Color.BLACK);
-                g.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints); // draws line
-                g.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
+                g2.setColor(Color.BLACK);
+                g2.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints); // draws line
+                g2.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
 
             }
             // Draws outflow line
@@ -238,23 +238,23 @@ public class FlowChartCAD extends JComponent{
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
                 fpline.setRoute(tRNrect, tRNList.tRNs[i].outSideFrom, 0, eLMrect, tRNList.tRNs[i].outSideTo, tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
-                g.setColor(Color.BLACK);// Placeholder of using colour until end arrow is drawn
-                g.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints);
-                g.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
+                g2.setColor(Color.BLACK);// Placeholder of using colour until end arrow is drawn
+                g2.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints);
+                g2.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
             }
             // Draws text Lable
-            g.setColor(Color.WHITE);
-            g.fillRect( tRNList.tRNs[i].x - nameWidth/2, tRNrect.y - vlableoffset - nameHeight, nameWidth, nameHeight); // draws whiteout 
-            g.setColor(Color.BLACK);
-            g.drawString(tRNList.tRNs[i].objname, tRNList.tRNs[i].x - nameWidth/2, tRNrect.y - vlableoffset); // Text draws from bottom up!, opposite of other objects
+            g2.setColor(Color.WHITE);
+            g2.fillRect( tRNList.tRNs[i].x - nameWidth/2, tRNrect.y - vlableoffset - nameHeight, nameWidth, nameHeight); // draws whiteout 
+            g2.setColor(Color.BLACK);
+            g2.drawString(tRNList.tRNs[i].objname, tRNList.tRNs[i].x - nameWidth/2, tRNrect.y - vlableoffset); // Text draws from bottom up!, opposite of other objects
             
             // draws the Box that represents the transfer
-            g.setColor(Color.WHITE); // Draws Whiteout behind box
-            g.fillRect(tRNrect.x, tRNrect.y, tRNrect.width, tRNrect.height);
-            g.setColor(Color.BLACK); // will need to size this box to match Normal KP flowsheets
-            g.drawRoundRect(tRNrect.x, tRNrect.y, tRNrect.width, tRNrect.height, 5, 5);
-            g.drawLine(tRNrect.x, tRNrect.y + tRNrect.height/3, tRNrect.x+tRNrect.width, tRNrect.y + tRNrect.height/3);
-            g.drawLine(tRNrect.x, tRNrect.y + tRNrect.height*2/3, tRNrect.x+tRNrect.width, tRNrect.y + tRNrect.height*2/3);
+            g2.setColor(Color.WHITE); // Draws Whiteout behind box
+            g2.fillRect(tRNrect.x, tRNrect.y, tRNrect.width, tRNrect.height);
+            g2.setColor(Color.BLACK); // will need to size this box to match Normal KP flowsheets
+            g2.drawRoundRect(tRNrect.x, tRNrect.y, tRNrect.width, tRNrect.height, 5, 5);
+            g2.drawLine(tRNrect.x, tRNrect.y + tRNrect.height/3, tRNrect.x+tRNrect.width, tRNrect.y + tRNrect.height/3);
+            g2.drawLine(tRNrect.x, tRNrect.y + tRNrect.height*2/3, tRNrect.x+tRNrect.width, tRNrect.y + tRNrect.height*2/3);
             
             // draws the box around the TRN if selected
             if(tRNList.tRNs[i].isSelected){
@@ -265,7 +265,7 @@ public class FlowChartCAD extends JComponent{
                 g2.setStroke(THIN_LINE);
             }
             
-            g.setFont(sfont); // Switches to smallest font for Numbers
+            g2.setFont(sfont); // Switches to smallest font for Numbers
             // Plots Annual Number
             
             //pVolAnn = String.valueOf(tRNList.tRNs[i].plotVolperAnnum);
@@ -273,15 +273,15 @@ public class FlowChartCAD extends JComponent{
             pVolDay = ProjSetting.fmtDay.format(tRNList.tRNs[i].plotVolperDay);
             pVolHr = ProjSetting.fmtHr.format(tRNList.tRNs[i].plotVolperHr);
             
-            pVolWidth = (int)g.getFontMetrics().getStringBounds(pVolAnn, g).getWidth();
-            pVolHeight = (int)g.getFontMetrics().getStringBounds(pVolAnn, g).getHeight();
-            g.drawString(pVolAnn, tRNrect.x + tRNrect.width/2 - pVolWidth/2, tRNrect.y + tRNrect.height*1/6 + pVolHeight/2);
+            pVolWidth = (int)g2.getFontMetrics().getStringBounds(pVolAnn, g2).getWidth();
+            pVolHeight = (int)g2.getFontMetrics().getStringBounds(pVolAnn, g2).getHeight();
+            g2.drawString(pVolAnn, tRNrect.x + tRNrect.width/2 - pVolWidth/2, tRNrect.y + tRNrect.height*1/6 + pVolHeight/2);
             
-            pVolWidth = (int)g.getFontMetrics().getStringBounds(pVolDay, g).getWidth();
-            g.drawString(pVolDay, tRNrect.x + tRNrect.width/2 - pVolWidth/2, tRNrect.y + tRNrect.height*3/6 + pVolHeight/2);
+            pVolWidth = (int)g2.getFontMetrics().getStringBounds(pVolDay, g2).getWidth();
+            g2.drawString(pVolDay, tRNrect.x + tRNrect.width/2 - pVolWidth/2, tRNrect.y + tRNrect.height*3/6 + pVolHeight/2);
             
-            pVolWidth = (int)g.getFontMetrics().getStringBounds(pVolHr, g).getWidth();
-            g.drawString(pVolHr, tRNrect.x + tRNrect.width/2 - pVolWidth/2, tRNrect.y + tRNrect.height*5/6 + pVolHeight/2);
+            pVolWidth = (int)g2.getFontMetrics().getStringBounds(pVolHr, g2).getWidth();
+            g2.drawString(pVolHr, tRNrect.x + tRNrect.width/2 - pVolWidth/2, tRNrect.y + tRNrect.height*5/6 + pVolHeight/2);
 
         }
     }

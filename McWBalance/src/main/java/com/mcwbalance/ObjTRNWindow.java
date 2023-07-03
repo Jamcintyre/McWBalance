@@ -29,6 +29,10 @@ import javax.swing.table.TableColumn;
  */
 public class ObjTRNWindow extends JDialog {
     private ObjTRN buffObjTRN = new ObjTRN(); // container for storing and modifying object used for return at end
+    private int closeAction = 1;
+    
+    public static final int CLOSE_ACTION_SAVE = 1;
+    public static final int CLOSE_ACTION_DISCARD = 2;
         
     ObjTRNWindow(ObjTRN inObjTRN, String[] eLMList){ // requires object number to edit
         super(MainWindow.mainframe, "Transfer Properties", true); // was orginally a frame but changed to dialog
@@ -181,9 +185,9 @@ public class ObjTRNWindow extends JDialog {
                 
         JButton bSave = new JButton("Save");
         //Tab 1 Save Button listener moved to end to allow saving variables from all tabs
-        bSave.addActionListener(e ->{ // uses a lambda instead of needing seperate listener override
+        bSave.addActionListener(e ->{ 
+            closeAction = CLOSE_ACTION_SAVE;
 
-            System.out.println("Save Clicked");
             buffObjTRN.objname = tfobjName.getText();
             buffObjTRN.subType = String.valueOf(cbobjType.getSelectedItem());
             
@@ -206,7 +210,6 @@ public class ObjTRNWindow extends JDialog {
                 buffObjTRN.stateTime[i] = (int)tab3TableModelState.getValueAt(i, 0);
                 buffObjTRN.state[i] = (String)tab3TableModelState.getValueAt(i, 1);
             }
-             
             
         });
 
@@ -304,10 +307,20 @@ public class ObjTRNWindow extends JDialog {
         this.setVisible(true);
         
     }
-    
+    /**
+     * Object used to return input from the window
+     * @return objTRN containing all data pertaining to the modified transfer 
+     */
     public ObjTRN getObjTRN(){
         return buffObjTRN;
     } 
+    /**
+     * Provide int to communicate whether the user intends to save changes or discard
+     * @return 1 - Save requested, 2 - cancel requested 
+     */
+    public int getCloseAction(){
+        return closeAction;
+    }
 
     
     

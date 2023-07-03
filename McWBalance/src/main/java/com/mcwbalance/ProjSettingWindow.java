@@ -6,6 +6,7 @@ package com.mcwbalance;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,12 +23,13 @@ import javax.swing.SpinnerNumberModel;
  */
 public class ProjSettingWindow extends JDialog{
     private final int TEXTBOX_WIDTH = 25;
-    
-    public void projSettingWindowFunc(){
+    private int closeAction = 1;
+
+   ProjSettingWindow(){
         
-        JDialog subframe = new JDialog(MainWindow.mainframe, "Project Settings", true);
-        subframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        subframe.setLocationRelativeTo(null);
+        super(MainWindow.mainframe, "Project Settings", true);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setLocationRelativeTo(null);
         JTabbedPane tabPane = new JTabbedPane();
         
         //Beginning of Tab 1 General
@@ -49,7 +51,12 @@ public class ProjSettingWindow extends JDialog{
         tab1PathFolderFieldConstr.anchor = GridBagConstraints.WEST;
         tab1.add(tab1PathFolderField,tab1PathFolderFieldConstr);
         tab1PathFolderField.addActionListener(e-> {
-            System.err.println("Action Listener to be implemented"); // Placholder, will want to check if new path is valid / accessable before committing change;
+            if(new File(tab1PathFolderField.getText()).isDirectory()){
+                ProjSetting.pathFolder = new File(tab1PathFolderField.getText());
+            }else{
+                new WarningDialog(MainWindow.mainframe,"Directory Does Not Exist or is not Accessible");
+                tab1PathFolderField.setText(ProjSetting.pathFolder.getPath());
+            }
         });
         
         JLabel tab1FileNameLabel = new JLabel("Filename: ");
@@ -154,19 +161,11 @@ public class ProjSettingWindow extends JDialog{
         tab1DurationSpinner.addChangeListener(e-> {
             ProjSetting.duration = (int)tab1DurationSpinnerModel.getValue();
         });
-        
-        
+
         tabPane.addTab("General",tab1);
         
-
-        
-        
-        
-        
-        subframe.add(tabPane);
-        subframe.pack();
-        subframe.setVisible(true);
-        
-        
+        this.add(tabPane);
+        this.pack();
+        this.setVisible(true);
     }
 }

@@ -54,7 +54,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     JPanel flowChartPanel = new JPanel(new BorderLayout()); // declair comment flow chart panel
     JScrollPane flowChartScPane = new JScrollPane(flowChartPanel); // moved from beginning to here. 
     // Turns out you need to construct the Panel into the Pane
-    static JFrame mainframe = new JFrame("McBalance Pre Pre Alpha"); // JFrame declared here and as static so that ObjELMWindow can refer to it
+    static JFrame mainframe = new JFrame("McWBalance Pre Pre Alpha"); // JFrame declared here and as static so that ObjELMWindow can refer to it
     static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
     
     public void MainWindowFunct() {
@@ -169,9 +169,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JLabel dateSpinnerLabel = new JLabel("DisplayDate");
         menubar.add(dateSpinnerLabel);
         
-        
-        
-        
         mainframe.setJMenuBar(menubar);
         // End of Overall MenuBar
         
@@ -243,21 +240,17 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     resetProject();
                 }
             }
-
             case "Open" -> {
 
                 ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow();
                 projOpenExistingWindow.ProjNewWindowFunc(); // all of the loading happends in the window
                 flowChart.repaint();
-
             }
             case "Save" -> {
                 saveProject();
             }
-
             case "PSettings" -> {
                 ProjSettingWindow projSettingWindow = new ProjSettingWindow();
-                projSettingWindow.projSettingWindowFunc();
             }
             case "AddObjELM" -> {
                 requestedAction = "AddObjELM";
@@ -310,10 +303,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                                     @Override
                                     public void windowClosed(WindowEvent e){
                                         //NOT CLEAR HOW DATA IS TRANSFERED FROM buffOBJ into the active list. 
-                                        //will want to add a step here to confirm changes and set has changed flag
-                                        
-                                    }
-                                
+                                        //will want to add a step here to confirm changes and set has changed flag                                     
+                                    }     
                                 });
                             }
                             break;
