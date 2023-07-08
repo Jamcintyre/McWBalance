@@ -45,7 +45,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     static int viewY;
     static int startMouseX;
     static int startMouseY;
-    static final double PAN_SPEED = 0.75;
+    static final double PAN_SPEED = 0.85; // if set to 1 its gittery
     static final double ZOOM_MIN = 0.05;
     static final double ZOOM_MAX = 2;
     static final double ZOOM_STEP = 0.05;
@@ -401,7 +401,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         else if (isViewPanning){
             int mouseMoveX = mme.getX() - startMouseX;
             int mouseMoveY = mme.getY() - startMouseY;
-            int panX = viewX + (int)(mouseMoveX*PAN_SPEED);
+            int panX = viewX - (int)(mouseMoveX*PAN_SPEED);
             if (panX < 0){
                 panX = 0;
             }
@@ -409,7 +409,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 panX = flowChartScPane.getHorizontalScrollBar().getMaximum();
             }
             flowChartScPane.getHorizontalScrollBar().setValue(panX);
-            int panY = viewY + (int)(mouseMoveY*PAN_SPEED);
+            int panY = viewY - (int)(mouseMoveY*PAN_SPEED);
             if (panY < 0){
                 panY = 0;
             }

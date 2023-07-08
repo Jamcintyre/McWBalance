@@ -34,8 +34,8 @@ public class Preferences {
                 DEFAULT_BACKGROUND_COLOR = Color.DARK_GRAY;
             }
             case NINETIES_MODE ->{
-                DEFAULT_DRAW_COLOR = Color.WHITE;
-                DEFAULT_BACKGROUND_COLOR = Color.BLUE;
+                DEFAULT_DRAW_COLOR = new Color(0,136,255);
+                DEFAULT_BACKGROUND_COLOR = new Color(0, 0, 170);
             }       
         }
     }

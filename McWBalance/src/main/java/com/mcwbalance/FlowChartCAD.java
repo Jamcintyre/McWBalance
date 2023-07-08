@@ -78,6 +78,8 @@ public class FlowChartCAD extends JComponent{
     Color defaultBGColor = Preferences.DEFAULT_BACKGROUND_COLOR;
     Color SELECTED = new Color(153,209,255);
     
+    private boolean isPageOutlineVisible = false; 
+    
     private final int minLineLength = 25; // used to set stublines from objects
     
     private final int vlableoffset = 5; 
@@ -118,12 +120,14 @@ public class FlowChartCAD extends JComponent{
             for (int irow = 0; irow < NUMBER_OF_SHEETS_VERTICAL; irow ++){
                 osetX = 1;
                 for (int icol = 0; icol < NUMBER_OF_SHEETS_HORIZONTAL; icol ++){
-                    g2.setColor(Color.LIGHT_GRAY);
-                    g2.setStroke(THIN_LINE);
-                    g2.drawRect(osetX - 1, osetY - 1, 
-                            TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH+2, 
-                            TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT+2);
-
+                    
+                    if(isPageOutlineVisible){
+                        g2.setColor(Color.LIGHT_GRAY);
+                        g2.setStroke(THIN_LINE);
+                        g2.drawRect(osetX - 1, osetY - 1, 
+                                TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH+2, 
+                               TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT+2);
+                    }
                     g2.setColor(defaultDrawColor);
                     g2.setStroke(new BasicStroke(TitleBlockTabloidFigure.THICK_LINE_WIDTH));
                     g2.drawRect(
