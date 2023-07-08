@@ -139,8 +139,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenu menusolve = new JMenu("Solve");
         menufile.setMnemonic(KeyEvent.VK_S);
         
-        JMenuItem menusolvesall = new JMenuItem("Solve All", KeyEvent.VK_A); 
-        menusolvesall.setActionCommand("SolveAll"); // Event trigger to make new project
+        JMenuItem menusolvesall = new JMenuItem("Solve", KeyEvent.VK_A); 
+        menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
         menusolvesall.addActionListener(this);
         menusolve.add(menusolvesall);
         
@@ -261,6 +261,15 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             case "DeleteObj" -> {
                 requestedAction = "DeleteObj";
             }
+            case "solve" ->{
+                BalanceRun brun;
+                for (int i = 0; i < ProjSetting.balanceRunSettings.length; i++){      
+                brun = new BalanceRun(ProjSetting.balanceRunSettings[i]);
+                
+                }
+                
+            }
+            
         }
     }
 
@@ -420,6 +429,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             
         }
     }
+    
     @Override
     public void mouseWheelMoved(MouseWheelEvent mwe){
         if(mwe.isControlDown()){

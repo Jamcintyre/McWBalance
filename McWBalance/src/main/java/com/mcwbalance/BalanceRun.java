@@ -183,6 +183,12 @@ String result;
         
     }
     
+    public String getResultTabbedString(){
+        StringBuilder resultString = new StringBuilder();
+        
+        return resultString.toString();
+    }
+    
    
     
 }

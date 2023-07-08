@@ -70,6 +70,41 @@ public class CalcBasics {
             }
             return month;
     }
+    
+    /**
+     * Method for identifying which year to assign a numerical day value. Method assumes Day 1 is Jan 1. Method also assumes all years are 365 days, Feb 29 does not exist
+     * this may be adjusted later
+     * @param day any positive day integer greater then 0; 
+     * @return a year number starting at 1.
+     */
+    public static int getYear(int day){
+        return (int)(day/365);
+    }
+    
+    /**
+     * Provides the number of days in a month, month 1 is January, ignores leap years
+     * @param month
+     * @return number of days in a month, will always return 28days for feb, if month is not valid 30 is returned
+     */
+    public static int getDaysInMonth(int month){
+        month = month - (int)(month/12);
+        return switch (month){
+            case 1 -> 31;
+            case 2 -> 28;
+            case 3 -> 31;
+            case 4 -> 30;
+            case 5 -> 31;
+            case 6 -> 30;
+            case 7 -> 31;
+            case 8 -> 31;
+            case 9 -> 30;
+            case 10 -> 31;
+            case 11 -> 30;
+            case 12 -> 31;
+            default -> 30;  
+        };
+    }
+ 
     /**
      * Method for rounding to the preferred number of decimals. Method intended to function equal to Excel's round function
      * @param inValue Value to be rounded
