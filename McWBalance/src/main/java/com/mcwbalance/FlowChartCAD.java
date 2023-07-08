@@ -74,7 +74,8 @@ public class FlowChartCAD extends JComponent{
     BasicStroke FLOW_LINE = new BasicStroke(1);
     BasicStroke THIN_LINE = new BasicStroke(1);
     BasicStroke THICK_LINE = new BasicStroke(3);
-    Color DEFAULT = Color.BLACK;
+    Color defaultDrawColor = Preferences.DEFAULT_DRAW_COLOR;
+    Color defaultBGColor = Preferences.DEFAULT_BACKGROUND_COLOR;
     Color SELECTED = new Color(153,209,255);
     
     private final int minLineLength = 25; // used to set stublines from objects
@@ -98,7 +99,7 @@ public class FlowChartCAD extends JComponent{
     private final int lshadow = 4; // used to size the shaddow box shadow
     private final int spadding = 2; // used to pad bottom of numbers. 
    
-    public static double zoomscale = 0.5; 
+    public static double zoomscale = Preferences.zoomScale; 
     public static int drawdate = -1; 
     
     @Override
@@ -110,7 +111,7 @@ public class FlowChartCAD extends JComponent{
         AffineTransform at = new AffineTransform();
         at.setToScale(zoomscale, zoomscale);
         g2.transform(at);
-        
+        g2.setColor(defaultDrawColor);
         if (titleBlockVisible){
             int osetX = 1;
             int osetY = 1; 
@@ -123,7 +124,7 @@ public class FlowChartCAD extends JComponent{
                             TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH+2, 
                             TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT+2);
 
-                    g2.setColor(TitleBlockTabloidFigure.TITLE_BLOCK_COLOR);
+                    g2.setColor(defaultDrawColor);
                     g2.setStroke(new BasicStroke(TitleBlockTabloidFigure.THICK_LINE_WIDTH));
                     g2.drawRect(
                             TitleBlockTabloidFigure.MAINBOUNDARY_X_LEFT_MARGIN + osetX,
@@ -178,7 +179,7 @@ public class FlowChartCAD extends JComponent{
                     g2.setStroke(THICK_LINE);
                     g2.setColor(SELECTED);
                     g2.drawRect(drawX, drawY, eLMList.eLMs[i].hitBox.width, eLMList.eLMs[i].hitBox.height);
-                    g2.setColor(DEFAULT);
+                    g2.setColor(defaultDrawColor);
                     g2.setStroke(THIN_LINE);
                 }
                 
@@ -187,11 +188,11 @@ public class FlowChartCAD extends JComponent{
                 nameHeightDouble = g.getFontMetrics().getStringBounds(eLMList.eLMs[i].objname, g2).getHeight();
                 nameHeight = (int)nameHeightDouble; // Because for some dumb reason graphics font metrics returns double whent it works in pixels!
                 // Draws text Lable
-                g2.setColor(Color.BLACK); // Draws Shadow that will be drawn over
+                g2.setColor(defaultDrawColor); // Draws Shadow that will be drawn over
                 g2.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding + lshadow, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset + lshadow, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout
-                g2.setColor(Color.WHITE); // whiteout behind text
+                g2.setColor(defaultBGColor); // whiteout behind text
                 g2.fillRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
-                g2.setColor(Color.BLACK); // border around text
+                g2.setColor(defaultDrawColor); // border around text
                 g2.drawRect( eLMList.eLMs[i].x - nameWidth/2 - lpadding, drawY + eLMList.eLMs[i].objSprite.getHeight() + vlableoffset, nameWidth + 2*lpadding, nameHeight + lpadding); // draws whiteout 
                 g2.drawString(eLMList.eLMs[i].objname, eLMList.eLMs[i].x - nameWidth/2, drawY + eLMList.eLMs[i].objSprite.getHeight() + nameHeight + vlableoffset); // Strings draw up from the bottom, opposite of rectangles and images... 
             }
@@ -225,7 +226,7 @@ public class FlowChartCAD extends JComponent{
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
                 fpline.setRoute(eLMrect, tRNList.tRNs[i].inSideFrom, tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo, 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
-                g2.setColor(Color.BLACK);
+                g2.setColor(defaultDrawColor);
                 g2.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints); // draws line
                 g2.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
 
@@ -238,20 +239,20 @@ public class FlowChartCAD extends JComponent{
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
                 fpline.setRoute(tRNrect, tRNList.tRNs[i].outSideFrom, 0, eLMrect, tRNList.tRNs[i].outSideTo, tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
-                g2.setColor(Color.BLACK);// Placeholder of using colour until end arrow is drawn
+                g2.setColor(defaultDrawColor);// Placeholder of using colour until end arrow is drawn
                 g2.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints);
                 g2.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
             }
             // Draws text Lable
-            g2.setColor(Color.WHITE);
+            g2.setColor(defaultBGColor);
             g2.fillRect( tRNList.tRNs[i].x - nameWidth/2, tRNrect.y - vlableoffset - nameHeight, nameWidth, nameHeight); // draws whiteout 
-            g2.setColor(Color.BLACK);
+            g2.setColor(defaultDrawColor);
             g2.drawString(tRNList.tRNs[i].objname, tRNList.tRNs[i].x - nameWidth/2, tRNrect.y - vlableoffset); // Text draws from bottom up!, opposite of other objects
             
             // draws the Box that represents the transfer
-            g2.setColor(Color.WHITE); // Draws Whiteout behind box
+            g2.setColor(defaultBGColor); // Draws Whiteout behind box
             g2.fillRect(tRNrect.x, tRNrect.y, tRNrect.width, tRNrect.height);
-            g2.setColor(Color.BLACK); // will need to size this box to match Normal KP flowsheets
+            g2.setColor(defaultDrawColor); // will need to size this box to match Normal KP flowsheets
             g2.drawRoundRect(tRNrect.x, tRNrect.y, tRNrect.width, tRNrect.height, 5, 5);
             g2.drawLine(tRNrect.x, tRNrect.y + tRNrect.height/3, tRNrect.x+tRNrect.width, tRNrect.y + tRNrect.height/3);
             g2.drawLine(tRNrect.x, tRNrect.y + tRNrect.height*2/3, tRNrect.x+tRNrect.width, tRNrect.y + tRNrect.height*2/3);
@@ -261,7 +262,7 @@ public class FlowChartCAD extends JComponent{
                 g2.setStroke(THICK_LINE);
                 g2.setColor(SELECTED);
                 g2.drawRect(tRNList.tRNs[i].hitBox.x, tRNList.tRNs[i].hitBox.y, tRNList.tRNs[i].hitBox.width, tRNList.tRNs[i].hitBox.height);
-                g2.setColor(DEFAULT);
+                g2.setColor(defaultDrawColor);
                 g2.setStroke(THIN_LINE);
             }
             

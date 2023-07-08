@@ -38,13 +38,6 @@ public class ProjSetting {
     static BalanceRunSetting[] balanceRunSettings; // list of runs
     
 
-    /**
-     * Variable was intended to allow user to select Annual, Monthly or Daily timestep. Will revist once solver is implement 
-     * to see if timesteps greater then 1 day are needed
-     * @deprecated 
-     */
-    static int timeStep;
-    
 
     // Project Limitations
     /**
@@ -79,6 +72,43 @@ public class ProjSetting {
     projectNumber = "NB101-###_#";
     balanceName = "SITE WATER BALANCE";
     runoffCoefficients = new TableRunoffCoefficients();
+        
+    }
+    
+    public static StringBuilder getSaveString(){
+        StringBuilder savestring = new StringBuilder();
+        String nextLine = System.getProperty("line.separator");
+        savestring.append("Client");
+        savestring.append("\t");
+        savestring.append(clientName);
+        savestring.append(nextLine);
+        
+        savestring.append("Project");
+        savestring.append("\t");
+        savestring.append(projectName);
+        savestring.append(nextLine);
+        
+        savestring.append("Project No");
+        savestring.append("\t");
+        savestring.append(projectNumber);
+        savestring.append(nextLine);
+        
+        savestring.append("Balance Name");
+        savestring.append("\t");
+        savestring.append(balanceName);
+        savestring.append(nextLine);
+        
+        savestring.append("Runoff Coefficients");
+        savestring.append(nextLine);
+        savestring.append(runoffCoefficients.toString());
+        savestring.append(nextLine);
+        
+        return savestring;
+    }
+    
+    public static void setFromString(String setString){
+        
+        
         
     }
 }

@@ -4,6 +4,7 @@
 
 package com.mcwbalance;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -36,16 +37,21 @@ public class McWBalance {
         }
         try {
             // Set System L&F
-            UIManager.setLookAndFeel(
-                    UIManager.getSystemLookAndFeelClassName());
+
+            //UIManager.setLookAndFeel                     UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+            Preferences.setDefaultColors(Preferences.DARK_MODE);
+            
         } catch (UnsupportedLookAndFeelException e) {
             // handle exception
+            /*
         } catch (ClassNotFoundException e) {
             // handle exception
         } catch (InstantiationException e) {
             // handle exception
         } catch (IllegalAccessException e) {
             // handle exception
+            */
         }
 
          

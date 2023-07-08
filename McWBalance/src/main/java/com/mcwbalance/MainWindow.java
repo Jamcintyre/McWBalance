@@ -172,7 +172,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         mainframe.setJMenuBar(menubar);
         // End of Overall MenuBar
         
-        flowChartPanel.setBackground(Color.white);
+        flowChartPanel.setBackground(Preferences.DEFAULT_BACKGROUND_COLOR);
         flowChartPanel.addMouseListener(this);
         flowChartPanel.addMouseMotionListener(this); // added to allow for moving of Object
         // keyboard binding - Doesn't work yet, suspect because focus isn;t pulled away from jSPinner
