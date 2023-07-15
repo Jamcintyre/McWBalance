@@ -12,16 +12,6 @@ DataRunoffCoeff rc; // used to store project monthly runoff coefficients.
 int nLandCovers;
 
 
-BalanceResult[] transfer;
-BalanceResult[][] runoff; // needs to track a seperate runoff for each landcover type + a total
-BalanceResult[] directprecip;
-BalanceResult[] evaporation;
-BalanceResult[] loss;
-BalanceResult[] changeinstorage;
-
-BalanceVolumeTracker[] waterVol;
-BalanceVolumeTracker[] solidsVol;
-BalanceVolumeTracker[] totalVol;
 
 
 String[] runSolveOrdType; // can be TRN or ELM
@@ -35,34 +25,8 @@ String result;
         duration = s.duration;
         climate = s.climate;
         rc = s.rc; // used to store project monthly runoff coefficients.
-
-        
-        int i; 
-        int j;
-        for (i = 0; i < s.ntransfer; i++){
-            transfer[i] = new BalanceResult(s.duration, s.transferList[i]);
-        }
-        for (i = 0; i < s.nrunoff; i++){
-            for (j = 0; j < rc.nLandCovers + 1; j++){
-                runoff[i][j] = new BalanceResult(s.duration, (s.runoffList[i] + " " + rc.landCovers[j].getCoverName()));
-            }
-            runoff[i][rc.nLandCovers + 1] = new BalanceResult(s.duration, (s.runoffList[i] + " Total"));
-        }
-        for (i = 0; i < s.ndirectprecip; i++){
-            directprecip[i] = new BalanceResult(s.duration, s.directprecipList[i]);
-        }
-        for (i = 0; i < s.nevaporation; i++){
-            evaporation[i] = new BalanceResult(s.duration, s.evaporationList[i]);
-        }
-        for (i = 0; i < s.nloss; i++){
-            loss[i] = new BalanceResult(s.duration, s.lossList[i]);
-        }
-        for (i = 0; i < s.nstorage; i++){
-            changeinstorage[i] = new BalanceResult(s.duration, s.storageList[i]);
-        }
         runSolveOrdType = s.runSolveOrdType;
         runSolveOrdIndex = s.runSolveOrdIndex;
-        
     }
     
     
@@ -81,6 +45,15 @@ String result;
         int runArea;
         int pondAreaSubtraction = 0;
         
+        String resultName; 
+        
+        for (i = 0; i < tRN.count; i++){
+            resultName = tRN.tRNs[i].objname; 
+            tRN.tRNs[i].result = new BalanceResult(duration, resultName);
+        }
+        
+        
+        
         for (day = 1; day < duration; day++){ // must start at 1 since solver will need previous days numbers to work;
             // set month;...
             month = CalcBasics.getMonth(day);
@@ -90,7 +63,7 @@ String result;
                 obj = runSolveOrdIndex[i];
                 switch(runSolveOrdType[i]){
                     case"TRN": // Transfers solved by themselves assume max pumping rate. otherwise must be resolved by element; 
-                        transfer[obj].daily[day] = tRN.tRNs[obj].getMaxPumpRate(day);
+                        tRN.tRNs[i].result.daily[day] = tRN.tRNs[obj].getMaxPumpRate(day);
                         
                         // if Contains Solids need to add a tonnage of solids
                         

@@ -39,7 +39,6 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     private static final int MAX_READLOOP_ITERATIONS = 100; // sets a limit in event inData has too many lines
     private static final int MIN_FILE_LENGTH = 13; // this is the minimum number of lines for a save string to be completed
     
-    // Note that Results will be stored to a seperate class, that will be Sized and Generated at Solve Time
     /**
      * Used to select what side the flow arrow gets drawn from
      */
@@ -50,7 +49,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         "BOTTOM"
     };
     /**
-     * Used to select calculation menthod for the transfer
+     * Used to select calculation method for the transfer
      */
     public static String[] objSubTypesAllowed = { // Note list also exitss in IconLibrary
         "FIXED RATE PUMPING", // transfer rate based on pump rates // these will be first to solve
@@ -71,7 +70,8 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     
     public int stateTime[] = new int[ProjSetting.MAX_STATES];
     public String state[] = new String[ProjSetting.MAX_STATES];
-
+    
+    public ResultFlow result; 
     
     ObjTRN(){
         x = 0;
@@ -96,11 +96,10 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         stateTime[0] = 0;
         state[0] = "ACTIVE";
         
-        
         plotVolperDay = 0.0;
         plotVolperHr = 0.00;
         plotVolperAnnum = 0; 
-
+        
     }
         ObjTRN(int inX, int inY, int number){
         x = inX;

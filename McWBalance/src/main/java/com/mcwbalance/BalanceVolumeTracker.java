@@ -5,7 +5,7 @@
 package com.mcwbalance;
 
 /**
- *
+ * @deprecated 
  * @author amcintyre
  */
 public class BalanceVolumeTracker {

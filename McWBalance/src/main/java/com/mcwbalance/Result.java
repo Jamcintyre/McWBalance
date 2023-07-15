@@ -5,20 +5,20 @@
 package com.mcwbalance;
 
 /**
- * @deprecated 
+ *
  * @author Alex
  */
-public class BalanceResultLevel{
-    
-    public double[] daily; // this will be a memory hog, may switch to storing as int or shifted int if memory becomes a limitation
-    public double[] monthly; // Any value more then daily is stored as int to save memory
-    public double[] annual;
-    public String name;
-    public String units;
-    private boolean avgsCalculated = false;
-    
-    BalanceResultLevel(int totalDays, String inname){
-       daily = new double[totalDays +1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
+public abstract class Result {
+
+    double[] daily; // this will be a memory hog, may switch to storing as int or shifted int if memory becomes a limitation
+    double[] monthly; // Any value more then daily is stored as int to save memory
+    double[] annual;
+    String name;
+    String units;
+    boolean calculated; 
+
+    Result(int totalDays, String inname, String units){
+        daily = new double[totalDays +1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
         for (int i = 0; i < daily.length; i++){
             daily[i] = 0;
         }
@@ -27,34 +27,11 @@ public class BalanceResultLevel{
         monthly = new double[months + 1];
         annual = new double[years +1];
         name = inname;
-        units = "m";
+        this.units = units;
+        calculated = false;
     }
-    
-    /**
-     * NOTE WILLL NEED TO GET THIS TO figure out partial years. 
-     */
-    private void calculateAvgs(){
-        int d;
-        int m;
-        int y;
-        for (d = 1; d < daily.length; d ++){ // day 0 is left out of sums
-            m = CalcBasics.getMonth(d);
-            y = CalcBasics.getYear(d);
-            
-            monthly[m] = (int)(monthly[m] + daily[d]);
-            annual[y] = (int)(annual[y] + daily[d]);
-        }
-        
-        for (m = 0; m < monthly.length; m ++){
-            monthly[m] = monthly[m] / CalcBasics.getDaysInMonth(m);
-        }
-        for (y = 0; m < annual.length; y ++){
-            annual[y] = annual[y] / 365;
-        }
-        
-        avgsCalculated = true;
-    }
-    
+    abstract void calculate(); 
+   
     
     public String toTabbedStringDaily(){
         StringBuilder resultString = new StringBuilder();
@@ -62,7 +39,7 @@ public class BalanceResultLevel{
         resultString.append("\t");
         resultString.append("(");
         resultString.append(units);
-        resultString.append(")");
+        resultString.append("/day)");
         resultString.append("\t");
         for (int i = 0; i < daily.length; i++){
             resultString.append("\t");
@@ -71,17 +48,16 @@ public class BalanceResultLevel{
         return resultString.toString();
     }
     
-    
     public String toTabbedStringMonthly(){
-        if (!avgsCalculated){
-            calculateAvgs();
+        if (!calculated){
+            calculate();
         }
         StringBuilder resultString = new StringBuilder();
         resultString.append(name);
         resultString.append("\t");
         resultString.append("(");
         resultString.append(units);
-        resultString.append(")");
+        resultString.append("/month)");
         resultString.append("\t");
         for (int i = 0; i < monthly.length; i++){
             resultString.append("\t");
@@ -92,15 +68,15 @@ public class BalanceResultLevel{
     
     
      public String toTabbedStringAnnual(){
-        if (!avgsCalculated){
-            calculateAvgs();
+        if (!calculated){
+            calculate();
         }
         StringBuilder resultString = new StringBuilder();
         resultString.append(name);
         resultString.append("\t");
         resultString.append("(");
         resultString.append(units);
-        resultString.append(")");
+        resultString.append("/year)");
         resultString.append("\t");
         for (int i = 0; i < annual.length; i++){
             resultString.append("\t");
@@ -108,5 +84,4 @@ public class BalanceResultLevel{
         }
         return resultString.toString();
     }
-    
 }

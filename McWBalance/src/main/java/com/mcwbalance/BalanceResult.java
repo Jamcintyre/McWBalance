@@ -9,6 +9,13 @@ public String name;
 public String units;
 private boolean sumsCalculated = false;
 
+
+
+/**
+ * @deprecated 
+ * @param totalDays
+ * @param inname 
+ */
     BalanceResult(int totalDays, String inname){
         daily = new double[totalDays +1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
         for (int i = 0; i < daily.length; i++){
