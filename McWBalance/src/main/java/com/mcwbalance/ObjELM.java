@@ -95,6 +95,23 @@ class ObjELM {
 
     public int stateTime[] = new int[ProjSetting.MAX_STATES];
     public String state[] = new String[ProjSetting.MAX_STATES];
+    
+    public ResultLevel resultWaterLevel;
+    public ResultLevel resultSolidsLevel;
+    
+    public ResultFlow resultWaterWithSolids;
+    public ResultFlow resultSolidsInflow;
+    
+    
+    public ResultFlow resultRunoff[];
+    public ResultFlow resultDirectPrecip;
+    
+    public ResultFlow resultEvaporation;
+    
+    public ResultFlow resultSeepage;
+    
+    
+    
 
     ObjELM() {
         this(0, 0, 0);
