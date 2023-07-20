@@ -26,14 +26,23 @@ class ObjELM {
     public Boolean hasCatchment;
     public int nCatchments;
     public DataCatchment[] Catchment = new DataCatchment[ProjSetting.MAX_LAND_COVERS + 1]; // needs a totalizer value.
+    /**
+     * @deprecated 
+     */
     public int indexRunoffTracker;
     public Boolean hasSolids;
+    /**
+     * @deprecated 
+     */
     public int indexSolidsTracker;
     public int oSetXVoids;
     public int oSetYVoids;
     public Boolean hasStorage;
     public Boolean showStorage;
-    public int indexStorageTracker; // used to also index Direct Precips and Evaps; 
+    /**
+     * @deprecated 
+     */
+    public int indexStorageTracker; // used to also index Direct Precips and Evaps; may be depreciated? 
     public int oSetXStorage;
     public int oSetYStorage;
     
@@ -99,15 +108,14 @@ class ObjELM {
     public ResultLevel resultWaterLevel;
     public ResultLevel resultSolidsLevel;
     
-    public ResultFlow resultWaterWithSolids;
-    public ResultFlow resultSolidsInflow;
+    public ResultStorageVolume resultTotalVolume;
+    public ResultStorageVolume resultPondVolume;
     
+    public ResultFlow resultSolidsInflow;
     
     public ResultFlow resultRunoff[];
     public ResultFlow resultDirectPrecip;
-    
     public ResultFlow resultEvaporation;
-    
     public ResultFlow resultSeepage;
     
     
@@ -212,6 +220,27 @@ class ObjELM {
         
         
         return saveString;
+    }
+    /**
+     * method to initialize result variables to current project duration and names
+     */
+    public void initializeResults() {
+        resultWaterLevel = new ResultLevel(ProjSetting.duration, objname + " Water Level");
+        resultSolidsLevel = new ResultLevel(ProjSetting.duration, objname + " Solids Level");
+        resultSolidsInflow = new ResultFlow(ProjSetting.duration, objname + " Solids Inflow");
+        
+        resultTotalVolume = new ResultStorageVolume(ProjSetting.duration, objname + " Total Stored Volume");
+        
+        resultPondVolume = new ResultStorageVolume(ProjSetting.duration, objname + " Pond Volume");
+        
+        resultRunoff = new ResultFlow[ProjSetting.runoffCoefficients.getLength()];
+        for (int i = 0; i < resultRunoff.length; i++) {
+            resultRunoff[i] = new ResultFlow(ProjSetting.duration, objname + ProjSetting.runoffCoefficients.getLandRunoffName(i));
+        }
+        resultDirectPrecip = new ResultFlow(ProjSetting.duration, objname + " Direct Precip");
+        
+        resultEvaporation = new ResultFlow(ProjSetting.duration, objname + " Evaporation");
+        resultSeepage = new ResultFlow(ProjSetting.duration, objname + " Seepage");
     }
     
     public void setFromString(String inData){

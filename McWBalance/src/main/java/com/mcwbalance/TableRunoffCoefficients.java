@@ -140,12 +140,18 @@ public class TableRunoffCoefficients extends AbstractTableModel{
         return saveString.toString();
     }
     
-    public void setFromString(String input){
-         // Not Implemented yet 
+    public int getLength(){
+        return length; 
+    }
+    
+    public String getLandRunoffName(int index){
+        return " " + (String)data[index][0] + " Runoff";
     }
     
     
-    
+    public void setFromString(String input){
+         // Not Implemented yet 
+    }
     
     
 }

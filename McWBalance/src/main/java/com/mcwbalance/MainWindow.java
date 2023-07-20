@@ -262,12 +262,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 requestedAction = "DeleteObj";
             }
             case "solve" ->{
-                BalanceRun brun;
-                for (int i = 0; i < ProjSetting.balanceRunSettings.length; i++){      
-                brun = new BalanceRun(ProjSetting.balanceRunSettings[i]);
-                
-                }
-                
+                for (int i = 0; i < ProjSetting.balanceRunSettings.length; i++) {
+                    flowChart.solveBalance(ProjSetting.balanceRunSettings[i]);
+                }          
             }
             
         }

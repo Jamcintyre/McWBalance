@@ -425,4 +425,117 @@ public class FlowChartCAD extends JComponent{
        }
        return -1;  
    }
+   
+   
+   /**
+    * This is the method that calculates the balance given a balance run setting
+    * @param s 
+    */
+   public void solveBalance(BalanceRunSetting s){
+       
+       int obj; 
+        int i;
+        int j;
+        int day;
+        int dayofyear;
+        int sodpondArea;
+        double sodTotalVol; // tracker for start of Day Volume used for Pond area calcs
+        int month;
+        double rainandmelt;
+        double totaler;
+        int runArea;
+        int pondAreaSubtraction = 0;
+        
+        //Constructs result arrays
+        tRNList.initializeResults();
+        eLMList.initializeResults();
+        
+        
+        
+        for (day = 1; day < s.duration; day++){ // must start at 1 since solver will need previous days numbers to work;
+            // set month;...
+            month = CalcBasics.getMonth(day);
+            
+            
+            for (i = 0; i < eLMList.count; i++){
+                // resets Pond Areas
+          
+                if (eLMList.eLMs[i].hasStorage) {
+                    sodTotalVol = eLMList.eLMs[i].resultTotalVolume.daily[day - 1];
+                    sodpondArea = eLMList.eLMs[i].dAC.getAreafromVol((int) sodTotalVol);
+                } else {
+                    sodpondArea = 0;
+                }
+
+                // Direct Precip and Evaporation
+                if (eLMList.eLMs[i].hasStorageEvapandPrecip) {
+                    eLMList.eLMs[i].resultDirectPrecip.daily[day] = s.climate.precip[day] * sodpondArea / 1000;
+                    eLMList.eLMs[i].resultEvaporation.daily[day] = s.climate.evap[day] * sodpondArea / 1000;
+                }
+                // Upstream Runoff
+                        /*
+                        if(eLM.eLMs[obj].hasCatchment){
+                            totaler = 0;
+                            rainandmelt = climate.rain[day] +climate.melt[day];
+                            pondAreaSubtraction = sodpondArea;
+                            for (j = 0; j < nLandCovers; j++){
+                                if (pondAreaSubtraction >= eLM.eLMs[obj].Catchment[j].getArea(day)){ // runoff area needs to be trimmed down to not double count the pond
+                                    runArea = 0;     
+                                }else if (pondAreaSubtraction > 0){
+                                    runArea = eLM.eLMs[obj].Catchment[j].getArea(day);
+                                    pondAreaSubtraction = pondAreaSubtraction - runArea;
+                                }else{
+                                    runArea = eLM.eLMs[obj].Catchment[j].getArea(day);
+                                }
+                                runoff[eLM.eLMs[obj].indexRunoffTracker][j].daily[day] = runArea * rainandmelt * rc.landCovers[j].getMonthlyCoeff(month) / 1000;
+                                totaler = totaler + runoff[eLM.eLMs[obj].indexRunoffTracker][j].daily[day];
+                            }
+                            runoff[eLM.eLMs[obj].indexRunoffTracker][nLandCovers + 1].daily[day] = totaler; 
+                            
+                        }
+                        */
+                    // if Contains Solids need to add a tonnage of solids
+                
+                
+                
+            }
+            
+            
+            
+            
+            
+            
+            for (i = 0; i < s.runTRNSolveOrdIndex.length; i++){
+                obj = s.runTRNSolveOrdIndex[i];
+                switch(s.runTRNSolveOrdType[i]){
+                    case"FIXED": // Transfers solved by themselves assume max pumping rate. otherwise must be resolved by element; 
+                        tRNList.tRNs[i].result.daily[day] = tRNList.tRNs[obj].getMaxPumpRate(day);
+                        
+                        // Manditory Inflow Transfers
+
+                        // Manditory Outflow Transfers
+                        
+                        // Seepage  // can be handeled as a manditory transfer if varies by time. 
+
+                        break;
+                    case "SOLIDS":
+                        
+                        // Solids Storage
+                                            
+                        // Void Losses
+                        
+                        break;
+                    case "ONDEMAND":
+
+                        
+                        // Optional Inflow Transders
+                        
+                        // Optional Ouflow Transfers
+                        
+                        break;
+
+                }
+            }
+        }
+    }
 }

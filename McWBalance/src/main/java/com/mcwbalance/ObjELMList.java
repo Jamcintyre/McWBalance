@@ -83,6 +83,7 @@ public class ObjELMList {
     public void setObjELM(int inNumber, ObjELM inObjELM){
         eLMs[inNumber] = inObjELM;
     }
+    
     /**
      * @deprecated Superceeded by ObjELM individual save strings
      * This Method defines and populates the format of the Portion of the Save file containing the ELM list.
@@ -97,6 +98,7 @@ public class ObjELMList {
         }
         return getCopyString(eLMIndicies);
        }
+    
     /**
      * @deprecated Superceeded by ObjELM individual save strings
      * This Method defines and populates the format save or copy data pulled from the ELM list. Method allow individual
@@ -124,6 +126,15 @@ public class ObjELMList {
             
         }
         return copyString;
+    }
+    
+    /**
+     * calls on each ELM to construct its result arrays.
+     */
+    public void initializeResults(){
+        for (int i = 0; i < count; i++){
+            eLMs[i].initializeResults();
+        }
     }
     
     

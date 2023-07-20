@@ -101,7 +101,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         plotVolperAnnum = 0; 
         
     }
-        ObjTRN(int inX, int inY, int number){
+    ObjTRN(int inX, int inY, int number) {
         x = inX;
         y = inY;
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
@@ -267,6 +267,13 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     }
     
     /**
+     * method to call constructor on result variables
+     */
+    public void initializeResults() {
+        result = new ResultFlow(ProjSetting.duration, objname);
+    }
+
+    /**
      * Populates the element from a tab delmited list of data 
      *
      * @param inData Recieves a string that is formatted identically to the getString method
@@ -330,6 +337,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         setHitBox();
         
     }
+    
     /**
      * updates object hitbox, called during a setFromString or other
      * 
@@ -337,7 +345,6 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     public void setHitBox(){
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
         hitBox.setLocation(x - hitBox.getSize().width/2, y - hitBox.getSize().height/2);
-
     }
     
     /**
@@ -358,4 +365,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         }
         ProjSetting.hasChangedSinceSave = true;
     }
+
+   
+
 }

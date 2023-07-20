@@ -200,6 +200,12 @@ public class ObjTRNList {
         return nameListIndex;
     }
     
+    public void initializeResults(){
+        for (int i = 0; i < count; i ++){
+            tRNs[i].initializeResults();
+        }
+    }
+    
    public void setInflow(int inELM, int inTRN){
         tRNs[inTRN].inObjNumber = inELM;
     }
@@ -235,6 +241,8 @@ public class ObjTRNList {
         }
         count --;
     }
+    
+    
    
            
            
