@@ -26,6 +26,11 @@ public class ProjSetting {
     
     static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
     
+    
+    
+    static TableClimateScenarios climateScenariosTable = new TableClimateScenarios(1);
+    static DataClimate[] climateScenarios;
+    
     static ImageLib imageLib = new ImageLib(); 
     
     static boolean hasChangedSinceSave = true; // Debug, will update to false
@@ -66,13 +71,15 @@ public class ProjSetting {
     /**
      * This method replaces the constructor as this class is fully static
      */
-    static void resetDefaults(){
-    clientName = "CLIENT NAME";
-    projectName = "PROJECT NAME";
-    projectNumber = "NB101-###_#";
-    balanceName = "SITE WATER BALANCE";
-    runoffCoefficients = new TableRunoffCoefficients();
+    static void resetDefaults() {
+        clientName = "CLIENT NAME";
+        projectName = "PROJECT NAME";
+        projectNumber = "NB101-###_#";
+        balanceName = "SITE WATER BALANCE";
+        runoffCoefficients = new TableRunoffCoefficients();
+        climateScenariosTable = new TableClimateScenarios(1);
         
+
     }
     
     public static StringBuilder getSaveString(){

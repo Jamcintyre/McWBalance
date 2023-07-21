@@ -1,7 +1,6 @@
 package com.mcwbalance;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -113,7 +112,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenu menuedit = new JMenu("Edit");
         menuedit.setMnemonic(KeyEvent.VK_E);
         
-        
         JMenuItem menueditdelete = new JMenuItem("Delete Object", KeyEvent.VK_D);
         menueditdelete.setActionCommand("DeleteObj");
         menueditdelete.addActionListener(this);
@@ -136,8 +134,14 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         //End of Edit Menu
         
          // Start of Solver Menu
-        JMenu menusolve = new JMenu("Solve");
+        JMenu menusolve = new JMenu("Calculation Settings");
         menufile.setMnemonic(KeyEvent.VK_S);
+        
+        JMenuItem menuclimate = new JMenuItem("Climate", KeyEvent.VK_C); 
+        menuclimate.setActionCommand("ClimateSetting"); // Event trigger to make new project
+        menuclimate.addActionListener(this);
+        menusolve.add(menuclimate);
+        
         
         JMenuItem menusolvesall = new JMenuItem("Solve", KeyEvent.VK_A); 
         menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
@@ -145,7 +149,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         menusolve.add(menusolvesall);
         
         menubar.add(menusolve);
-        //End of File Menu
+        //End of Solver Menu
         
         JSpinner zoomSpinner = new JSpinner(zoomSpinnerModel);
         zoomSpinner.setMaximumSize(new Dimension(50, 30));
@@ -260,6 +264,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             }
             case "DeleteObj" -> {
                 requestedAction = "DeleteObj";
+            }
+            case "ClimateSetting" -> {
+                JFrame climateSettingWindow = new DataClimateSettingWindow(this);
             }
             case "solve" ->{
                 for (int i = 0; i < ProjSetting.balanceRunSettings.length; i++) {

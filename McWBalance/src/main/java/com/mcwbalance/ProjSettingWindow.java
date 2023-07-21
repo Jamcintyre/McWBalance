@@ -37,7 +37,7 @@ public class ProjSettingWindow extends JDialog{
         
         super(MainWindow.mainframe, "Project Settings", true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(MainWindow.mainframe);
         JTabbedPane tabPane = new JTabbedPane();
         
         //Beginning of Tab 1 General
