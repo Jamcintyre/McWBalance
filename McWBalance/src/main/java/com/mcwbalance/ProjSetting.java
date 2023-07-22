@@ -26,10 +26,7 @@ public class ProjSetting {
     
     static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
     
-    
-    
-    static TableClimateScenarios climateScenariosTable = new TableClimateScenarios(1);
-    static DataClimate[] climateScenarios;
+    static TableClimateScenarios climateScenarios = new TableClimateScenarios(1);
     
     static ImageLib imageLib = new ImageLib(); 
     
@@ -77,7 +74,7 @@ public class ProjSetting {
         projectNumber = "NB101-###_#";
         balanceName = "SITE WATER BALANCE";
         runoffCoefficients = new TableRunoffCoefficients();
-        climateScenariosTable = new TableClimateScenarios(1);
+        climateScenarios = new TableClimateScenarios(1);
         
 
     }

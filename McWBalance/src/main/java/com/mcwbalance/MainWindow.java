@@ -1,5 +1,6 @@
 package com.mcwbalance;
 
+
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
@@ -72,7 +73,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         // Overall Menu Bar
         JMenuBar menubar = new JMenuBar();
         // Start of File Menu
-        JMenu menufile = new JMenu("File");
+        JMenu menufile = new JMenu(McWBalance.langRB.getString("FILE"));
         menufile.setMnemonic(KeyEvent.VK_F);
         
         JMenuItem menufilenew = new JMenuItem("New Project", KeyEvent.VK_N); 

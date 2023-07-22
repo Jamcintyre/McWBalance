@@ -12,26 +12,25 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TableClimateScenarios extends AbstractTableModel{
     private static final String[] columnNames = {"Scenario", "Description","Avg Ann Precip","Min Ann Precip","Max Ann Precip", "Yr 1 Precip"};
-    private static final int NUMBER_OF_COLUMNS = 6;
+    public static final int NUMBER_OF_COLUMNS = 6;
     
-    String[] scenario; 
     String[] description;
     double[] aaprecip;
     double[] minprecip;
     double[] maxprecip;
     double[] yr1precip;
+    DataClimate[] climateScenarios; 
     
     TableClimateScenarios(int size){
-        scenario = new String[size]; 
-        description = new String[size]; 
         aaprecip = new double[size];
         minprecip = new double[size];
         maxprecip = new double[size];
         yr1precip = new double[size];
+        climateScenarios = new DataClimate[size];
         for (int i = 0; i < size; i++) {
-
-            scenario[i] = String.valueOf(i);
-            description[i] = "new";
+            climateScenarios[i] = new DataClimate(1);
+            
+            climateScenarios[i].description = "new";
             aaprecip[i] = 0;
             minprecip[i] = 0;
             maxprecip[i] = 0;
@@ -41,15 +40,13 @@ public class TableClimateScenarios extends AbstractTableModel{
         
     }
     TableClimateScenarios(DataClimate[] climates){
+        climateScenarios = climates; 
         int size = climates.length;
-        scenario = new String[size]; 
-        description = new String[size]; 
         aaprecip = new double[size];
         minprecip = new double[size];
         maxprecip = new double[size];
         yr1precip = new double[size];
-    
-    
+
     }
         
         
@@ -59,10 +56,10 @@ public class TableClimateScenarios extends AbstractTableModel{
     public Object getValueAt(int row, int col){
         switch(col){
             case 0 -> {
-                return scenario[row];
+                return row;
             }
             case 1 -> {
-                return description[row];
+                return climateScenarios[row].description;
             }
             case 2 -> {
                 return aaprecip[row];
@@ -85,7 +82,7 @@ public class TableClimateScenarios extends AbstractTableModel{
     }
     @Override 
     public int getRowCount(){
-        return scenario.length;
+        return climateScenarios.length;
     }
     @Override 
     public String getColumnName(int col){
@@ -99,6 +96,10 @@ public class TableClimateScenarios extends AbstractTableModel{
     @Override 
     public boolean isCellEditable(int rowIndex, int columnIndex){
         return false;
+        
+    }
+    
+    public void removeRow(int rowIndex){
         
     }
 

@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,26 +16,46 @@ import javax.swing.JTable;
  * @author Alex
  */
 public class DataClimateSettingWindow extends JFrame{
-    
+    private final int TABLE_FIRST_COL_WIDTH = 50;
+    private final int TABLE_SECOND_COL_WIDTH = 150;
+    private final int TABLE_OTHER_COL_WIDTH = 80;
+    private final int TABLE_ROW_HEIGHT = 20;
+    private final Dimension TABLE_PREF_DIMENSION = new Dimension(TABLE_FIRST_COL_WIDTH+TABLE_SECOND_COL_WIDTH+(TableClimateScenarios.NUMBER_OF_COLUMNS-1)*TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*5);
     
     DataClimateSettingWindow(JFrame owner){
         
-        super(java.util.ResourceBundle.getBundle("com/mcwbalance/Language").getString("CLIMATE SETTINGS"));
+        super("Climate Settings");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(owner);
         
-        JTable table = new JTable(ProjSetting.climateScenariosTable);
-        JScrollPane scrollPane = new JScrollPane(table);
-        JPanel tablePanel = new JPanel();
-        tablePanel.add(scrollPane);
-        this.add(tablePanel); 
+        JTable table = new JTable(ProjSetting.climateScenarios);
         
-        JButton addClimate = new JButton(java.util.ResourceBundle.getBundle("com/mcwbalance/Language").getString("ADD CLIMATE SCENARIO"));
+        table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
+        table.getColumnModel().getColumn(1).setPreferredWidth(TABLE_SECOND_COL_WIDTH);
+        for (int i = 2; i < TableClimateScenarios.NUMBER_OF_COLUMNS; i ++){
+            table.getColumnModel().getColumn(i).setPreferredWidth(TABLE_OTHER_COL_WIDTH);
+        }
+        table.setRowHeight(TABLE_ROW_HEIGHT);
+        table.setPreferredScrollableViewportSize(TABLE_PREF_DIMENSION);
+        JScrollPane scrollPane = new JScrollPane(table);
+        JPanel panel = new JPanel();
+        panel.add(scrollPane);
+        
+        JButton addClimate = new JButton("Add Climate Scenario");
         addClimate.addActionListener(l ->{
             DataClimateImportWindow importWindow = new DataClimateImportWindow(this);
         
         });
-        this.add(addClimate);
+        JButton removeClimate = new JButton("remove Climate Scenario");
+        addClimate.addActionListener(l ->{
+            table.getSelectedRow();
+            DataClimateImportWindow importWindow = new DataClimateImportWindow(this);
+        });
+        panel.add(addClimate);
+        
+        
+        this.add(panel); 
+        
         this.pack();
         this.setVisible(true);
         

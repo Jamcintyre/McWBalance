@@ -8,6 +8,8 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -26,6 +28,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class McWBalance {
     static BufferedImage mainIcon30;
     public static String FILE_EXTENSION = "mcbl";
+    public static String LANGUAGE_RESOURCE = "resources/Language";
+    public static Locale currentLocale = new Locale("en");
+    
+    public static ResourceBundle langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
+    
     
     public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File",FILE_EXTENSION);
 
@@ -54,9 +61,6 @@ public class McWBalance {
             */
         }
 
-         
-         
-         
          
         System.out.println("McBalance Version " + ProjSetting.verInfo + " is loading");
         MainWindow mainWin = new MainWindow();
