@@ -76,31 +76,31 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JMenu menufile = new JMenu(McWBalance.langRB.getString("FILE"));
         menufile.setMnemonic(KeyEvent.VK_F);
         
-        JMenuItem menufilenew = new JMenuItem("New Project", KeyEvent.VK_N); 
-        menufilenew.setActionCommand("New"); // Event trigger to make new project
+        JMenuItem menufilenew = new JMenuItem(McWBalance.langRB.getString("NEW_PROJECT"), KeyEvent.VK_N); 
+        menufilenew.setActionCommand("new"); // Event trigger to make new project
         menufilenew.addActionListener(this);
         menufilenew.setIcon(iconNewProject);
         menufile.add(menufilenew);
            
-        JMenuItem menufileopen = new JMenuItem("Open Existing Project", KeyEvent.VK_O);
+        JMenuItem menufileopen = new JMenuItem(McWBalance.langRB.getString("OPEN_EXISTING_PROJECT"), KeyEvent.VK_O);
         menufileopen.setActionCommand("Open"); // Event trigger to change project path
         menufileopen.addActionListener(this);
         menufileopen.setIcon(iconOpen);
         menufile.add(menufileopen);
         
-        JMenuItem menufileSave = new JMenuItem("Save Project", KeyEvent.VK_O);
+        JMenuItem menufileSave = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT"), KeyEvent.VK_O);
         menufileSave.setActionCommand("Save"); // Event trigger to change project path
         menufileSave.addActionListener(this);
         menufileSave.setIcon(iconSave);
         menufile.add(menufileSave);
         
-        JMenuItem menufileSaveAs = new JMenuItem("Save As Project", KeyEvent.VK_O);
+        JMenuItem menufileSaveAs = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT_AS"), KeyEvent.VK_O);
         menufileSaveAs.setActionCommand("SaveAs"); // Event trigger to change project path
         menufileSaveAs.addActionListener(this);
         menufileSaveAs.setIcon(iconSaveAs);
         menufile.add(menufileSaveAs);
         
-        JMenuItem menufileProjSettings = new JMenuItem("Project Settings", KeyEvent.VK_S);
+        JMenuItem menufileProjSettings = new JMenuItem(McWBalance.langRB.getString("PROJECT_SETTINGS"), KeyEvent.VK_S);
         menufileProjSettings.setActionCommand("PSettings"); // Event trigger to change project path
         menufileProjSettings.addActionListener(this);
         menufileProjSettings.setIcon(iconSettings);
@@ -110,22 +110,22 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         //End of File Menu
 
         //Start of Edit Menu
-        JMenu menuedit = new JMenu("Edit");
+        JMenu menuedit = new JMenu(McWBalance.langRB.getString("EDIT"));
         menuedit.setMnemonic(KeyEvent.VK_E);
         
-        JMenuItem menueditdelete = new JMenuItem("Delete Object", KeyEvent.VK_D);
+        JMenuItem menueditdelete = new JMenuItem(McWBalance.langRB.getString("DELETE_OBJECT"), KeyEvent.VK_D);
         menueditdelete.setActionCommand("DeleteObj");
         menueditdelete.addActionListener(this);
         menueditdelete.setIcon(iconDelete);
         menuedit.add(menueditdelete);
  
-        JMenuItem menueditaddELM = new JMenuItem("Add Element", KeyEvent.VK_L);
+        JMenuItem menueditaddELM = new JMenuItem(McWBalance.langRB.getString("ADD_ELEMENT"), KeyEvent.VK_L);
         menueditaddELM.setActionCommand("AddObjELM");
         menueditaddELM.addActionListener(this);
         menueditaddELM.setIcon(iconNewELM);
         menuedit.add(menueditaddELM);
         
-        JMenuItem menueditaddTRN = new JMenuItem("Add Transfer", KeyEvent.VK_T);
+        JMenuItem menueditaddTRN = new JMenuItem(McWBalance.langRB.getString("ADD_TRANSFER"), KeyEvent.VK_T);
         menueditaddTRN.setActionCommand("AddObjTRN");
         menueditaddTRN.addActionListener(this);
         menueditaddTRN.setIcon(iconNewTRN);
@@ -135,16 +135,16 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         //End of Edit Menu
         
          // Start of Solver Menu
-        JMenu menusolve = new JMenu("Calculation Settings");
+        JMenu menusolve = new JMenu(McWBalance.langRB.getString("CALCULATION_SETTINGS"));
         menufile.setMnemonic(KeyEvent.VK_S);
         
-        JMenuItem menuclimate = new JMenuItem("Climate", KeyEvent.VK_C); 
+        JMenuItem menuclimate = new JMenuItem(McWBalance.langRB.getString("CLIMATE"), KeyEvent.VK_C); 
         menuclimate.setActionCommand("ClimateSetting"); // Event trigger to make new project
         menuclimate.addActionListener(this);
         menusolve.add(menuclimate);
         
         
-        JMenuItem menusolvesall = new JMenuItem("Solve", KeyEvent.VK_A); 
+        JMenuItem menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_A); 
         menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
         menusolvesall.addActionListener(this);
         menusolve.add(menusolvesall);
@@ -160,7 +160,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             flowChartPanel.repaint();
         });
         menubar.add(zoomSpinner);
-        JLabel zoomSpinnerLabel = new JLabel("Zoom");
+        JLabel zoomSpinnerLabel = new JLabel(McWBalance.langRB.getString("ZOOM"));
         menubar.add(zoomSpinnerLabel);
         
         SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,ProjSetting.MAX_DURATION,1);
@@ -171,7 +171,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             flowChartPanel.repaint();
         });
         menubar.add(dateSpinner);
-        JLabel dateSpinnerLabel = new JLabel("DisplayDate");
+        JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
         menubar.add(dateSpinnerLabel);
         
         mainframe.setJMenuBar(menubar);
@@ -508,7 +508,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             sfilezos.close();
             sfileos.close();
             ProjSetting.hasChangedSinceSave = false; // Debug - does not confirm successful save
-            new WarningDialog(mainframe, "Save Successful");
+            new WarningDialog(mainframe, McWBalance.langRB.getString("SAVE_SUCCESSFUL"));
         } catch (FileNotFoundException fe) {
             new WarningDialog(mainframe, fe.getMessage());
         } catch (IOException fe) {
