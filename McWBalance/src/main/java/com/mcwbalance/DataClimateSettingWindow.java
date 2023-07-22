@@ -24,7 +24,7 @@ public class DataClimateSettingWindow extends JFrame{
     
     DataClimateSettingWindow(JFrame owner){
         
-        super("Climate Settings");
+        super(McWBalance.langRB.getString("CLIMATE_SCENARIOS"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(owner);
         
@@ -41,18 +41,19 @@ public class DataClimateSettingWindow extends JFrame{
         JPanel panel = new JPanel();
         panel.add(scrollPane);
         
-        JButton addClimate = new JButton("Add Climate Scenario");
+        JButton addClimate = new JButton(McWBalance.langRB.getString("ADD_CLIMATE_SCENARIO"));
         addClimate.addActionListener(l ->{
-            DataClimateImportWindow importWindow = new DataClimateImportWindow(this);
-        
+            DataClimateImportWindow importWindow = new DataClimateImportWindow(this);   
+            if(importWindow.getStatus() == DataClimateImportWindow.FILE_OBTAINED){
+                ProjSetting.climateScenarios.addClimateScenario(importWindow.getString());
+            }
         });
-        JButton removeClimate = new JButton("remove Climate Scenario");
-        addClimate.addActionListener(l ->{
-            table.getSelectedRow();
-            DataClimateImportWindow importWindow = new DataClimateImportWindow(this);
+        JButton removeClimate = new JButton(McWBalance.langRB.getString("DELETE_CLIMATE_SCENARIO"));
+        removeClimate.addActionListener(l ->{
+            ProjSetting.climateScenarios.removeRow(table.getSelectedRow());
         });
         panel.add(addClimate);
-        
+        panel.add(removeClimate);
         
         this.add(panel); 
         

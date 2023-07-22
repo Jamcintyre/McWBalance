@@ -11,10 +11,9 @@ import javax.swing.table.AbstractTableModel;
  * @author Alex
  */
 public class TableClimateScenarios extends AbstractTableModel{
-    private static final String[] columnNames = {"Scenario", "Description","Avg Ann Precip","Min Ann Precip","Max Ann Precip", "Yr 1 Precip"};
-    public static final int NUMBER_OF_COLUMNS = 6;
+    private static final String[] columnNames = {"Scenario", "Description","Length","Avg Ann Precip","Min Ann Precip","Max Ann Precip", "Yr 1 Precip"};
+    public static final int NUMBER_OF_COLUMNS = 7;
     
-    String[] description;
     double[] aaprecip;
     double[] minprecip;
     double[] maxprecip;
@@ -30,7 +29,7 @@ public class TableClimateScenarios extends AbstractTableModel{
         for (int i = 0; i < size; i++) {
             climateScenarios[i] = new DataClimate(1);
             
-            climateScenarios[i].description = "new";
+            climateScenarios[i].description = DataClimate.NULL_DESCRIP;
             aaprecip[i] = 0;
             minprecip[i] = 0;
             maxprecip[i] = 0;
@@ -62,15 +61,18 @@ public class TableClimateScenarios extends AbstractTableModel{
                 return climateScenarios[row].description;
             }
             case 2 -> {
-                return aaprecip[row];
+                return climateScenarios[row].precip.length;
             }
             case 3 -> {
-                return minprecip[row];
+                return aaprecip[row];
             }
             case 4 -> {
-                return maxprecip[row];
+                return minprecip[row];
             }
             case 5 -> {
+                return maxprecip[row];
+            }
+            case 6 -> {
                 return yr1precip[row];
             }
         }
@@ -99,7 +101,92 @@ public class TableClimateScenarios extends AbstractTableModel{
         
     }
     
+    
+    /**
+     * Method to remove a climate set, if all data is removed a Null value will be placed into row 0
+     * @param rowIndex 
+     */
     public void removeRow(int rowIndex){
+        if(rowIndex < 0 || rowIndex >= climateScenarios.length){
+            //Do Nothing
+        }
+        else if(climateScenarios.length == 1){
+            if(climateScenarios[0].description.equals(DataClimate.NULL_DESCRIP) ){
+                //Do Nothing
+            }
+            else{
+                climateScenarios[0] = new DataClimate(1);
+                aaprecip[0] = 0;
+                minprecip[0] = 0;
+                maxprecip[0] = 0;
+                yr1precip[0] = 0;
+                fireTableRowsUpdated(0, 0);
+            }
+        }
+        else{
+            int size = climateScenarios.length -1;
+            double[] aaprecipBuff = new double[size];
+            double[] minprecipBuff = new double[size];
+            double[] maxprecipBuff = new double[size];
+            double[] yr1precipBuff = new double[size];
+            DataClimate[] climateScenariosBuff = new DataClimate[size];
+            
+            for (int i = 0; i < rowIndex; i++){
+                aaprecipBuff[i] = aaprecip[i];
+                minprecipBuff[i] = minprecip[i];
+                maxprecipBuff[i] = maxprecip[i];
+                yr1precipBuff[i] = yr1precip[i];
+                climateScenariosBuff[i] = climateScenarios[i];
+            }
+            for (int i = rowIndex; i < size; i++){
+                aaprecipBuff[i] = aaprecip[i+1];
+                minprecipBuff[i] = minprecip[i+1];
+                maxprecipBuff[i] = maxprecip[i+1];
+                yr1precipBuff[i] = yr1precip[i+1];
+                climateScenariosBuff[i] = climateScenarios[i+1];
+            }
+            aaprecip = aaprecipBuff;
+            minprecip = minprecipBuff;
+            maxprecip = maxprecipBuff;
+            yr1precip = yr1precipBuff;
+            climateScenarios = climateScenariosBuff;
+            fireTableDataChanged();
+        }
+    }
+    /**
+     * Method to take a string value of a cclm file and add it to the list of climate scenarios
+     * @param readString 
+     */
+    public void addClimateScenario(String readString){
+        
+        int size = climateScenarios.length;
+        if(climateScenarios[0].description != DataClimate.NULL_DESCRIP){
+            size++;
+            double[] aaprecipBuff = new double[size];
+            double[] minprecipBuff = new double[size];
+            double[] maxprecipBuff = new double[size];
+            double[] yr1precipBuff = new double[size];
+            DataClimate[] climateScenariosBuff = new DataClimate[size];
+            
+            for (int i = 0; i < size -1; i++){
+                aaprecipBuff[i] = aaprecip[i];
+                minprecipBuff[i] = minprecip[i];
+                maxprecipBuff[i] = maxprecip[i];
+                yr1precipBuff[i] = yr1precip[i];
+                climateScenariosBuff[i] = climateScenarios[i];
+            }
+            aaprecip = aaprecipBuff;
+            minprecip = minprecipBuff;
+            maxprecip = maxprecipBuff;
+            yr1precip = yr1precipBuff;
+            climateScenarios = climateScenariosBuff;
+        }
+        climateScenarios[size-1] = new DataClimate(readString);
+        aaprecip[size-1] = climateScenarios[size-1].getAnnualAvgPrecip();
+        minprecip[size-1] = climateScenarios[size-1].getMinimumAnnualPrecip();
+        maxprecip[size-1] = climateScenarios[size-1].getMaximumAnnualPrecip();
+        yr1precip[size-1] = climateScenarios[size-1].getyr1Precip();
+        fireTableDataChanged();
         
     }
 

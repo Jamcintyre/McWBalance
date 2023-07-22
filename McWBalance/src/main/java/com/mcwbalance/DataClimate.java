@@ -20,18 +20,27 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     double[] iceThickness;
     int size;
     private boolean calcsRun;
-    private String ls = System.getProperty("line.seperator");
+    private String ls = System.getProperty("line.separator");
     private String delim = "\t"; //tab delimited files;
+    public static final String NULL_DESCRIP = "NONE";
+    
+    double aaprecip;
+    double minaprecip;
+    double maxaprecip;
+    double yr1precip;
+    
+    
 
     DataClimate(int setsize) {
         calcsRun = false;
-        description = "New Climate Set";
+        description = NULL_DESCRIP;
         setSize(setsize);
     }
 
     DataClimate(String fileString) {
         calcsRun = false;
         String[] allLines, sLine; 
+        
         allLines = fileString.split(ls);
         sLine = allLines[0].split(delim);
         description = sLine[1];
@@ -66,6 +75,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
             iceThickness[i-2] = Double.parseDouble(sLine[9]);
         }
         calcSnowMelt();
+        calcStats();
         calcsRun = true;
 
     }
@@ -83,17 +93,62 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     }
 
     public void calcSnowMelt() {
-        for (int i = 1; i < size; i ++){
-            melt[i] = snowpack[i-1] + precip[i] - rain[i] - snowpack[i];
-            if (melt[i] < 0){
-                melt[i] = 0;
+        if (!description.contentEquals(NULL_DESCRIP)) {
+            for (int i = 1; i < size; i++) {
+                melt[i] = snowpack[i - 1] + precip[i] - rain[i] - snowpack[i];
+                if (melt[i] < 0) {
+                    melt[i] = 0;
+                }
             }
         }
     }
     /**
      * to be called to calculate averages and maximums
      */
-    public void calcStats(){
+    public void calcStats() {
+        double sum = 0;
+        double min;
+        double max;
+        int d = 1;
+        if (description.contentEquals(NULL_DESCRIP)) {
+            aaprecip = 0;
+            minaprecip = 0;
+            maxaprecip = 0;
+            yr1precip = 0;
+
+        } else {
+
+            for (int i = 1; i < precip.length; i++) {
+                sum = sum + precip[i];
+            }
+            aaprecip = sum / (precip.length / 365);
+            sum = 0;
+            for (int i = 1; i < 366 && i < precip.length; i++) {
+                sum = sum + precip[i];
+            }
+            yr1precip = sum;
+            min = sum;
+            max = sum;
+            sum = 0;
+            for (int i = 366; i < precip.length; i++) {
+                sum = sum + precip[i];
+                d++;
+
+                if (d == 365) {
+                    if (sum < min) {
+                        min = sum;
+                    }
+                    if (sum > max) {
+                        max = sum;
+                    }
+                    sum = 0;
+                    d = 1;
+                }
+            }
+            minaprecip = min;
+            maxaprecip = max;
+        }
+        
         
     }
 
@@ -101,6 +156,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
+            calcsRun = true;
         }
         
         return description;
@@ -110,32 +166,36 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
+            calcsRun = true;
         }
-        return 1;
+        return aaprecip;
     }
 
     public double getMinimumAnnualPrecip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
+            calcsRun = true;
         }
-        return 2;
+        return minaprecip;
     }
 
     public double getMaximumAnnualPrecip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
+            calcsRun = true;
         }
-        return 3;
+        return maxaprecip;
     }
 
     public double getyr1Precip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
+            calcsRun = true;
         }
-        return 4;
+        return yr1precip;
     }
 
 }

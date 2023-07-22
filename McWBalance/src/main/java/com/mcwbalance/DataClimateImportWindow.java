@@ -18,13 +18,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author Alex
  */
 public class DataClimateImportWindow extends JDialog{
-    private final static FileNameExtensionFilter CLIMATE_FILE_FILTER = new FileNameExtensionFilter("McWBalance Climate Data File","cclm");
+    public final static int FILE_OBTAINED = 1;
+    public final static int FILE_NOT_READ = 0;
+    
+    private int status = FILE_NOT_READ;
+    private final FileNameExtensionFilter CLIMATE_FILE_FILTER = new FileNameExtensionFilter(McWBalance.langRB.getString("CLIMATE_DATA_FILE"),"cclm");
     private BufferedReader reader;
     private StringBuilder stringBuilder = new StringBuilder();
     private String ls = System.getProperty("line.separator");
     
     DataClimateImportWindow(JFrame owner) {
-        super(owner, "Select Climate Dataset", true);
+        super(owner, McWBalance.langRB.getString("SELECT_CLIMATE_DATASET"), true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(owner);
         JFileChooser fileChooser = new JFileChooser(ProjSetting.pathFolder);
@@ -43,16 +47,30 @@ public class DataClimateImportWindow extends JDialog{
                             stringBuilder.append(line);
                             stringBuilder.append(ls);
                         }
+                        status = FILE_OBTAINED;            
+                        this.dispose();
                     } catch (IOException e) {
                         WarningDialog warn = new WarningDialog(owner, e.getMessage());
                     }
                 }
+                case JFileChooser.CANCEL_SELECTION -> this.dispose();
             }
         });
         this.add(fileChooser);
         this.pack();
         this.setVisible(true);
     }
+    /**
+     * Flags if a file was successfully loaded or not 
+     * @return Returns int flag of 0 FILE_NOT_READ or 1 FILE_OBTAINED
+     */
+    public int getStatus(){
+        return status;
+    }
+    /**
+     * Used for returning loaded string
+     * @return A String representation of the loaded file
+     */
     public String getString(){
         return stringBuilder.toString();
     }
