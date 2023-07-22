@@ -28,8 +28,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class McWBalance {
     static BufferedImage mainIcon30;
     public static String FILE_EXTENSION = "mcbl";
-    public static String LANGUAGE_RESOURCE = "resources/Language";
-    public static Locale currentLocale = new Locale("en");
+    public static String LANGUAGE_RESOURCE = "Language";
+    public static Locale currentLocale = new Locale("es");
     
     public static ResourceBundle langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
     
