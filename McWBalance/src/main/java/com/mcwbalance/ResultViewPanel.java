@@ -50,6 +50,7 @@ public class ResultViewPanel extends JComponent{
     
     private Color colorBorder;
     private Color colorGridLine;
+    private Color colorBackground;
     private String[] rgb;
     
     private static final Font FONT_AXIS_VALUE = new Font("Arial", Font.PLAIN, 18);
@@ -73,8 +74,18 @@ public class ResultViewPanel extends JComponent{
         1,2,7,14,21,30,60,90,182,365,730,1460,2920
     };
     
+    public int legendX;
+    public int legendY;
+    private int legendWidth = 300;
+    private int legendHeight = 200;
+    public boolean legendisVisible = true;
     
-    ResultViewPanel(double[][] results, Color[] rescolors, int minX, int maxX, int minY, int maxY, String hozTitle, String verTitle){
+    private int shadowBoxTL = 1;
+    private int shadowBoxBR = 4;
+    
+    
+    
+    ResultViewPanel(double[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String hozTitle, String verTitle){
         // all of the work is done in the paint component method
         this.results = results;
         this.rescolors = rescolors;
@@ -91,6 +102,8 @@ public class ResultViewPanel extends JComponent{
         colorBorder = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
         rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_GRIDLINE","255,255,255").split(",");
         colorGridLine = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+        
+        colorBackground = Color.WHITE;
         
         pageHeight = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_HEIGHT", "800"));
         pageWidth = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_WIDTH", "1400"));
@@ -109,9 +122,11 @@ public class ResultViewPanel extends JComponent{
         maximumVertIncs = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_MAX_VERT_INCREMENTS", "5")); 
         maximumHorzIncs = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
         
-        
         thickLine = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_THICK", "3")));
         thinLine = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_THIN", "1")));
+        
+        shadowBoxTL = Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_SHADOWBOX_TL", "1"));
+        shadowBoxBR = Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_SHADOWBOX_BR", "4"));
         
         calcScales();
     }
@@ -196,7 +211,8 @@ public class ResultViewPanel extends JComponent{
             scaledresultsHorz[day] = marginLeft + (int)(day/scaleHorz);
         }
         
-        
+        legendX = pageWidth - marginRight - 350;
+        legendY = marginTop + 50;
         
     }
     
@@ -206,7 +222,7 @@ public class ResultViewPanel extends JComponent{
         Graphics2D g2 = (Graphics2D) g;
         AffineTransform at = new AffineTransform();
         g2.setTransform(at); // in event windows scale is not 100%, then at transform is needed first
-        g2.setColor(Color.WHITE); // used to set background color, would have preferred use setbackground to preserve transparancy but doesnt seem to work
+        g2.setColor(colorBackground); // used to set background color, would have preferred use setbackground to preserve transparancy but doesnt seem to work
         g2.fillRect(0, 0, pageWidth, pageHeight);
         
         // minor gridlines are drawn first, behind the data lines 
@@ -270,7 +286,7 @@ public class ResultViewPanel extends JComponent{
         }
         
         
-        
+        // Draw axis Titles
         g2.setFont(FONT_AXIS_TITLE);
         textWidth = (int)g2.getFontMetrics().getStringBounds(hozTitle, g2).getWidth();
         g2.drawString(hozTitle,marginLeft + plotWidth/2 - textWidth/2, pageHeight - plotInsetTitle);
@@ -284,7 +300,13 @@ public class ResultViewPanel extends JComponent{
         at.setToRotation(1,0);
         g2.setTransform(at);
         
+        // Draw Legend box;
+        g2.setColor(colorBorder);
+        g2.fillRect(legendX - shadowBoxTL, legendY - shadowBoxTL, legendWidth + 2*shadowBoxTL, legendHeight + 2*shadowBoxTL); // border first        
+        g2.fillRect(legendX - shadowBoxTL + shadowBoxBR, legendY - shadowBoxTL + shadowBoxBR, legendWidth + 2*shadowBoxTL, legendHeight + 2*shadowBoxTL); // shadow
         
+        g2.setColor(colorBackground);
+        g2.fillRect(legendX, legendY, legendWidth, legendHeight);
         
     }
     

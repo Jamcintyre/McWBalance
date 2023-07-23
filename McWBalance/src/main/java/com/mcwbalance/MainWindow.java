@@ -29,7 +29,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
@@ -54,7 +56,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     JPanel flowChartPanel = new JPanel(new BorderLayout()); // declair comment flow chart panel
     JScrollPane flowChartScPane = new JScrollPane(flowChartPanel); // moved from beginning to here. 
     // Turns out you need to construct the Panel into the Pane
-    static JFrame mainframe = new JFrame("McWBalance Pre Pre Alpha"); // JFrame declared here and as static so that ObjELMWindow can refer to it
+    static JFrame mainframe = new JFrame("McWBalance Pre-Release Non-Functional"); // JFrame declared here and as static so that ObjELMWindow can refer to it
     static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
     
     public void MainWindowFunct() {
@@ -152,27 +154,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         menubar.add(menusolve);
         //End of Solver Menu
         
-        JSpinner zoomSpinner = new JSpinner(zoomSpinnerModel);
-        zoomSpinner.setMaximumSize(new Dimension(50, 30));
-        zoomSpinner.addChangeListener(e->{
-            FlowChartCAD.zoomscale = (double)zoomSpinner.getValue();
-            flowChartPanel.setPreferredSize(new Dimension((int)(FlowChartCAD.CAD_AREA_WIDTH*FlowChartCAD.zoomscale),(int)(FlowChartCAD.CAD_AREA_HEIGHT*FlowChartCAD.zoomscale)));
-            flowChartPanel.repaint();
-        });
-        menubar.add(zoomSpinner);
-        JLabel zoomSpinnerLabel = new JLabel(McWBalance.langRB.getString("ZOOM"));
-        menubar.add(zoomSpinnerLabel);
         
-        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,ProjSetting.MAX_DURATION,1);
-        JSpinner dateSpinner = new JSpinner(dateSpinnerModel);
-        dateSpinner.setMaximumSize(new Dimension(50, 30));
-        dateSpinner.addChangeListener(e->{
-            FlowChartCAD.drawdate = (int)dateSpinner.getValue();
-            flowChartPanel.repaint();
-        });
-        menubar.add(dateSpinner);
-        JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
-        menubar.add(dateSpinnerLabel);
         
         mainframe.setJMenuBar(menubar);
         // End of Overall MenuBar
@@ -215,8 +197,47 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             }
         });
         
-
-        mainframe.add(flowChartScPane); // adds the FlowChart graphics area to the Frame
+        // View Toolbar
+        // Zoom Selector
+        JToolBar toolbarView = new JToolBar();
+        JPanel toolbarViewpanel = new JPanel();
+        JSpinner zoomSpinner = new JSpinner(zoomSpinnerModel);
+        zoomSpinner.setMaximumSize(new Dimension(50, 30));
+        zoomSpinner.addChangeListener(e->{
+            FlowChartCAD.zoomscale = (double)zoomSpinner.getValue();
+            flowChartPanel.setPreferredSize(new Dimension((int)(FlowChartCAD.CAD_AREA_WIDTH*FlowChartCAD.zoomscale),(int)(FlowChartCAD.CAD_AREA_HEIGHT*FlowChartCAD.zoomscale)));
+            flowChartPanel.repaint();
+        });
+        JLabel zoomSpinnerLabel = new JLabel(McWBalance.langRB.getString("ZOOM"));
+        toolbarViewpanel.add(zoomSpinnerLabel);
+        toolbarViewpanel.add(zoomSpinner);
+        
+        //Date Selector
+        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,ProjSetting.MAX_DURATION,1);
+        JSpinner dateSpinner = new JSpinner(dateSpinnerModel);
+        dateSpinner.setMaximumSize(new Dimension(50, 30));
+        dateSpinner.addChangeListener(e->{
+            FlowChartCAD.drawdate = (int)dateSpinner.getValue();
+            flowChartPanel.repaint();
+        });
+        JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
+        toolbarViewpanel.add(dateSpinnerLabel);
+        toolbarViewpanel.add(dateSpinner);
+        //Locale Selector
+        SpinnerModel localeSelectorModel = new SpinnerListModel(McWBalance.localeprops.getProperty("AVAILABLE_LOCALES","en").split(","));
+        JSpinner localSelector = new JSpinner(localeSelectorModel);
+        localSelector.addChangeListener(e->{
+            McWBalance.setLocale(String.valueOf(localSelector.getValue()));
+            flowChartPanel.repaint();
+        });
+        toolbarViewpanel.add(localSelector);
+        
+        toolbarView.add(toolbarViewpanel);
+        toolbarView.setFloatable(true);
+        
+        mainframe.setLayout(new BorderLayout());
+        mainframe.add(toolbarView, BorderLayout.NORTH);
+        mainframe.add(flowChartScPane, BorderLayout.CENTER); // adds the FlowChart graphics area to the Frame
         mainframe.validate(); // done because set visible is before the menu additions
         mainframe.setIconImage(McWBalance.mainIcon30);
         mainframe.setVisible(true);

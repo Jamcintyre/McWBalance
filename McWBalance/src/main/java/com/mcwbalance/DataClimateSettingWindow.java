@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JButton;
@@ -38,9 +39,7 @@ public class DataClimateSettingWindow extends JFrame{
         }
         table.setRowHeight(TABLE_ROW_HEIGHT);
         table.setPreferredScrollableViewportSize(TABLE_PREF_DIMENSION);
-        JScrollPane scrollPane = new JScrollPane(table);
-        JPanel panel = new JPanel();
-        panel.add(scrollPane);
+        
         
         JButton addClimate = new JButton(McWBalance.langRB.getString("ADD_CLIMATE_SCENARIO"));
         addClimate.addActionListener(l ->{
@@ -101,13 +100,21 @@ public class DataClimateSettingWindow extends JFrame{
             
         });
         
-        panel.add(addClimate);
-        panel.add(removeClimate);
-        panel.add(viewData);
+        setLayout(new BorderLayout());
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        JPanel cpanel = new JPanel();
+        cpanel.add(scrollPane);
+        
+        JPanel bpanel = new JPanel();
+        bpanel.add(addClimate);
+        bpanel.add(removeClimate);
+        bpanel.add(viewData);
         
         
         
-        this.add(panel); 
+        this.add(cpanel, BorderLayout.CENTER); 
+        this.add(bpanel, BorderLayout.SOUTH); 
         
         this.pack();
         this.setVisible(true);

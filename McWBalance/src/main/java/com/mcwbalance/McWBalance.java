@@ -28,22 +28,35 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class McWBalance {
     static BufferedImage mainIcon30;
-    public static String FILE_EXTENSION = "mcbl";
-    public static String LANGUAGE_RESOURCE = "Language";
-    public static Locale currentLocale = new Locale("es");
+    static String FILE_EXTENSION = "mcbl";
+    static String LANGUAGE_RESOURCE = "Language";
+    static String localeOptions;
+    static Locale currentLocale;
     
-    public static ResourceBundle langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
+    static ResourceBundle langRB;
     static Properties titleBlock = new Properties();
+    static Properties localeprops = new Properties();
     
     
     public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File",FILE_EXTENSION);
 
     public static void main(String[] args) {
+        
+        setLocale("en_CA");
+
         try{
             titleBlock.load(new java.io.FileInputStream("src/main/resources/TitleBlock.properties"));
         } catch (IOException e) {
             System.out.println("TitleBlock Properties Not Found");
         }
+        
+        try{
+            localeprops.load(new java.io.FileInputStream("src/main/resources/Locales.properties"));
+        } catch (IOException e) {
+            System.out.println("Locales Properties Not Found");
+        }
+        
+        
         
         try {
             mainIcon30 = ImageIO.read(new File("bin/Icon30.png"));
@@ -74,4 +87,26 @@ public class McWBalance {
         MainWindow mainWin = new MainWindow();
         mainWin.MainWindowFunct(); 
     }
+    
+    public static void setLocale(String newLocal){
+        
+        String[] localCodes = newLocal.split("_");
+        
+        if(localCodes.length == 1){
+           currentLocale = new Locale(localCodes[0]);
+           
+           System.out.println("language Changed to " + localCodes[0]);
+        }
+        else{
+           currentLocale = new Locale(localCodes[0], localCodes[1]);
+           System.out.println("language Changed to " + localCodes[0] + " " + localCodes[1]);
+        }
+        
+        langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
+        
+    }
+    
+    
+    
+    
 }

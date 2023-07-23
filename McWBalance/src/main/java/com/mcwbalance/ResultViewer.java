@@ -49,7 +49,7 @@ public class ResultViewer extends JFrame{
             }      
         }
         
-        ResultViewPanel resultViewPanel = new ResultViewPanel(results, rescolors,0,results[0].length,minY,maxY, horTitle, verTitle);
+        ResultViewPanel resultViewPanel = new ResultViewPanel(results, rescolors,resultnames,0,results[0].length,minY,maxY, horTitle, verTitle);
         JScrollPane scrollpane = new JScrollPane(resultViewPanel);
         resultViewPanel.repaint();
         this.add(scrollpane);
