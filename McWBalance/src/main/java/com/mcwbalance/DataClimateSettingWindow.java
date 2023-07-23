@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -52,8 +53,59 @@ public class DataClimateSettingWindow extends JFrame{
         removeClimate.addActionListener(l ->{
             ProjSetting.climateScenarios.removeRow(table.getSelectedRow());
         });
+        JButton viewData = new JButton(McWBalance.langRB.getString("VIEW_DATA"));
+        viewData.addActionListener(l ->{
+            int scenario = table.getSelectedRow();
+            if (scenario >= 0
+                    && scenario < ProjSetting.climateScenarios.climateScenarios.length
+                    && !ProjSetting.climateScenarios.climateScenarios[scenario].equals(DataClimate.NULL_DESCRIP)) {
+
+                double[][] results = new double[5][];
+                String[] resultnames = new String[5];
+                Color[] rescolors = new Color[5];
+                
+                resultnames[0] = McWBalance.langRB.getString("DAILY_PRECIPITATION_UNITS");
+                resultnames[1] = McWBalance.langRB.getString("DAILY_RAINFALL_UNITS");
+                resultnames[2] = McWBalance.langRB.getString("DAILY_SNOWMELT_UNITS");
+                resultnames[3] = McWBalance.langRB.getString("DAILY_EVAPORATION_UNITS");
+                resultnames[4] = McWBalance.langRB.getString("CUMULATED_SNOWPACK_UNITS");
+                
+                results[0] = ProjSetting.climateScenarios.climateScenarios[scenario].precip;
+                results[1] = ProjSetting.climateScenarios.climateScenarios[scenario].rain;
+                results[2] = ProjSetting.climateScenarios.climateScenarios[scenario].melt;
+                results[3] = ProjSetting.climateScenarios.climateScenarios[scenario].evap;
+                results[4] = ProjSetting.climateScenarios.climateScenarios[scenario].snowpack;
+                
+                String[] rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_PRECIP","255,255,255").split(",");
+                rescolors[0] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_RAIN","255,255,255").split(",");
+                rescolors[1] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_MELT","255,255,255").split(",");
+                rescolors[2] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_EVAP","255,255,255").split(",");
+                rescolors[3] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_SNOWPACK","255,255,255").split(",");
+                rescolors[4] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                
+                ResultViewer rv = new ResultViewer(ProjSetting.climateScenarios.climateScenarios[scenario].description,
+                         results,
+                         resultnames,
+                         rescolors,
+                         McWBalance.langRB.getString("MODEL_DAY"),
+                         McWBalance.langRB.getString("WATER_DEPTH_UNITS")
+                );
+                
+
+            }
+
+            
+        });
+        
         panel.add(addClimate);
         panel.add(removeClimate);
+        panel.add(viewData);
+        
+        
         
         this.add(panel); 
         

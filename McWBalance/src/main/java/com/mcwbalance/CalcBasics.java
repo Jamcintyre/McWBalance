@@ -22,6 +22,37 @@ public class CalcBasics {
         }
 
     }
+    
+    /**
+     * Finds the maximum value in an array of doubles
+     * @param array
+     * @return 
+     */
+    public static double findMaxDouble(double[] array){
+        double max = array[0];
+        for (int i = 1; i < array.length; i++){
+            if(max < array[i]){
+                max = array[i];
+            }
+        }
+        return max;
+    }
+    
+    /**
+     * Finds the minimum value in an array of doubles
+     * @param array
+     * @return 
+     */
+    public static double findMinDouble(double[] array){
+        double min = array[0];
+        for (int i = 1; i < array.length; i++){
+            if(min > array[i]){
+                min = array[i];
+            }
+        }
+        return min;
+    }
+    
 
     
     /**
@@ -125,4 +156,8 @@ public class CalcBasics {
         roundedValue = scaledValue/roundfactor;
         return roundedValue;
     }
+    
+    
+    
+    
 }

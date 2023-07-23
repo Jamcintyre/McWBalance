@@ -3,6 +3,7 @@ package com.mcwbalance;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 
 /**
 * This Class is for storage and retrieval of all key project software related settings. 
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 * @version Pre-Alpha 0.2023.06.24
 */
 public class ProjSetting {
-    static String verInfo ="0.2023.06.24";
+    static String verInfo ="0.2023.07.22";
     /**
      * Note this is a placeholder, should set this on project start to whatever the previous save was
      * will add an info file that will save beside the Program for this kind of thing
@@ -27,8 +28,8 @@ public class ProjSetting {
     static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
     
     static TableClimateScenarios climateScenarios = new TableClimateScenarios(1);
-    
     static ImageLib imageLib = new ImageLib(); 
+    
     
     static boolean hasChangedSinceSave = true; // Debug, will update to false
     

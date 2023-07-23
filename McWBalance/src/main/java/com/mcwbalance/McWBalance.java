@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
@@ -32,11 +33,18 @@ public class McWBalance {
     public static Locale currentLocale = new Locale("es");
     
     public static ResourceBundle langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
+    static Properties titleBlock = new Properties();
     
     
     public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File",FILE_EXTENSION);
 
     public static void main(String[] args) {
+        try{
+            titleBlock.load(new java.io.FileInputStream("src/main/resources/TitleBlock.properties"));
+        } catch (IOException e) {
+            System.out.println("TitleBlock Properties Not Found");
+        }
+        
         try {
             mainIcon30 = ImageIO.read(new File("bin/Icon30.png"));
         } catch (IOException e) {

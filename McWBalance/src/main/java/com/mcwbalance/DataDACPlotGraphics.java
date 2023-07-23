@@ -9,9 +9,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
-import java.text.AttributedString;
 import javax.swing.JComponent;
 
 /**
@@ -98,7 +96,6 @@ public class DataDACPlotGraphics extends JComponent{
         scaledVol = new int[dAC.elev.length];
         scaledArea = new int[dAC.elev.length];
         
-        System.out.println("Elevation Range " + rangeElev);
         // this sets the increments of the elevation axis to something rounded to the nearest major tick
         for (int i = 0; i < INC_OPTIONS_VERT.length; i++){
             incElevNoOfMajors = (int)(rangeElev / INC_OPTIONS_VERT[i]);
