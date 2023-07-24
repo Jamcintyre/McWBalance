@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.font.TextLayout;
+import java.awt.font.TextMeasurer;
 import java.awt.geom.AffineTransform;
 import javax.swing.JComponent;
 
@@ -21,6 +23,7 @@ public class ResultViewPanel extends JComponent{
     
     double[][] results;
     Color[] rescolors;
+    String[] resNames;
     int minX;
     int maxX;
     int minY;
@@ -46,6 +49,7 @@ public class ResultViewPanel extends JComponent{
     private int maximumHorzIncs;
     
     private BasicStroke thinLine;
+    private BasicStroke lineSeries;
     private BasicStroke thickLine;
     
     private Color colorBorder;
@@ -55,6 +59,9 @@ public class ResultViewPanel extends JComponent{
     
     private static final Font FONT_AXIS_VALUE = new Font("Arial", Font.PLAIN, 18);
     private static final Font FONT_AXIS_TITLE = new Font("Arial", Font.BOLD, 20);
+    
+    private static final Font FONT_LEGEND_TITLE = new Font("Arial", Font.BOLD, 16);
+    private static final Font FONT_LEGEND_ENTRY = new Font("Arial", Font.PLAIN, 16);
     
     private int rangeHorz;
     private int rangeVert;
@@ -80,8 +87,12 @@ public class ResultViewPanel extends JComponent{
     private int legendHeight = 200;
     public boolean legendisVisible = true;
     
-    private int shadowBoxTL = 1;
-    private int shadowBoxBR = 4;
+    private int shadowBoxTL;
+    private int shadowBoxBR;
+    
+    private int legendSymbol;
+    private int legendPadding;
+    private int legendSpacing;
     
     
     
@@ -89,6 +100,7 @@ public class ResultViewPanel extends JComponent{
         // all of the work is done in the paint component method
         this.results = results;
         this.rescolors = rescolors;
+        this.resNames = resNames;
         this.minX = minX;
         this.maxX = maxX;
         this.minY = minY;
@@ -123,10 +135,18 @@ public class ResultViewPanel extends JComponent{
         maximumHorzIncs = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
         
         thickLine = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_THICK", "3")));
+        lineSeries = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LINE_SERIES", "2")));
         thinLine = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_THIN", "1")));
         
         shadowBoxTL = Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_SHADOWBOX_TL", "1"));
         shadowBoxBR = Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_SHADOWBOX_BR", "4"));
+        
+        legendSymbol = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_SYMBOL", "10"));
+        legendPadding = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_PADDING", "10"));
+        legendSpacing = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_SPACING", "4"));
+        
+        legendX = pageWidth - marginRight - 350;
+        legendY = marginTop + 50;
         
         calcScales();
     }
@@ -210,17 +230,47 @@ public class ResultViewPanel extends JComponent{
             }
             scaledresultsHorz[day] = marginLeft + (int)(day/scaleHorz);
         }
+    }
+    public void calcHorizontalScales(){
+    // this sets the increment of the Horizontal axis to something rounded to the nearest major tick
+        for (int i = 0; i < INC_OPTIONS_HORZ.length; i++){
+            incHorzNoOfMajors = (int)(rangeHorz / INC_OPTIONS_HORZ[i]);
+            incHorz = INC_OPTIONS_HORZ[i];
+            if (incHorzNoOfMajors < maximumHorzIncs){
+                break;
+            }
+        }
         
-        legendX = pageWidth - marginRight - 350;
-        legendY = marginTop + 50;
+        for(int i = 0; i < 100; i ++){
+            if(i*incHorz + minX > maxX){
+                incHorzNoOfMajors = i;
+                break;
+            }
+        }
+        rangeHorz = incHorzNoOfMajors * incHorz;
+        scaleHorz = (double)rangeHorz/ plotWidth; 
+        
+        for (int i = 0; i < results.length; i++){
+            scaledresults[i] = new int[maxX - minX];
+        }
+        scaledresultsHorz = new int[maxX - minX];
+                
+        for (int day = 0; day < scaledresults[0].length; day++) {
+            for (int res = 0; res < scaledresults.length; res++) {
+                scaledresults[res][day] = pageHeight - marginBottom - (int)((results[res][day+minX]-minY)/scaleVert);
+            }
+            scaledresultsHorz[day] = marginLeft + (int)(day/scaleHorz);
+        }
         
     }
+    
     
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         AffineTransform at = new AffineTransform();
+        at.setToScale(1, 1);
         g2.setTransform(at); // in event windows scale is not 100%, then at transform is needed first
         g2.setColor(colorBackground); // used to set background color, would have preferred use setbackground to preserve transparancy but doesnt seem to work
         g2.fillRect(0, 0, pageWidth, pageHeight);
@@ -234,13 +284,13 @@ public class ResultViewPanel extends JComponent{
 
             g2.drawLine(marginLeft, minor, marginLeft+plotWidth, minor);
         }
-        for (int i = 0; i < incHorzNoOfMajors * 5; i ++){
-            minor = marginLeft+plotWidth - (int)(i*incHorz/(scaleHorz*5)); 
+        for (int i = 0; i < incHorzNoOfMajors * 4; i ++){
+            minor = marginLeft+plotWidth - (int)(i*incHorz/(scaleHorz*4)); 
 
             g2.drawLine(minor, pageHeight - marginBottom, minor, marginTop);
         }
         // data lines are drawn next, so tht border and major gridlines overlap
-        g2.setStroke(thinLine);
+        g2.setStroke(lineSeries);
         for (int res = 0; res < results.length; res++) {
                 g2.setColor(rescolors[res]);
                 g2.drawPolyline(scaledresultsHorz, scaledresults[res], scaledresultsHorz.length);
@@ -277,7 +327,7 @@ public class ResultViewPanel extends JComponent{
         String labelFormatHorz = "%.0f"; 
         for (int i = 0; i < incHorzNoOfMajors+1; i++){
             major = marginLeft + (int)(i*incHorz/scaleHorz); 
-            majorLabelValue = (i*incHorz); 
+            majorLabelValue = (i*incHorz+minX); 
             g2.drawLine(major, pageHeight - marginBottom + plotTickLength, major, marginTop);
             majorLabel = String.format(labelFormatHorz,majorLabelValue);
             textWidth = (int)g2.getFontMetrics().getStringBounds(majorLabel, g2).getWidth();
@@ -300,6 +350,33 @@ public class ResultViewPanel extends JComponent{
         at.setToRotation(1,0);
         g2.setTransform(at);
         
+        
+        
+        // determine Legend box Dimensions;
+
+        g2.setFont(FONT_LEGEND_TITLE);
+        
+        String txt = McWBalance.langRB.getString("LEGEND_CAPS");
+        int txtH = (int)g2.getFontMetrics().getStringBounds(McWBalance.langRB.getString("LEGEND_CAPS"), g2).getHeight();
+        int txtW = (int)g2.getFontMetrics().getStringBounds(McWBalance.langRB.getString("LEGEND_CAPS"), g2).getWidth();
+
+        legendHeight = txtH + 2*legendPadding; 
+        legendWidth = txtW + 2*legendPadding; 
+        
+        g2.setFont(FONT_LEGEND_ENTRY);
+        int nWidth;
+        for (int i = 0; i < resNames.length; i++) {
+            txtH = (int)g2.getFontMetrics().getStringBounds(resNames[i], g2).getHeight();
+            txtW = (int)g2.getFontMetrics().getStringBounds(resNames[i], g2).getWidth();
+            legendHeight = legendHeight + txtH + legendSpacing; 
+            nWidth = 2*legendPadding + legendSymbol + legendSpacing + txtW;
+            if (nWidth > legendWidth){
+                legendWidth = nWidth;
+            }
+            
+        }
+        
+
         // Draw Legend box;
         g2.setColor(colorBorder);
         g2.fillRect(legendX - shadowBoxTL, legendY - shadowBoxTL, legendWidth + 2*shadowBoxTL, legendHeight + 2*shadowBoxTL); // border first        
@@ -308,7 +385,41 @@ public class ResultViewPanel extends JComponent{
         g2.setColor(colorBackground);
         g2.fillRect(legendX, legendY, legendWidth, legendHeight);
         
+        int txtX = legendX + legendPadding;
+        int txtY = legendY + legendPadding; 
+        
+        // Draw Legend text and symbols
+        g2.setFont(FONT_LEGEND_TITLE);
+        txtH = (int)g2.getFontMetrics().getStringBounds(McWBalance.langRB.getString("LEGEND_CAPS"), g2).getHeight();  
+        g2.setColor(colorBorder);
+        g2.drawString(McWBalance.langRB.getString("LEGEND_CAPS"), txtX, txtY + txtH);  
+        int symX = txtX;
+        txtX = txtX + legendSpacing + legendSymbol; 
+        txtY = txtY + txtH + legendSpacing;
+        
+        g2.setStroke(lineSeries);
+        g2.setFont(FONT_LEGEND_ENTRY);
+        for (int i = 0; i < resNames.length; i++){
+            txtH = (int)g2.getFontMetrics().getStringBounds(resNames[i], g2).getHeight();
+            g2.setColor(rescolors[i]);
+            g2.drawLine(symX, txtY + txtH/2+2, symX+legendSymbol, txtY + txtH/2+2);
+            g2.setColor(colorBorder);
+            g2.drawString(resNames[i], txtX, txtY + txtH);  
+            txtY = txtY + txtH + legendSpacing; 
+        }
+        
+        
     }
     
+    public void setStartDate(int sDate){
+        minX = sDate;
+        calcHorizontalScales();
+        this.repaint();
+    }
+    public void setEndDate(int eDate){
+        maxX = eDate;
+        calcHorizontalScales();
+        this.repaint();
+    }
     
 }

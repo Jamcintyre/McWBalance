@@ -4,9 +4,17 @@
  */
 package com.mcwbalance;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JToolBar;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -23,6 +31,10 @@ public class ResultViewer extends JFrame{
     private int minY;
     private int maxY;
     
+    public int startDate;
+    public int endDate;
+    SpinnerModel startDateSpinnerModel;
+    SpinnerModel endDateSpinnerModel;
     
     ResultViewer(String title, double[][] results, String[] resultnames, Color[] rescolors, String horTitle, String verTitle){
         super(title);
@@ -49,10 +61,44 @@ public class ResultViewer extends JFrame{
             }      
         }
         
+        startDate = 0;
+        endDate = results[0].length;
+        
         ResultViewPanel resultViewPanel = new ResultViewPanel(results, rescolors,resultnames,0,results[0].length,minY,maxY, horTitle, verTitle);
         JScrollPane scrollpane = new JScrollPane(resultViewPanel);
         resultViewPanel.repaint();
-        this.add(scrollpane);
+        
+        // View Toolbar
+        // Zoom Selector
+        JToolBar toolbarView = new JToolBar();
+        JPanel toolbarViewpanel = new JPanel();
+        
+        startDateSpinnerModel = new SpinnerNumberModel(startDate,0,endDate-1,1);
+        
+        JSpinner startDateSpinner = new JSpinner(startDateSpinnerModel);
+        startDateSpinner.setMaximumSize(new Dimension(50, 30));
+        startDateSpinner.addChangeListener(e->{
+            startDate = (int)startDateSpinner.getValue();
+            resultViewPanel.setStartDate(startDate);
+        });
+        JLabel startDateSpinnerLabel = new JLabel(McWBalance.langRB.getString("START_DATE"));
+        toolbarViewpanel.add(startDateSpinnerLabel);
+        toolbarViewpanel.add(startDateSpinner);
+        
+        endDateSpinnerModel = new SpinnerNumberModel(endDate,startDate+1,results[0].length,1);
+        JSpinner endDateSpinner = new JSpinner(endDateSpinnerModel);
+        endDateSpinner.setMaximumSize(new Dimension(50, 30));
+        endDateSpinner.addChangeListener(e->{
+            endDate = (int)endDateSpinner.getValue();
+            resultViewPanel.setEndDate(endDate);
+        });
+        JLabel endDateSpinnerLabel = new JLabel(McWBalance.langRB.getString("END_DATE"));
+        toolbarViewpanel.add(endDateSpinnerLabel);
+        toolbarViewpanel.add(endDateSpinner);
+        
+        this.setLayout(new BorderLayout());
+        this.add(toolbarViewpanel,BorderLayout.SOUTH);
+        this.add(scrollpane,BorderLayout.CENTER);
         this.setVisible(true);
     }
     

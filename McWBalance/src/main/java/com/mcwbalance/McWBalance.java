@@ -42,7 +42,7 @@ public class McWBalance {
 
     public static void main(String[] args) {
         
-        setLocale("en_CA");
+        setLocale("es");
 
         try{
             titleBlock.load(new java.io.FileInputStream("src/main/resources/TitleBlock.properties"));
