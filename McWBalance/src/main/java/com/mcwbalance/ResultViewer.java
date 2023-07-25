@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JToolBar;
+import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
@@ -23,10 +24,7 @@ import javax.swing.SpinnerNumberModel;
 public class ResultViewer extends JFrame{
     private int pageWidth;
     private int pageHeight;
-    private int marginTop;
-    private int marginBottom;
-    private int marginRight;
-    private int marginLeft;
+
     
     private int minY;
     private int maxY;
@@ -35,8 +33,12 @@ public class ResultViewer extends JFrame{
     public int endDate;
     SpinnerModel startDateSpinnerModel;
     SpinnerModel endDateSpinnerModel;
+    SpinnerModel timeStepSpinnerModel;
+
+    public int timeStep; 
+    public static String[] timeStepOptions; 
     
-    ResultViewer(String title, double[][] results, String[] resultnames, Color[] rescolors, String horTitle, String verTitle){
+    ResultViewer(String title, double[][] results, String[] resultnames, Color[] rescolors, String verTitle){
         super(title);
         pageWidth = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_WIDTH", "50"));
         pageHeight = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_HEIGHT", "50"));
@@ -63,8 +65,11 @@ public class ResultViewer extends JFrame{
         
         startDate = 0;
         endDate = results[0].length;
-        
-        ResultViewPanel resultViewPanel = new ResultViewPanel(results, rescolors,resultnames,0,results[0].length,minY,maxY, horTitle, verTitle);
+  
+        timeStep = ResultViewPanel.DAILY;
+        timeStepOptions = McWBalance.langRB.getString("TIME_STEP_OPTIONS").split(",");
+
+        ResultViewPanel resultViewPanel = new ResultViewPanel(results, rescolors,resultnames,0,results[0].length,minY,maxY, verTitle);
         JScrollPane scrollpane = new JScrollPane(resultViewPanel);
         resultViewPanel.repaint();
         
@@ -95,6 +100,18 @@ public class ResultViewer extends JFrame{
         JLabel endDateSpinnerLabel = new JLabel(McWBalance.langRB.getString("END_DATE"));
         toolbarViewpanel.add(endDateSpinnerLabel);
         toolbarViewpanel.add(endDateSpinner);
+        
+        timeStepSpinnerModel = new SpinnerListModel(timeStepOptions);
+        timeStepSpinnerModel.setValue(timeStepOptions[0]);
+        JSpinner timeStepSpinner = new JSpinner(timeStepSpinnerModel);
+        timeStepSpinner.setPreferredSize(new Dimension(100,20));
+        timeStepSpinner.addChangeListener(e->{
+            timeStep = CalcBasics.findArrayMatchIndex(String.valueOf(timeStepSpinner.getValue()), timeStepOptions);
+            resultViewPanel.setTimeStep(timeStep);
+        });
+        JLabel timeStepSpinnerLabel = new JLabel(McWBalance.langRB.getString("TIME_STEP"));
+        toolbarViewpanel.add(timeStepSpinnerLabel);
+        toolbarViewpanel.add(timeStepSpinner);
         
         this.setLayout(new BorderLayout());
         this.add(toolbarViewpanel,BorderLayout.SOUTH);

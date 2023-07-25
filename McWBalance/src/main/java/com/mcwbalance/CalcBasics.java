@@ -37,6 +37,20 @@ public class CalcBasics {
         }
         return max;
     }
+     /**
+     * Finds the maximum value in an array of integers
+     * @param array
+     * @return 
+     */
+    public static int findMaxInteger(int[] array){
+        int max = array[0];
+        for (int i = 1; i < array.length; i++){
+            if(max < array[i]){
+                max = array[i];
+            }
+        }
+        return max;
+    }
     
     /**
      * Finds the minimum value in an array of doubles
@@ -52,7 +66,36 @@ public class CalcBasics {
         }
         return min;
     }
+
+    /**
+     * Finds the minimum value in an array of integers
+     * @param array
+     * @return 
+     */
+    public static int findMinInteger(int[] array){
+        int min = array[0];
+        for (int i = 1; i < array.length; i++){
+            if(min > array[i]){
+                min = array[i];
+            }
+        }
+        return min;
+    }
     
+    /**
+     * Finds a matching string index value in a given array of strings
+     * @param searchvalue Value to search for
+     * @param array list of Strings to search in
+     * @return index value of match, returns -1 if no match found
+     */
+    public static int findArrayMatchIndex(String searchvalue, String[] array){
+        for (int i = 0; i < array.length; i++){
+            if (array[i].equals(searchvalue)){
+                return i;
+            }
+        }
+        return -1;
+    }
 
     
     /**

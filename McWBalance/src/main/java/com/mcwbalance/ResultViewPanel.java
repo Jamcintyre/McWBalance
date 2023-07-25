@@ -24,10 +24,10 @@ public class ResultViewPanel extends JComponent{
     double[][] results;
     Color[] rescolors;
     String[] resNames;
-    int minX;
-    int maxX;
-    int minY;
-    int maxY;
+    int minX, minX_Day;
+    int maxX, maxX_Day;
+    int minY, minY_Day;
+    int maxY, maxY_Day;
     String hozTitle;
     String verTitle;
     
@@ -71,15 +71,20 @@ public class ResultViewPanel extends JComponent{
     private int incVertNoOfMajors;
     private double scaleHorz; 
     private double scaleVert;
-    
+
     private int[][] scaledresults;
     private int[] scaledresultsHorz;
     
-    private final int INC_OPTIONS_VERT[] = {1,2,5,10,20,25,50,100};
+    private static final int INC_OPTIONS_VERT[] = {1,2,5,10,20,25,50,100};
     
-    private final int INC_OPTIONS_HORZ[] = {
+    private static final int INC_OPTIONS_HORZ[] = {
         1,2,7,14,21,30,60,90,182,365,730,1460,2920
     };
+    
+    public static final int DAILY = 0;
+    public static final int WEEKLY = 1;
+    public static final int MONTHLY = 2;
+    public static final int YEARLY = 3;
     
     public int legendX;
     public int legendY;
@@ -94,9 +99,10 @@ public class ResultViewPanel extends JComponent{
     private int legendPadding;
     private int legendSpacing;
     
+    private int timeStep;
     
     
-    ResultViewPanel(double[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String hozTitle, String verTitle){
+    ResultViewPanel(double[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String verTitle){
         // all of the work is done in the paint component method
         this.results = results;
         this.rescolors = rescolors;
@@ -105,7 +111,11 @@ public class ResultViewPanel extends JComponent{
         this.maxX = maxX;
         this.minY = minY;
         this.maxY = maxY;
-        this.hozTitle = hozTitle;
+        this.minX_Day = minX;
+        this.maxX_Day = maxX;
+        this.minY_Day = minY;
+        this.maxY_Day = maxY;
+        this.hozTitle =  McWBalance.langRB.getString("MODEL_DAY");
         this.verTitle = verTitle;
         scaledresults = new int[results.length][results[0].length];
         scaledresultsHorz = new int[results[0].length];
@@ -144,6 +154,8 @@ public class ResultViewPanel extends JComponent{
         legendSymbol = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_SYMBOL", "10"));
         legendPadding = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_PADDING", "10"));
         legendSpacing = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_SPACING", "4"));
+        
+        timeStep = 0;
         
         legendX = pageWidth - marginRight - 350;
         legendY = marginTop + 50;
@@ -231,8 +243,15 @@ public class ResultViewPanel extends JComponent{
             scaledresultsHorz[day] = marginLeft + (int)(day/scaleHorz);
         }
     }
+    
+    
+    // Note this method does not set vertical scale
     public void calcHorizontalScales(){
     // this sets the increment of the Horizontal axis to something rounded to the nearest major tick
+        
+        
+        rangeHorz = maxX - minX;
+    
         for (int i = 0; i < INC_OPTIONS_HORZ.length; i++){
             incHorzNoOfMajors = (int)(rangeHorz / INC_OPTIONS_HORZ[i]);
             incHorz = INC_OPTIONS_HORZ[i];
@@ -254,16 +273,114 @@ public class ResultViewPanel extends JComponent{
             scaledresults[i] = new int[maxX - minX];
         }
         scaledresultsHorz = new int[maxX - minX];
-                
-        for (int day = 0; day < scaledresults[0].length; day++) {
-            for (int res = 0; res < scaledresults.length; res++) {
-                scaledresults[res][day] = pageHeight - marginBottom - (int)((results[res][day+minX]-minY)/scaleVert);
-            }
-            scaledresultsHorz[day] = marginLeft + (int)(day/scaleHorz);
-        }
         
+        switch (timeStep) {
+
+            case DAILY -> {
+                for (int day = 0; day < scaledresults[0].length; day++) {
+                    for (int res = 0; res < scaledresults.length; res++) {
+                        scaledresults[res][day] = (int)(results[res][day + minX]);
+                    }
+                    scaledresultsHorz[day] = marginLeft + (int) (day / scaleHorz);
+                }
+            }
+            case WEEKLY -> { // this wont work since vertical scale will be off
+                double cumulator; 
+                for (int wk = 0; wk < scaledresults[0].length; wk++) {
+                    for (int res = 0; res < scaledresults.length; res++) {
+                        cumulator = 0;
+                        for (int day = 0; day < 7; day ++){
+                            cumulator = cumulator + results[res][(wk+minX)*7+day];
+                        }       
+                        scaledresults[res][wk] = (int)(cumulator);
+                    }
+                    scaledresultsHorz[wk] = marginLeft + (int) (wk / scaleHorz);
+                }
+            }
+            case MONTHLY -> {
+                double cumulator; 
+                for (int mon = 0; mon < scaledresults[0].length; mon++) {
+                    for (int res = 0; res < scaledresults.length; res++) {
+                        cumulator = 0;
+                        for (int day = 0; day < 30; day ++){
+                            cumulator = cumulator + results[res][(mon+minX)*30+day];
+                        }       
+                        scaledresults[res][mon] = (int)(cumulator);
+                    }
+                    scaledresultsHorz[mon] = marginLeft + (int) (mon / scaleHorz);
+                }
+            }
+            case YEARLY -> {
+                double cumulator; 
+                for (int y = 0; y < scaledresults[0].length; y++) {
+                    for (int res = 0; res < scaledresults.length; res++) {
+                        cumulator = 0;
+                        for (int day = 0; day < 365; day ++){
+                            
+                            cumulator = cumulator + results[res][(y+minX)*365+day];
+                        }       
+                        scaledresults[res][y] = (int)(cumulator);
+                    }
+                    scaledresultsHorz[y] = marginLeft + (int) (y / scaleHorz);
+                }
+            }
+        }
+        calcVerticalScale();
+
     }
     
+    public void calcVerticalScale(){
+        maxY = 0; //reset maxY to 0 incase needs to decrease (i.e. going from yearly to daily)
+        int newMaxY = 0;
+        for (int r = 0; r < scaledresults.length; r++){
+            newMaxY = CalcBasics.findMaxInteger(scaledresults[r]);
+            if(newMaxY > maxY){
+                maxY = newMaxY;
+            }
+        }
+        rangeVert = maxY - minY;
+        // this sets the increments of the Vertical axis to something rounded to the nearest major tick
+        for (int i = 0; i < INC_OPTIONS_VERT.length; i++){
+            incVertNoOfMajors = (int)(rangeVert / INC_OPTIONS_VERT[i]);
+            incVert = INC_OPTIONS_VERT[i];
+            if (incVertNoOfMajors < maximumVertIncs){
+                break;
+            }
+        }
+        if (minY == 0){ 
+        }else if(minY < 0){
+            for (int i = 0; i < 10000; i ++){
+                if (minY > -i*incVert){
+                    minY = -i*incVert;
+                    break;
+                }
+            }
+        }else if (minY > 0){
+            for (int i = 0; i < 10000; i ++){
+                if (minY < (i+1)*incVert){
+                    minY = i*incVert;
+                    break;
+                }
+            }
+        }
+        for(int i = 0; i < 100; i ++){
+            if(i*incVert + minY > maxY){
+                incVertNoOfMajors = i;
+                break;
+            }
+        }
+        rangeVert = incVertNoOfMajors * incVert;
+        scaleVert = (double)rangeVert/plotHeight; 
+        
+        for (int r = 0; r < scaledresults.length; r++) {
+            for (int t = 0; t < scaledresults[r].length; t++) {
+                scaledresults[r][t] = pageHeight - marginBottom - (int)((scaledresults[r][t] + minY)/scaleVert);
+
+            }
+
+        }
+
+    }
     
     @Override
     public void paintComponent(Graphics g){
@@ -411,15 +528,66 @@ public class ResultViewPanel extends JComponent{
         
     }
     
+    /**
+     * TO Fix, should count the months instead of simple 30 day divide
+     * @param sDate 
+     */
     public void setStartDate(int sDate){
-        minX = sDate;
+        switch(timeStep){
+            case DAILY -> minX = sDate;
+            case WEEKLY -> minX = sDate/7;
+            case MONTHLY -> minX = sDate/30;
+            case YEARLY -> minX = sDate/365;
+        }
         calcHorizontalScales();
         this.repaint();
     }
+    
+    /**
+     * TO Fix, should count the months instead of simple 30 day divide
+     * @param eDate 
+     */
     public void setEndDate(int eDate){
-        maxX = eDate;
+        switch(timeStep){
+            case DAILY -> maxX = eDate;
+            case WEEKLY -> maxX = eDate/7;
+            case MONTHLY -> maxX = eDate/30;
+            case YEARLY -> maxX = eDate/365;
+        }
         calcHorizontalScales();
         this.repaint();
+    }
+    
+    public void setTimeStep(int timeStepin){
+        timeStep = timeStepin;
+        if (timeStep < 0){
+            timeStep = 0;
+        }
+        switch (timeStep) {
+            case DAILY -> {
+                minX = minX_Day;
+                maxX = maxX_Day;
+                hozTitle = McWBalance.langRB.getString("MODEL_DAY");
+            }
+            case WEEKLY -> {
+                minX = minX_Day / 7;
+                maxX = maxX_Day / 7;
+                hozTitle = McWBalance.langRB.getString("MODEL_WEEK");
+            }
+            case MONTHLY -> {
+                minX = minX_Day / 30;
+                maxX = maxX_Day / 30;
+                hozTitle = McWBalance.langRB.getString("MODEL_MONTH");
+            }
+            case YEARLY -> {
+                minX = minX_Day / 365;
+                maxX = maxX_Day / 365;
+                hozTitle = McWBalance.langRB.getString("MODEL_YEAR");
+            }
+        }
+        calcHorizontalScales();
+        this.repaint();
+        
     }
     
 }
