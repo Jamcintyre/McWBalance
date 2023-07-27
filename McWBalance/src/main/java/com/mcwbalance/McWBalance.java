@@ -42,7 +42,8 @@ public class McWBalance {
 
     public static void main(String[] args) {
         
-        setLocale("es");
+        //setLocale("es");
+        langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE);
 
         try{
             titleBlock.load(new java.io.FileInputStream("src/main/resources/TitleBlock.properties"));
@@ -87,7 +88,10 @@ public class McWBalance {
         MainWindow mainWin = new MainWindow();
         mainWin.MainWindowFunct(); 
     }
-    
+    /**
+     * note this doesn't work correctly, once data bundle is loaded it appears the data cannot change
+     * @param newLocal 
+     */
     public static void setLocale(String newLocal){
         
         String[] localCodes = newLocal.split("_");

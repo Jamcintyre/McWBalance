@@ -14,7 +14,7 @@ import javax.swing.table.AbstractTableModel;
  * @author Alex
  */
 public class TableRunoffCoefficients extends AbstractTableModel{
-    private static final String[] columnNames = {"LandCover", "Jan","Feb","Mar","Apr","May", "Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+    String[] columnNames = McWBalance.langRB.getString("RUNOFF_COEFFICIENTS_TABLE_HEADINGS").split(",");
     private static final int NUMBER_OF_COLUMNS = 13;
     private static final int MAX_LAND_COVERS = ProjSetting.MAX_LAND_COVERS;
     private Object[][] data;
@@ -150,8 +150,28 @@ public class TableRunoffCoefficients extends AbstractTableModel{
     
     
     public void setFromString(String input){
+        
+        System.err.println("Method setFromString Not Implemented Yet");
          // Not Implemented yet 
     }
     
     
+    public void addRow(){
+        
+        System.err.println("Method addRow Not Implemented Yet");
+        
+    }
+    
+    public void deleteRow(int row){
+        
+        System.err.println("Method deleteRow Not Implemented Yet");
+    }
+    public void moveUp(int row){
+        
+        System.err.println("Method MoveDown Not Implemented Yet");
+    }
+    public void moveDown(int row){
+        
+        System.err.println("Method MoveUp Not Implemented Yet");
+    }
 }

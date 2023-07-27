@@ -100,21 +100,16 @@ public class DataClimateSettingWindow extends JFrame{
         });
         
         setLayout(new BorderLayout());
-        
         JScrollPane scrollPane = new JScrollPane(table);
         JPanel cpanel = new JPanel();
         cpanel.add(scrollPane);
-        
         JPanel bpanel = new JPanel();
         bpanel.add(addClimate);
         bpanel.add(removeClimate);
         bpanel.add(viewData);
-        
-        
-        
+
         this.add(cpanel, BorderLayout.CENTER); 
         this.add(bpanel, BorderLayout.SOUTH); 
-        
         this.pack();
         this.setVisible(true);
         

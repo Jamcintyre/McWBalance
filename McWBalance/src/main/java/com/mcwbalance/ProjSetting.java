@@ -38,7 +38,7 @@ public class ProjSetting {
     */
     static int duration = 25; // 2 years  note this will be 3650 lines for a typical 10 year Mine Life.  
 
-    static BalanceRunSetting[] balanceRunSettings; // list of runs
+    static SolveOrder solveOrder = new SolveOrder();
     
 
 

@@ -51,7 +51,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     static final double ZOOM_MIN = 0.05;
     static final double ZOOM_MAX = 2;
     static final double ZOOM_STEP = 0.05;
-    private SpinnerModel zoomSpinnerModel = new SpinnerNumberModel(FlowChartCAD.zoomscale,ZOOM_MIN,ZOOM_MAX,ZOOM_STEP);
+    private final SpinnerModel zoomSpinnerModel = new SpinnerNumberModel(FlowChartCAD.zoomscale,ZOOM_MIN,ZOOM_MAX,ZOOM_STEP);
     
     JPanel flowChartPanel = new JPanel(new BorderLayout()); // declair comment flow chart panel
     JScrollPane flowChartScPane = new JScrollPane(flowChartPanel); // moved from beginning to here. 
@@ -145,8 +145,17 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         menuclimate.addActionListener(this);
         menusolve.add(menuclimate);
         
+        JMenuItem menuRunoffCoefficients = new JMenuItem(McWBalance.langRB.getString("RUNOFF_COEFFICIENTS"), KeyEvent.VK_O); 
+        menuRunoffCoefficients.setActionCommand("RunoffCoefficientsWindow"); // Event trigger to make new project
+        menuRunoffCoefficients.addActionListener(this);
+        menusolve.add(menuRunoffCoefficients);
         
-        JMenuItem menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_A); 
+        JMenuItem menuSolveOrder = new JMenuItem(McWBalance.langRB.getString("SOLVE_ORDER"), KeyEvent.VK_O); 
+        menuSolveOrder.setActionCommand("SolveOrderWindow"); // Event trigger to make new project
+        menuSolveOrder.addActionListener(this);
+        menusolve.add(menuSolveOrder); 
+        
+        JMenuItem menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_S); 
         menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
         menusolvesall.addActionListener(this);
         menusolve.add(menusolvesall);
@@ -223,15 +232,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
         toolbarViewpanel.add(dateSpinnerLabel);
         toolbarViewpanel.add(dateSpinner);
-        //Locale Selector
-        SpinnerModel localeSelectorModel = new SpinnerListModel(McWBalance.localeprops.getProperty("AVAILABLE_LOCALES","en").split(","));
-        JSpinner localSelector = new JSpinner(localeSelectorModel);
-        localSelector.addChangeListener(e->{
-            McWBalance.setLocale(String.valueOf(localSelector.getValue()));
-            flowChartPanel.repaint();
-        });
-        toolbarViewpanel.add(localSelector);
-        
+       
         toolbarView.add(toolbarViewpanel);
         toolbarView.setFloatable(true);
         
@@ -290,10 +291,17 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             case "ClimateSetting" -> {
                 JFrame climateSettingWindow = new DataClimateSettingWindow(this);
             }
+            case "SolveOrderWindow" -> {
+                JFrame solveOrderWindow = new SolveOrderWindow(this);
+            }
+            case "RunoffCoefficientsWindow" ->{
+                JFrame runoffCoefficientWindow = new RunoffCoefficientWindow(this);
+            }
+            
+            
             case "solve" ->{
-                for (int i = 0; i < ProjSetting.balanceRunSettings.length; i++) {
-                    flowChart.solveBalance(ProjSetting.balanceRunSettings[i]);
-                }          
+                //TO DO
+
             }
             
         }
