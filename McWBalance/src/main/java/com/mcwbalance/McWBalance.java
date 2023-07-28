@@ -34,7 +34,7 @@ public class McWBalance {
     static Locale currentLocale;
     
     static ResourceBundle langRB;
-    static Properties titleBlock = new Properties();
+    static Properties style = new Properties();
     static Properties localeprops = new Properties();
     
     
@@ -46,9 +46,9 @@ public class McWBalance {
         langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE);
 
         try{
-            titleBlock.load(new java.io.FileInputStream("src/main/resources/TitleBlock.properties"));
+            style.load(new java.io.FileInputStream("src/main/resources/Style.properties"));
         } catch (IOException e) {
-            System.out.println("TitleBlock Properties Not Found");
+            System.out.println("Style Properties Not Found");
         }
         
         try{

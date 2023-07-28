@@ -75,13 +75,13 @@ public class DataClimateSettingWindow extends JFrame{
                 results[3] = ProjSetting.climateScenarios.climateScenarios[scenario].evap;
                 //results[4] = ProjSetting.climateScenarios.climateScenarios[scenario].snowpack;
                 
-                String[] rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_PRECIP","255,255,255").split(",");
+                String[] rgb = McWBalance.style.getProperty("PREF_COLOR_PRECIP","255,255,255").split(",");
                 rescolors[0] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
-                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_RAIN","255,255,255").split(",");
+                rgb = McWBalance.style.getProperty("PREF_COLOR_RAIN","255,255,255").split(",");
                 rescolors[1] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
-                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_MELT","255,255,255").split(",");
+                rgb = McWBalance.style.getProperty("PREF_COLOR_MELT","255,255,255").split(",");
                 rescolors[2] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
-                rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_EVAP","255,255,255").split(",");
+                rgb = McWBalance.style.getProperty("PREF_COLOR_EVAP","255,255,255").split(",");
                 rescolors[3] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
                 //rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_SNOWPACK","255,255,255").split(",");
                 //rescolors[4] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));

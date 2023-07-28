@@ -40,8 +40,8 @@ public class ResultViewer extends JFrame{
     
     ResultViewer(String title, double[][] results, String[] resultnames, Color[] rescolors, String verTitle){
         super(title);
-        pageWidth = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_WIDTH", "50"));
-        pageHeight = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_HEIGHT", "50"));
+        pageWidth = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_PAGE_WIDTH", "50"));
+        pageHeight = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_PAGE_HEIGHT", "50"));
         
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(pageWidth, pageHeight + 37);

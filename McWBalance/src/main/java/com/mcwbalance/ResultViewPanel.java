@@ -120,40 +120,40 @@ public class ResultViewPanel extends JComponent{
         scaledresults = new int[results.length][results[0].length];
         scaledresultsHorz = new int[results[0].length];
         
-        rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_BORDER","255,255,255").split(",");
+        rgb = McWBalance.style.getProperty("PREF_COLOR_BORDER","255,255,255").split(",");
         colorBorder = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
-        rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_GRIDLINE","255,255,255").split(",");
+        rgb = McWBalance.style.getProperty("PREF_COLOR_GRIDLINE","255,255,255").split(",");
         colorGridLine = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
         
         colorBackground = Color.WHITE;
         
-        pageHeight = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_HEIGHT", "800"));
-        pageWidth = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_PAGE_WIDTH", "1400"));
-        marginTop = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_MARGIN_TOP", "50"));
-        marginBottom = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_MARGIN_BOTTOM", "50"));
-        marginLeft = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_MARGIN_LEFT", "50")); 
-        marginRight = Integer.valueOf(McWBalance.titleBlock.getProperty("EMBEDDED_MARGIN_RIGHT", "50"));
+        pageHeight = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_PAGE_HEIGHT", "800"));
+        pageWidth = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_PAGE_WIDTH", "1400"));
+        marginTop = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_TOP", "50"));
+        marginBottom = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_BOTTOM", "50"));
+        marginLeft = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_LEFT", "50")); 
+        marginRight = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_RIGHT", "50"));
         
         plotHeight = pageHeight - marginTop - marginBottom;
         plotWidth = pageWidth - marginLeft - marginRight;
         
-        plotTickLength = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_TICK_LENGTH", "4"));
-        plotOffsetLabel = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LABEL_OFFSET", "5"));
-        plotInsetTitle = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_INSET_TITLE", "5"));
+        plotTickLength = Integer.valueOf(McWBalance.style.getProperty("PLOT_TICK_LENGTH", "4"));
+        plotOffsetLabel = Integer.valueOf(McWBalance.style.getProperty("PLOT_LABEL_OFFSET", "5"));
+        plotInsetTitle = Integer.valueOf(McWBalance.style.getProperty("PLOT_INSET_TITLE", "5"));
         
-        maximumVertIncs = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_MAX_VERT_INCREMENTS", "5")); 
-        maximumHorzIncs = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
+        maximumVertIncs = Integer.valueOf(McWBalance.style.getProperty("PLOT_MAX_VERT_INCREMENTS", "5")); 
+        maximumHorzIncs = Integer.valueOf(McWBalance.style.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
         
-        thickLine = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_THICK", "3")));
-        lineSeries = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LINE_SERIES", "2")));
-        thinLine = new BasicStroke(Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_THIN", "1")));
+        thickLine = new BasicStroke(Integer.valueOf(McWBalance.style.getProperty("LINE_THICK", "3")));
+        lineSeries = new BasicStroke(Integer.valueOf(McWBalance.style.getProperty("PLOT_LINE_SERIES", "2")));
+        thinLine = new BasicStroke(Integer.valueOf(McWBalance.style.getProperty("LINE_THIN", "1")));
         
-        shadowBoxTL = Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_SHADOWBOX_TL", "1"));
-        shadowBoxBR = Integer.valueOf(McWBalance.titleBlock.getProperty("LINE_SHADOWBOX_BR", "4"));
+        shadowBoxTL = Integer.valueOf(McWBalance.style.getProperty("LINE_SHADOWBOX_TL", "1"));
+        shadowBoxBR = Integer.valueOf(McWBalance.style.getProperty("LINE_SHADOWBOX_BR", "4"));
         
-        legendSymbol = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_SYMBOL", "10"));
-        legendPadding = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_PADDING", "10"));
-        legendSpacing = Integer.valueOf(McWBalance.titleBlock.getProperty("PLOT_LEGEND_SPACING", "4"));
+        legendSymbol = Integer.valueOf(McWBalance.style.getProperty("PLOT_LEGEND_SYMBOL", "10"));
+        legendPadding = Integer.valueOf(McWBalance.style.getProperty("PLOT_LEGEND_PADDING", "10"));
+        legendSpacing = Integer.valueOf(McWBalance.style.getProperty("PLOT_LEGEND_SPACING", "4"));
         
         timeStep = 0;
         

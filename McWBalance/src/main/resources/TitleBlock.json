@@ -1,0 +1,65 @@
+[
+    {
+        "template": {
+            "name": "DEFAULT",
+            "pageWidth": 5100,
+            "pageHeight": 3300,
+            "mainBoundaryLeftMargin": 223,
+            "mainBoundaryRightMargin": 87,
+            "mainBoundaryTopMargin": 92,
+            "mainBoundaryBottomMargin": 87,
+            "titleBoundaryWidth": 946,
+            "titleBoundaryHeigth": 413,
+            "clientNameUnderline": 70,
+            "projectNameUnderline": 140,
+            "figureNameUnderline": 280,
+            "logoRightBoundary": 507,
+            "projectNumberRightBoundary": 551,
+            "figureNumberRightBoundary": 887,
+            "lineThickWidth": 9,
+            "lineThinWidth": 3
+        }
+    },
+    {
+        "template": {
+            "name": "KP_L_11X17",
+            "pageWidth": 5100,
+            "pageHeight": 3300,
+            "mainBoundaryLeftMargin": 223,
+            "mainBoundaryRightMargin": 87,
+            "mainBoundaryTopMargin": 92,
+            "mainBoundaryBottomMargin": 87,
+            "titleBoundaryWidth": 946,
+            "titleBoundaryHeigth": 413,
+            "clientNameUnderline": 70,
+            "projectNameUnderline": 140,
+            "figureNameUnderline": 280,
+            "logoRightBoundary": 507,
+            "projectNumberRightBoundary": 551,
+            "figureNumberRightBoundary": 887,
+            "lineThickWidth": 9,
+            "lineThinWidth": 3
+        }
+    },
+    {
+        "template": {
+            "name": "KP_L_8X11",
+            "pageWidth": 2550,
+            "pageHeight": 3300,
+            "mainBoundaryLeftMargin": 102,
+            "mainBoundaryRightMargin": 87,
+            "mainBoundaryTopMargin": 92,
+            "mainBoundaryBottomMargin": 87,
+            "titleBoundaryWidth": 946,
+            "titleBoundaryHeigth": 413,
+            "clientNameUnderline": 70,
+            "projectNameUnderline": 140,
+            "figureNameUnderline": 280,
+            "logoRightBoundary": 507,
+            "projectNumberRightBoundary": 551,
+            "figureNumberRightBoundary": 887,
+            "lineThickWidth": 9,
+            "lineThinWidth": 3
+        }
+    }
+]

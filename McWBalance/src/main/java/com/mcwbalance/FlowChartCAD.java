@@ -32,7 +32,7 @@ public class FlowChartCAD extends JComponent{
     /**
      * Defines number of rows of Title Blocks to layout in Cad Space
      */
-    static final int NUMBER_OF_SHEETS_VERTICAL = 2; 
+    static final int NUMBER_OF_SHEETS_VERTICAL = 1; 
     /**
      * Sets working width of CAD Window
      */
@@ -43,6 +43,12 @@ public class FlowChartCAD extends JComponent{
     static final int CAD_AREA_HEIGHT = TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT * NUMBER_OF_SHEETS_VERTICAL + 1 + NUMBER_OF_SHEETS_VERTICAL;
     
     static boolean titleBlockVisible = true; 
+    
+    /**
+     * 
+     */
+    static TitleBlock tb = new TitleBlock();
+    
     
     /**
      * This is the active list of Elements
@@ -104,6 +110,7 @@ public class FlowChartCAD extends JComponent{
     public static double zoomscale = Preferences.zoomScale; 
     public static int drawdate = -1; 
     
+    
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -111,7 +118,7 @@ public class FlowChartCAD extends JComponent{
         
         // note items drawn before setting the transform will ignore the transform... 
         AffineTransform at = new AffineTransform();
-        at.setToScale(zoomscale, zoomscale);
+        at.setToScale(zoomscale*.32, zoomscale*.32); // Screen resolution is 96 dpi, paper is 300
         g2.transform(at);
         g2.setColor(defaultDrawColor);
         if (titleBlockVisible){
@@ -159,8 +166,6 @@ public class FlowChartCAD extends JComponent{
                             TitleBlockTabloidFigure.LOGO_RIGHT_BOUND_X + osetX,
                             TitleBlockTabloidFigure.TITLEBOUND_Y_TOP + TitleBlockTabloidFigure.TITLEBOUND_HEIGHT + osetY);
                             
-                    
-                    
                     
                     osetX = osetX + TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH +1;
                 }
