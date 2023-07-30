@@ -10,7 +10,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 
 /**
- *
+ * @deprecated 
  * @author amcintyre
  */
 public class DataDACWindow extends JDialog{

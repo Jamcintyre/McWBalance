@@ -6,6 +6,7 @@ package com.mcwbalance.generics;
 
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
+import com.mcwbalance.settings.Preferences;
 
 /**
  *
@@ -116,12 +117,12 @@ public class DataTimeIntSeries {
             tabbedString.append(value[i]);
             tabbedString.append(System.getProperty("line.separator"));
         }
-        tabbedString.append(ProjSetting.LIST_TERMINATOR);
+        tabbedString.append(Preferences.LIST_TERMINATOR);
         tabbedString.append(System.getProperty("line.separator"));
         return tabbedString; 
     }
     public void setFromStringLine(String line, int index){
-        if (index < MAX_LENGTH && index >= 0 && line != ProjSetting.LIST_TERMINATOR){
+        if (index < MAX_LENGTH && index >= 0 && line != Preferences.LIST_TERMINATOR){
             if (index +1 < length){
                 int newdayArray[] = new int[index +1];
                 int newvalueArray[] = new int[index +1];

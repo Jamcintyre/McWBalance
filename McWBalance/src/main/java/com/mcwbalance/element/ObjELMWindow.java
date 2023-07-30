@@ -8,7 +8,7 @@ import com.mcwbalance.MainWindow;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.transfer.ObjTRNList;
 import com.mcwbalance.project.ProjSetting;
-import com.mcwbalance.dacapacity.DataDACPlotWIndow;
+import com.mcwbalance.dacapacity.DACPlotWindow;
 import com.mcwbalance.dacapacity.DataDACTableModel;
 import com.mcwbalance.settings.Limit;
 import java.awt.Color;
@@ -422,9 +422,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         // TAB 3 for handelling Depth Area Capacity
         JPanel tab3 = new JPanel();
  
-        DataDACTableModel tab3TableModelDAC = new DataDACTableModel();
-        tab3TableModelDAC.setAllData(buffObjELM.dAC.elev, buffObjELM.dAC.area, buffObjELM.dAC.vol);
-        JTable tab3TableDAC = new JTable(tab3TableModelDAC);
+        JTable tab3TableDAC = new JTable(buffObjELM.dAC);
         
         JPopupMenu popupMenuDACTable = new JPopupMenu();
         JMenuItem popupMenuItemDACSelectAll = new JMenuItem("Select All");
@@ -432,18 +430,18 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
                 tab3TableDAC.setColumnSelectionInterval(0, 2);
                 tab3TableDAC.setRowSelectionInterval(0, tab3TableDAC.getRowCount()-1);
         });
-        JMenuItem popupMenuItemDACDelete = new JMenuItem("Delete Selection");
+        JMenuItem popupMenuItemDACDelete = new JMenuItem("Delete Rows (not Implemented");
         popupMenuItemDACDelete.addActionListener(e->{
-                tab3TableModelDAC.removeData(tab3TableDAC.getSelectedRows(),tab3TableDAC.getSelectedColumns());
+                //buffObjELM.dAC.removeRows(tab3TableDAC.getSelectedRows());
         });
         JMenuItem popupMenuItemDACCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
         popupMenuItemDACCopy.addActionListener(e->{
                 System.out.println("popup menu Copy button hit");
         });
 
-        JMenuItem popupMenuItemDACPaste = new JMenuItem("Paste (All 3 Columns El. A V)");
+        JMenuItem popupMenuItemDACPaste = new JMenuItem("Paste");
         popupMenuItemDACPaste.addActionListener(e->{
-                tab3TableModelDAC.pasteFromClipboard(tab3TableDAC.getSelectedRows(),tab3TableDAC.getSelectedColumns());
+                buffObjELM.dAC.pasteFromClipboard(tab3TableDAC.getSelectedRows(),tab3TableDAC.getSelectedColumns());
         });
         
         popupMenuDACTable.add(popupMenuItemDACSelectAll);
@@ -458,9 +456,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         
         JButton tab3buttonPlotDAC = new JButton("Show DAC");
         tab3buttonPlotDAC.addActionListener(e -> {
-            // save the current DAC to the buffer. this will result in an update to the ELM
-            buffObjELM.dAC.setData(tab3TableModelDAC.getElevColumn(), tab3TableModelDAC.getAreaColumn(), tab3TableModelDAC.getVolColumn());
-            DataDACPlotWIndow DACplotwindow = new DataDACPlotWIndow();
+            DACPlotWindow DACplotwindow = new DACPlotWindow();
             DACplotwindow.plotWindow(buffObjELM.dAC);
 
         });
@@ -747,7 +743,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         bSave.addActionListener(e ->{ // uses a lambda instead of needing seperate listener override
             buffObjELM.objname = tfobjName.getText();
             buffObjELM.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE");
-            buffObjELM.dAC.setData(tab3TableModelDAC.getElevColumn(), tab3TableModelDAC.getAreaColumn(), tab3TableModelDAC.getVolColumn());
+
 
             buffObjELM.targetOperatingVol.setAllData(tab4TableModelTargetVol.getDayColumn(), tab4TableModelTargetVol.getVolColumn()); // problem seems to lie here
             

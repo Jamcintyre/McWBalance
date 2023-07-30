@@ -30,7 +30,7 @@ public class SolveOrderWindow extends JFrame{
     public SolveOrderWindow(JFrame owner){
         super(McWBalance.langRB.getString("SOLVE_ORDER"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(owner);
+        
         
         JTable table = new JTable(ProjSetting.solveOrder);
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
@@ -67,6 +67,7 @@ public class SolveOrderWindow extends JFrame{
         this.add(cpanel, BorderLayout.CENTER); 
         this.add(bpanel, BorderLayout.SOUTH); 
         this.pack();
+        this.setLocationRelativeTo(owner);
         this.setVisible(true);
     }
 }

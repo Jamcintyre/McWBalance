@@ -1,11 +1,11 @@
 package com.mcwbalance.element;
 
+import com.mcwbalance.dacapacity.DAC;
 import com.mcwbalance.landcover.DataCatchment;
 import com.mcwbalance.generics.DataTimeDoubleSeries;
 import com.mcwbalance.generics.DataTimeIntSeries;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
-import com.mcwbalance.dacapacity.DataDAC;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.result.ResultStorageVolume;
 import com.mcwbalance.result.ResultLevel;
@@ -57,7 +57,7 @@ public class ObjELM {
     public int oSetYStorage;
     
     public Boolean hasStorageEvapandPrecip; // used to indicate storage is exposed (as opposed to a closed top tank)
-    public DataDAC dAC; // note will only be constructed if boolean hasStorage is selected; 
+    public DAC dAC; // note will only be constructed if boolean hasStorage is selected; 
 
     public IndexList inflows;
     public IndexList outflows;
@@ -161,7 +161,7 @@ public class ObjELM {
         showStorage = false;
         oSetXStorage = 0;
         oSetYStorage = 0;
-        dAC = new DataDAC(1);
+        dAC = new DAC();
 
         targetOperatingVol = new DataTimeIntSeries(1);
         minDepth = new DataTimeDoubleSeries(1);

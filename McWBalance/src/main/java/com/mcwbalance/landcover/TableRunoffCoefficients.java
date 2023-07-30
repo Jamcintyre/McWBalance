@@ -7,6 +7,7 @@ package com.mcwbalance.landcover;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
+import com.mcwbalance.settings.Preferences;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -139,7 +140,7 @@ public class TableRunoffCoefficients extends AbstractTableModel{
             }
             saveString.append(nextLine);
         }
-        saveString.append(ProjSetting.LIST_TERMINATOR);
+        saveString.append(Preferences.LIST_TERMINATOR);
         return saveString.toString();
     }
     

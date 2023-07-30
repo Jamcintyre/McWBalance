@@ -162,6 +162,11 @@ public class DataDAC {
             vol[i] = (int)(totArea*factor);
         }
     }
+    /**
+     * @deprecated - moved to tableDAC
+     * @param targetElv
+     * @return 
+     */
     public int getVolfromEl(double targetElv){
         double slopeofVol;
         if(targetElv <= elev[0]){
@@ -181,6 +186,11 @@ public class DataDAC {
         }
         return -1; //Should never return -1 unless something is messed. 
     }
+    /**
+     * @deprecated - moved to Table DAC
+     * @param targetElv
+     * @return 
+     */
     public int getAreafromEl(double targetElv){
         double slopeofarea;
         if(targetElv <= elev[0]){
@@ -200,6 +210,11 @@ public class DataDAC {
         }
         return -1; //Should never return -1 unless something is messed. 
     }
+    /**
+     * @deprecated moved to TableDAC
+     * @param targetVol
+     * @return 
+     */
     public int getAreafromVol(int targetVol){
         double slopeofarea;
         if(targetVol <= vol[0]){
@@ -219,6 +234,11 @@ public class DataDAC {
         }
         return -1; //Should never return -1 unless something is messed. 
     }
+    /**
+     * @deprecated - moved to TableDAC
+     * @param targetVol
+     * @return 
+     */
     public double getElfromVol(int targetVol){
         double slopeofelev;
         if(targetVol <= vol[0]){

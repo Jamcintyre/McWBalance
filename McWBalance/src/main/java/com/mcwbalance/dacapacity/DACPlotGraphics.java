@@ -16,7 +16,7 @@ import javax.swing.JComponent;
  *
  * @author amcintyre
  */
-public class DataDACPlotGraphics extends JComponent{
+public class DACPlotGraphics extends JComponent{
     private static final int PAGE_WIDTH = 1360;
     private static final int PAGE_HEIGHT = 800;
     private static final int MARGIN_TOP = 70;
@@ -85,7 +85,7 @@ public class DataDACPlotGraphics extends JComponent{
         100000000,150000000,200000000,250000000,300000000,400000000,500000000
     };
 
-    DataDACPlotGraphics(DataDAC dAC){
+    DACPlotGraphics(DAC dAC){
         minElev = dAC.elev[0];
         rangeElev =  dAC.elev[dAC.elev.length-1] - minElev;
         rangeArea =  dAC.area[dAC.vol.length-1] - minArea;

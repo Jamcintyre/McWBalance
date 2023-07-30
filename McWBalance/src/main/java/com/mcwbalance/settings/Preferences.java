@@ -12,6 +12,8 @@ import java.awt.Color;
  */
 public class Preferences {
     
+    public static final String LIST_TERMINATOR = "---END---";
+    
     public static final int LIGHT_MODE = 0; 
     public static final int DARK_MODE = 1;
     public static final int NINETIES_MODE = 2;

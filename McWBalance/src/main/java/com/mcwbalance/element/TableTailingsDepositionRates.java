@@ -6,6 +6,7 @@ package com.mcwbalance.element;
 
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
+import com.mcwbalance.settings.Preferences;
 import com.mcwbalance.util.CalcBasics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -500,7 +501,7 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
             }
             saveString.append(nextLine);
         }
-        saveString.append(ProjSetting.LIST_TERMINATOR);
+        saveString.append(Preferences.LIST_TERMINATOR);
         return saveString.toString();
     }
     

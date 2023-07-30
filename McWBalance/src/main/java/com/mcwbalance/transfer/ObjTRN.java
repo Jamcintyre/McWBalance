@@ -5,6 +5,7 @@ import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.settings.Limit;
+import com.mcwbalance.settings.Preferences;
 import java.awt.Rectangle;
 
 public class ObjTRN {// class to catalog properties of a Pipe or other water transfer Mechanism
@@ -253,7 +254,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
             saveString.append(pumpRateDay[i]);
             saveString.append(nextLine);
         }
-        saveString.append(ProjSetting.LIST_TERMINATOR);
+        saveString.append(Preferences.LIST_TERMINATOR);
         saveString.append(nextLine);
         saveString.append("Object State");
         saveString.append(nextLine);
@@ -265,7 +266,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
             saveString.append(state[i]);
             saveString.append(nextLine);
         }
-        saveString.append(ProjSetting.LIST_TERMINATOR);
+        saveString.append(Preferences.LIST_TERMINATOR);
         saveString.append(nextLine);
         return saveString;
     }
@@ -316,7 +317,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
             if (lines.length <= lc){
                 return;
             }
-            if (lines[lc].equals(ProjSetting.LIST_TERMINATOR)){
+            if (lines[lc].equals(Preferences.LIST_TERMINATOR)){
                 break; 
             }else if (i < MAX_PUMP_RATES){
                 pumpTime[i] = Integer.parseInt(lines[lc].split("\t")[0]);
@@ -331,7 +332,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
             if (lines.length <= lc){
                 break;
             }
-            if (lines[lc].equals(ProjSetting.LIST_TERMINATOR)){
+            if (lines[lc].equals(Preferences.LIST_TERMINATOR)){
                 break; 
             }else if (i < Limit.MAX_STATES){
                 stateTime[i] = Integer.parseInt(lines[lc].split("\t")[0]);

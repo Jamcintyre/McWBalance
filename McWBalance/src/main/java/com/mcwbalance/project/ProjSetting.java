@@ -52,8 +52,7 @@ public class ProjSetting {
      * @see ObjELMList
      */
     
-    public static final String LIST_TERMINATOR = "---END---";
-    public static final int MAX_DEPO_RATES = 10;
+    
     
     // Misc Settings for Formatting
     public static int precisionDay = 1; // number of decimal places to use in actual calcuations;
