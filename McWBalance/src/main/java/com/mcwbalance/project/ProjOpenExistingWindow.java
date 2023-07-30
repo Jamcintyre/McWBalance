@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mcwbalance;
+package com.mcwbalance.project;
 
+import com.mcwbalance.MainWindow;
+import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.ObjTRNList;
 import com.mcwbalance.element.ObjELMList;

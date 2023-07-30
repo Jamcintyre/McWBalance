@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mcwbalance;
+package com.mcwbalance.solve;
 
+import com.mcwbalance.McWBalance;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -25,7 +27,7 @@ public class SolveOrderWindow extends JFrame{
     private final int TABLE_ROW_HEIGHT = 20;
     private final Dimension TABLE_PREF_DIMENSION = new Dimension(360,TABLE_ROW_HEIGHT*20);
     
-    SolveOrderWindow(JFrame owner){
+    public SolveOrderWindow(JFrame owner){
         super(McWBalance.langRB.getString("SOLVE_ORDER"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(owner);

@@ -5,8 +5,8 @@ package com.mcwbalance.flowchart;
 
 */
 
-import com.mcwbalance.Preferences;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Preferences;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.flowchart.TitleBlockTabloidFigure;
 import com.mcwbalance.flowchart.TitleBlock;
 import com.mcwbalance.util.CalcBasics;

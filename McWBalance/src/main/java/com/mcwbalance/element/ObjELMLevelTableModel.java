@@ -5,7 +5,7 @@
 package com.mcwbalance.element;
 
 import com.mcwbalance.generics.DataTimeDoubleSeries;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

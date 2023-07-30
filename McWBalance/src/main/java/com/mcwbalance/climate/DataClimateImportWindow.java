@@ -5,7 +5,7 @@
 package com.mcwbalance.climate;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.WarningDialog;
 import java.io.BufferedReader;

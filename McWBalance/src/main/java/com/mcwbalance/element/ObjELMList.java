@@ -1,7 +1,7 @@
 
 package com.mcwbalance.element;
 
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 
 /**

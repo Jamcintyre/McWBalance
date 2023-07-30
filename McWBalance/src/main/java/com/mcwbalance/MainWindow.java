@@ -1,6 +1,11 @@
 package com.mcwbalance;
 
 
+import com.mcwbalance.project.ProjSettingWindow;
+import com.mcwbalance.project.ProjOpenExistingWindow;
+import com.mcwbalance.project.ProjSetting;
+import com.mcwbalance.settings.Preferences;
+import com.mcwbalance.solve.SolveOrderWindow;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.util.ConfirmSaveDialog;
 import com.mcwbalance.transfer.ObjTRNWindow;

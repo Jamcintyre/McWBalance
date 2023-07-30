@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mcwbalance;
+package com.mcwbalance.project;
 
+import com.mcwbalance.MainWindow;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.WarningDialog;
 import java.awt.Dimension;
@@ -35,7 +36,7 @@ public class ProjSettingWindow extends JDialog{
     private int closeAction = 1;
     
 
-   ProjSettingWindow(){
+   public ProjSettingWindow(){
         
         super(MainWindow.mainframe, "Project Settings", true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

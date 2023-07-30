@@ -1,12 +1,13 @@
-package com.mcwbalance;
+package com.mcwbalance.project;
 
+import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.flowchart.ImageLib;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.climate.TableClimateScenarios;
+import com.mcwbalance.element.ObjELMList;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Properties;
 
 /**
 * This Class is for storage and retrieval of all key project software related settings. 
@@ -29,7 +30,6 @@ public class ProjSetting {
     public static String balanceName = "SITE WATER BALANCE";
     
     public static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
-    
     public static TableClimateScenarios climateScenarios = new TableClimateScenarios(1);
     public static ImageLib imageLib = new ImageLib(); 
     
@@ -75,8 +75,6 @@ public class ProjSetting {
         balanceName = "SITE WATER BALANCE";
         runoffCoefficients = new TableRunoffCoefficients();
         climateScenarios = new TableClimateScenarios(1);
-        
-
     }
     
     public static StringBuilder getSaveString(){

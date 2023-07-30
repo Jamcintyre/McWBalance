@@ -2,7 +2,7 @@
 package com.mcwbalance.transfer;
 
 import com.mcwbalance.flowchart.FlowChartCAD;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;

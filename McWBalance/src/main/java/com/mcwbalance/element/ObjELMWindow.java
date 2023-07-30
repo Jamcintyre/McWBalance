@@ -7,7 +7,7 @@ import com.mcwbalance.generics.DataNameListModel;
 import com.mcwbalance.MainWindow;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.transfer.ObjTRNList;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.dacapacity.DataDACPlotWIndow;
 import com.mcwbalance.dacapacity.DataDACTableModel;
 import com.mcwbalance.settings.Limit;

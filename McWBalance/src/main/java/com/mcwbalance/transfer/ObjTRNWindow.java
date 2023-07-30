@@ -3,7 +3,7 @@ package com.mcwbalance.transfer;
 
 import com.mcwbalance.MainWindow;
 import com.mcwbalance.generics.ObjStateTableModel;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 import java.awt.Color;
 import javax.swing.DefaultCellEditor;

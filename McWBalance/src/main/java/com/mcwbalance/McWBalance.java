@@ -4,6 +4,8 @@
 
 package com.mcwbalance;
 
+import com.mcwbalance.project.ProjSetting;
+import com.mcwbalance.settings.Preferences;
 import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.image.BufferedImage;
 import java.io.File;

@@ -5,7 +5,7 @@
 package com.mcwbalance.landcover;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

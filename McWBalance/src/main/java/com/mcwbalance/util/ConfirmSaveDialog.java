@@ -4,7 +4,7 @@
  */
 package com.mcwbalance.util;
 
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;

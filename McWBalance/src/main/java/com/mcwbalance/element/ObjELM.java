@@ -3,7 +3,7 @@ package com.mcwbalance.element;
 import com.mcwbalance.landcover.DataCatchment;
 import com.mcwbalance.generics.DataTimeDoubleSeries;
 import com.mcwbalance.generics.DataTimeIntSeries;
-import com.mcwbalance.ProjSetting;
+import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
 import com.mcwbalance.dacapacity.DataDAC;
 import com.mcwbalance.result.ResultFlow;
