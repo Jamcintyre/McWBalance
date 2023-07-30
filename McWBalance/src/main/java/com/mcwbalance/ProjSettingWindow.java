@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.WarningDialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -160,7 +161,7 @@ public class ProjSettingWindow extends JDialog{
         tab1DurationLabelConstr.gridy = 6;
         tab1DurationLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1DurationLabel,tab1DurationLabelConstr);
-        SpinnerModel tab1DurationSpinnerModel = new SpinnerNumberModel(ProjSetting.duration,1,ProjSetting.MAX_DURATION,1);
+        SpinnerModel tab1DurationSpinnerModel = new SpinnerNumberModel(ProjSetting.duration,1,Limit.MAX_DURATION,1);
         JSpinner tab1DurationSpinner = new JSpinner(tab1DurationSpinnerModel);
         GridBagConstraints tab1DurationSpinnerConstr = new GridBagConstraints();
         tab1DurationSpinnerConstr.gridx = 1;

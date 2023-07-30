@@ -10,6 +10,7 @@ import com.mcwbalance.element.ObjELMList;
 import com.mcwbalance.util.WarningDialog;
 import com.mcwbalance.landcover.RunoffCoefficientWindow;
 import com.mcwbalance.climate.DataClimateSettingWindow;
+import com.mcwbalance.settings.Limit;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
@@ -230,7 +231,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         toolbarViewpanel.add(zoomSpinner);
         
         //Date Selector
-        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,ProjSetting.MAX_DURATION,1);
+        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,Limit.MAX_DURATION,1);
         JSpinner dateSpinner = new JSpinner(dateSpinnerModel);
         dateSpinner.setMaximumSize(new Dimension(50, 30));
         dateSpinner.addChangeListener(e->{

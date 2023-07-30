@@ -9,6 +9,7 @@ import com.mcwbalance.dacapacity.DataDAC;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.result.ResultStorageVolume;
 import com.mcwbalance.result.ResultLevel;
+import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -34,7 +35,7 @@ public class ObjELM {
 
     public Boolean hasCatchment;
     public int nCatchments;
-    public DataCatchment[] Catchment = new DataCatchment[ProjSetting.MAX_LAND_COVERS + 1]; // needs a totalizer value.
+    public DataCatchment[] Catchment = new DataCatchment[Limit.MAX_LAND_COVERS + 1]; // needs a totalizer value.
     /**
      * @deprecated 
      */
@@ -111,8 +112,8 @@ public class ObjELM {
         "CLOSEDWETCOVER"
     };
 
-    public int stateTime[] = new int[ProjSetting.MAX_STATES];
-    public String state[] = new String[ProjSetting.MAX_STATES];
+    public int stateTime[] = new int[Limit.MAX_STATES];
+    public String state[] = new String[Limit.MAX_STATES];
     
     public ResultLevel resultWaterLevel;
     public ResultLevel resultSolidsLevel;
@@ -170,22 +171,22 @@ public class ObjELM {
         
         depositionRates = new TableTailingsDepositionRates();
 
-        inflows = new IndexList(ProjSetting.MAX_TRNS);
-        outflows = new IndexList(ProjSetting.MAX_TRNS);
-        tailsTRNOptions = new IndexList(ProjSetting.MAX_TRNS);
+        inflows = new IndexList(Limit.MAX_TRNS);
+        outflows = new IndexList(Limit.MAX_TRNS);
+        tailsTRNOptions = new IndexList(Limit.MAX_TRNS);
         tailsTRN = -1;
 
-        inflowFixedTRN = new IndexList(ProjSetting.MAX_TRNS);
-        outflowFixedTRN = new IndexList(ProjSetting.MAX_TRNS);
-        inflowOnDemandTRN = new IndexList(ProjSetting.MAX_TRNS);
-        outflowOnDemandTRN = new IndexList(ProjSetting.MAX_TRNS);
+        inflowFixedTRN = new IndexList(Limit.MAX_TRNS);
+        outflowFixedTRN = new IndexList(Limit.MAX_TRNS);
+        inflowOnDemandTRN = new IndexList(Limit.MAX_TRNS);
+        outflowOnDemandTRN = new IndexList(Limit.MAX_TRNS);
 
-        overflowOptions = new IndexList(ProjSetting.MAX_TRNS);
+        overflowOptions = new IndexList(Limit.MAX_TRNS);
         overflowTRN = -1;
 
         stateTime[0] = -1;
-        for (int i = 1; i < ProjSetting.MAX_STATES; i++) {
-            stateTime[i] = ProjSetting.MAX_DURATION;
+        for (int i = 1; i < Limit.MAX_STATES; i++) {
+            stateTime[i] = Limit.MAX_DURATION;
         }
         state[0] = "ACTIVE";
     }

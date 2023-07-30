@@ -5,6 +5,7 @@
 package com.mcwbalance.generics;
 
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 
 /**
  *
@@ -14,7 +15,7 @@ public class DataTimeIntSeries {
     public int length;
     private int[] day;
     private int[] value;
-    public static int MAX_LENGTH = ProjSetting.MAX_LEVELS; // maximum length of DAC that will be accepted,  intention is about 1000 or 1500 to allow for 150 m tall TSF 0.1 m increments. 
+    public static int MAX_LENGTH = Limit.MAX_LEVELS; // maximum length of DAC that will be accepted,  intention is about 1000 or 1500 to allow for 150 m tall TSF 0.1 m increments. 
     public static final int DAY_NULL = -1;
     public static final int VAL_NULL = -1;
     

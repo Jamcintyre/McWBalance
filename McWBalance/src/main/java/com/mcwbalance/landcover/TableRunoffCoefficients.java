@@ -6,6 +6,7 @@ package com.mcwbalance.landcover;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -18,7 +19,7 @@ import javax.swing.table.AbstractTableModel;
 public class TableRunoffCoefficients extends AbstractTableModel{
     String[] columnNames = McWBalance.langRB.getString("RUNOFF_COEFFICIENTS_TABLE_HEADINGS").split(",");
     private static final int NUMBER_OF_COLUMNS = 13;
-    private static final int MAX_LAND_COVERS = ProjSetting.MAX_LAND_COVERS;
+    private static final int MAX_LAND_COVERS = Limit.MAX_LAND_COVERS;
     private Object[][] data;
     private int length = 1; 
     

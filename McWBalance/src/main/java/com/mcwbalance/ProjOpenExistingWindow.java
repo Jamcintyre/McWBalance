@@ -8,6 +8,7 @@ import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.ObjTRNList;
 import com.mcwbalance.element.ObjELMList;
 import static com.mcwbalance.MainWindow.mainframe;
+import com.mcwbalance.settings.Limit;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
@@ -71,7 +72,7 @@ public class ProjOpenExistingWindow extends JDialog{
                                     case "trn" -> {
                                         System.out.println(entryName[0]);
                                         objNumber = Integer.parseInt(entryName[0]); //
-                                        if(objNumber < ProjSetting.MAX_TRNS){
+                                        if(objNumber < Limit.MAX_TRNS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
                                             FlowChartCAD.tRNList.tRNs[objNumber].setFromString(inbuffer);
@@ -83,7 +84,7 @@ public class ProjOpenExistingWindow extends JDialog{
                                     }
                                     case "elm" -> {
                                         objNumber = Integer.parseInt(entryName[0]); //
-                                        if(objNumber < ProjSetting.MAX_ELMS){
+                                        if(objNumber < Limit.MAX_ELMS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
                                             FlowChartCAD.eLMList.eLMs[objNumber].setFromString(inbuffer);

@@ -4,6 +4,7 @@ package com.mcwbalance.transfer;
 import com.mcwbalance.MainWindow;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 import java.awt.Color;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -99,7 +100,7 @@ public class ObjTRNWindow extends JDialog {
         ObjStateTableModel tab3TableModelState = new ObjStateTableModel();
         JTable tab3TableState = new JTable(tab3TableModelState);
         
-        for(int i = 0; i < ProjSetting.MAX_STATES; i++){
+        for(int i = 0; i < Limit.MAX_STATES; i++){
             tab3TableModelState.setValueAt((int)buffObjTRN.stateTime[i], i, 0);
             tab3TableModelState.setValueAt((String)buffObjTRN.state[i], i, 1);
         }
@@ -209,7 +210,7 @@ public class ObjTRNWindow extends JDialog {
                 buffObjTRN.pumpTime[i] = (int)tab2TableModelRate.getValueAt(i, 0);   
                 buffObjTRN.pumpRateDay[i] = (double)tab2TableModelRate.getValueAt(i, 1);                    
             }
-            for(int i = 0; i < ProjSetting.MAX_STATES; i++){
+            for(int i = 0; i < Limit.MAX_STATES; i++){
                 buffObjTRN.stateTime[i] = (int)tab3TableModelState.getValueAt(i, 0);
                 buffObjTRN.state[i] = (String)tab3TableModelState.getValueAt(i, 1);
             }

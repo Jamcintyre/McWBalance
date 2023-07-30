@@ -6,6 +6,7 @@ package com.mcwbalance.element;
 
 import com.mcwbalance.generics.DataTimeDoubleSeries;
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -21,7 +22,7 @@ import javax.swing.table.AbstractTableModel;
 public class ObjELMLevelTableModel extends AbstractTableModel {
     
     private final String[] columnNames = {"Model Day", "Level (m)"};
-    private final Object[][] data = new Object[ProjSetting.MAX_LEVELS][2];
+    private final Object[][] data = new Object[Limit.MAX_LEVELS][2];
     private int datalength;
     
 
@@ -31,7 +32,7 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
     ObjELMLevelTableModel(){
         data[0][0] = 0;
         data[0][1] = 0;
-        for (int i = 1; i < ProjSetting.MAX_LEVELS; i ++){
+        for (int i = 1; i < Limit.MAX_LEVELS; i ++){
             data[i][0] = DAY_NULL;
             data[i][1] = VAL_NULL;
         }
@@ -73,7 +74,7 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
     }
     public int[] getDayColumn(){
         datalength = 0; 
-        for (int i = 0; i < ProjSetting.MAX_LEVELS; i ++){
+        for (int i = 0; i < Limit.MAX_LEVELS; i ++){
             if((int)data[i][0] == DAY_NULL || data[i][0] == null){
             break; 
             }

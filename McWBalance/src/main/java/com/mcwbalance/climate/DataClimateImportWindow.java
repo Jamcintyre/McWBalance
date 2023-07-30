@@ -6,6 +6,7 @@ package com.mcwbalance.climate;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.WarningDialog;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -43,7 +44,7 @@ public class DataClimateImportWindow extends JDialog{
                     try {
                         reader = new BufferedReader(new FileReader(fileChooser.getSelectedFile()));
                         String line;
-                        for (int i = 0; i < ProjSetting.MAX_DURATION + 3; i++) { // climate data file has 2 headers and a 0 row
+                        for (int i = 0; i < Limit.MAX_DURATION + 3; i++) { // climate data file has 2 headers and a 0 row
                             if ((line = reader.readLine()) == null) {
                                 break;
                             }

@@ -2,6 +2,7 @@
 package com.mcwbalance.element;
 
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 
 /**
  * Contains a complete array of all ELMs present in the model as well as placeholder values. 
@@ -11,13 +12,13 @@ import com.mcwbalance.ProjSetting;
 public class ObjELMList {
 
     public int count; // counter to keep track fo list size
-    public ObjELM[] eLMs= new ObjELM[ProjSetting.MAX_ELMS]; 
+    public ObjELM[] eLMs= new ObjELM[Limit.MAX_ELMS]; 
     /**
      * Constructor initializes a blank array of ELMs of generally 0 values to avoid issues with null values
      */
      public ObjELMList(){
         count = 0; // sets number of elements to 0 to start
-        for (int i = 0; i < ProjSetting.MAX_ELMS; i++){
+        for (int i = 0; i < Limit.MAX_ELMS; i++){
             eLMs[i] = new ObjELM(); // Constructs the element so there is a place in memory for it, only needed for Object arrays
             eLMs[i].x = 0;
             eLMs[i].y = 0;
@@ -33,7 +34,7 @@ public class ObjELMList {
       * @return 0 is returned of successful, -1 if unsuccessful
       */
     public int addELM(int inX, int inY){
-        if (count - 1 == ProjSetting.MAX_ELMS){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
+        if (count - 1 == Limit.MAX_ELMS){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
             System.out.println("Max Number of Objects");
         return -1; // returns -1 as error code, object could not be added
         }

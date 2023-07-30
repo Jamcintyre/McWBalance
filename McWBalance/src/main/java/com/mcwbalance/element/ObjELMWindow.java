@@ -10,6 +10,7 @@ import com.mcwbalance.transfer.ObjTRNList;
 import com.mcwbalance.ProjSetting;
 import com.mcwbalance.dacapacity.DataDACPlotWIndow;
 import com.mcwbalance.dacapacity.DataDACTableModel;
+import com.mcwbalance.settings.Limit;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -621,7 +622,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         ObjStateTableModel tab6TableModelState = new ObjStateTableModel();
         //tab6TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
         JTable tab6TableState = new JTable(tab6TableModelState);      
-        for(int i = 0; i < ProjSetting.MAX_STATES; i++){
+        for(int i = 0; i < Limit.MAX_STATES; i++){
             tab6TableModelState.setValueAt((int)buffObjELM.stateTime[i], i, 0);
             tab6TableModelState.setValueAt((String)buffObjELM.state[i], i, 1);
         }

@@ -5,6 +5,7 @@
 package com.mcwbalance.generics;
 
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -28,7 +29,7 @@ public class ObjStateTableModel extends AbstractTableModel{
     /**
      * Data structure for this table model is of fixed size
      */
-    private final Object[][] data = new Object[ProjSetting.MAX_STATES][2];
+    private final Object[][] data = new Object[Limit.MAX_STATES][2];
         
     @Override 
     public Object getValueAt(int row, int col){

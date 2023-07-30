@@ -5,6 +5,7 @@
 package com.mcwbalance.climate;
 
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 
 /**
  *
@@ -47,8 +48,8 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
         sLine = allLines[0].split(delim);
         description = sLine[1];
         
-        if (allLines.length > ProjSetting.MAX_DURATION + 3){
-            setSize(ProjSetting.MAX_DURATION + 1);
+        if (allLines.length > Limit.MAX_DURATION + 3){
+            setSize(Limit.MAX_DURATION + 1);
         }
         else if (allLines.length <= 2){
             setSize(1);

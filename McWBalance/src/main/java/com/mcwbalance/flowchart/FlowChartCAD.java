@@ -14,6 +14,7 @@ import com.mcwbalance.transfer.ObjTRN;
 import com.mcwbalance.transfer.ObjTRNList;
 import com.mcwbalance.element.ObjELM;
 import com.mcwbalance.element.ObjELMList;
+import com.mcwbalance.settings.Limit;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -314,13 +315,13 @@ public class FlowChartCAD extends JComponent{
        ProjSetting.hasChangedSinceSave = true;
    }
     public void addSelectionELM(int inNumber){
-        if(inNumber >=0 && inNumber <= ProjSetting.MAX_ELMS){
+        if(inNumber >=0 && inNumber <= Limit.MAX_ELMS){
             eLMList.eLMs[inNumber].isSelected = true; 
         }
         ProjSetting.hasChangedSinceSave = true;
     }
     public void addSelectionTRN(int inNumber){
-        if(inNumber >=0 && inNumber <= ProjSetting.MAX_TRNS){
+        if(inNumber >=0 && inNumber <= Limit.MAX_TRNS){
             tRNList.tRNs[inNumber].isSelected = true; 
         }
         ProjSetting.hasChangedSinceSave = true;
@@ -332,10 +333,10 @@ public class FlowChartCAD extends JComponent{
         return tRNList.tRNs[inNumber].isSelected;
     }
     public void clearSelection(){
-        for (int i = 0; i < ProjSetting.MAX_ELMS; i ++){
+        for (int i = 0; i < Limit.MAX_ELMS; i ++){
            eLMList.eLMs[i].isSelected = false;
         }
-        for (int i = 0; i < ProjSetting.MAX_TRNS; i ++){
+        for (int i = 0; i < Limit.MAX_TRNS; i ++){
            tRNList.tRNs[i].isSelected = false;
         }
     }

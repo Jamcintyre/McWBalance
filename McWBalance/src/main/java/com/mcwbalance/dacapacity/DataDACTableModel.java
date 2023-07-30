@@ -13,7 +13,7 @@ import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
+ * @deprecated 
  * @author amcintyre
  */
 public class DataDACTableModel extends AbstractTableModel{
@@ -70,8 +70,6 @@ public class DataDACTableModel extends AbstractTableModel{
     public void setValueAt(Object value, int row, int col){
         data[row][col] = value;
         fireTableCellUpdated(row,col);
-        
-        
     }
     /**
      * This method also sets the datalength and should be called imediately prior to the getAreaColumn and getVolColumn to avoid missmatch;
@@ -125,7 +123,11 @@ public class DataDACTableModel extends AbstractTableModel{
     }
     
 
-    
+    /**
+     * @deprecated - moved to TableDAC
+     * @param selectedrow
+     * @param selectedcol 
+     */
     public void pasteFromClipboard(int[] selectedrow, int[] selectedcol){
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable content = clipboard.getContents(this);

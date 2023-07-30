@@ -4,6 +4,7 @@ package com.mcwbalance.transfer;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.ProjSetting;
 import com.mcwbalance.result.ResultFlow;
+import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 
 public class ObjTRN {// class to catalog properties of a Pipe or other water transfer Mechanism
@@ -71,8 +72,8 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         "",
     };
     
-    public int stateTime[] = new int[ProjSetting.MAX_STATES];
-    public String state[] = new String[ProjSetting.MAX_STATES];
+    public int stateTime[] = new int[Limit.MAX_STATES];
+    public String state[] = new String[Limit.MAX_STATES];
     
     public ResultFlow result; 
     
@@ -332,7 +333,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
             }
             if (lines[lc].equals(ProjSetting.LIST_TERMINATOR)){
                 break; 
-            }else if (i < ProjSetting.MAX_STATES){
+            }else if (i < Limit.MAX_STATES){
                 stateTime[i] = Integer.parseInt(lines[lc].split("\t")[0]);
                 state[i] = lines[lc].split("\t")[1];
             }

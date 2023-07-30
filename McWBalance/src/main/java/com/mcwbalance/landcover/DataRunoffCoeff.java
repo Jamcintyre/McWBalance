@@ -5,6 +5,7 @@
 package com.mcwbalance.landcover;
 
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 
 /**
  * @author amcintyre
@@ -12,7 +13,7 @@ import com.mcwbalance.ProjSetting;
  */
 public class DataRunoffCoeff {
     int nLandCovers;
-    static final int MAX_COVERS = ProjSetting.MAX_LAND_COVERS;
+    static final int MAX_COVERS = Limit.MAX_LAND_COVERS;
     DataLandCover landCovers[];
     
     DataRunoffCoeff(int nCovers){

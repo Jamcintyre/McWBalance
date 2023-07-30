@@ -5,6 +5,7 @@
 package com.mcwbalance.generics;
 
 import com.mcwbalance.ProjSetting;
+import com.mcwbalance.settings.Limit;
 
 /**
  *
@@ -14,7 +15,7 @@ public class DataTimeDoubleSeries {
       public int length;
     private int[] day;
     private double[] value;
-    public static int MAX_LENGTH = ProjSetting.MAX_LEVELS; 
+    public static int MAX_LENGTH = Limit.MAX_LEVELS; 
     public static final int DAY_NULL = -1;
     public static final double VAL_NULL = -9999;
     

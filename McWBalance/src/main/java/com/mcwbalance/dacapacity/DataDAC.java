@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 /**
  * Plan to migrate this to TableDAC Model... 
+ * @deprecated 
  * @author Alex
  */
 public class DataDAC {
