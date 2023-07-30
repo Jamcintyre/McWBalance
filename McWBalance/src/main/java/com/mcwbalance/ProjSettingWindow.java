@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import com.mcwbalance.util.WarningDialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

@@ -4,6 +4,9 @@
  */
 package com.mcwbalance;
 
+import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.transfer.ObjTRNList;
+import com.mcwbalance.element.ObjELMList;
 import static com.mcwbalance.MainWindow.mainframe;
 import java.awt.Dialog;
 import java.awt.Dimension;

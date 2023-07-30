@@ -33,8 +33,8 @@ public class McWBalance {
     static String localeOptions;
     static Locale currentLocale;
     
-    static ResourceBundle langRB;
-    static Properties style = new Properties();
+    public static ResourceBundle langRB;
+    public static Properties style = new Properties();
     static Properties localeprops = new Properties();
     
     

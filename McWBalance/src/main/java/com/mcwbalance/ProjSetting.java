@@ -1,5 +1,8 @@
 package com.mcwbalance;
 
+import com.mcwbalance.flowchart.ImageLib;
+import com.mcwbalance.landcover.TableRunoffCoefficients;
+import com.mcwbalance.climate.TableClimateScenarios;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
@@ -12,33 +15,33 @@ import java.util.Properties;
 * @version Pre-Alpha 0.2023.06.24
 */
 public class ProjSetting {
-    static String verInfo ="0.2023.07.22";
+    public static String verInfo ="0.2023.07.29";
     /**
      * Note this is a placeholder, should set this on project start to whatever the previous save was
      * will add an info file that will save beside the Program for this kind of thing
      * 
      */
-    static File pathFolder = new File("C:\\Temp\\McBalance\\"); 
-    static File pathFile = new File("C:\\Temp\\McBalance\\TestFile.mcbl");
-    static String clientName = "CLIENT NAME";
-    static String projectName = "PROJECT NAME";
-    static String projectNumber = "NB101-###_#";
-    static String balanceName = "SITE WATER BALANCE";
+    public static File pathFolder = new File("C:\\Temp\\McBalance\\"); 
+    public static File pathFile = new File("C:\\Temp\\McBalance\\TestFile.mcbl");
+    public static String clientName = "CLIENT NAME";
+    public static String projectName = "PROJECT NAME";
+    public static String projectNumber = "NB101-###_#";
+    public static String balanceName = "SITE WATER BALANCE";
     
-    static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
+    public static TableRunoffCoefficients runoffCoefficients = new TableRunoffCoefficients();
     
-    static TableClimateScenarios climateScenarios = new TableClimateScenarios(1);
-    static ImageLib imageLib = new ImageLib(); 
+    public static TableClimateScenarios climateScenarios = new TableClimateScenarios(1);
+    public static ImageLib imageLib = new ImageLib(); 
     
     
-    static boolean hasChangedSinceSave = true; // Debug, will update to false
+    public static boolean hasChangedSinceSave = true; // Debug, will update to false
     
     /**
      * Total model time in days from start to finish for each run. Each day will generate 1 result. 
     */
-    static int duration = 25; // 2 years  note this will be 3650 lines for a typical 10 year Mine Life.  
+    public static int duration = 25; // 2 years  note this will be 3650 lines for a typical 10 year Mine Life.  
 
-    static SolveOrder solveOrder = new SolveOrder();
+    public static SolveOrder solveOrder = new SolveOrder();
     
 
 
@@ -48,28 +51,29 @@ public class ProjSetting {
      * as ELMList is not of fixed length
      * @see ObjELMList
      */
-    static final int MAX_DURATION = 365*10;
-    static final int MAX_ELMS = 20;
-    static final int MAX_TRNS = 40;
-    static final int MAX_LEVELS = 20;
-    static final int MAX_LAND_COVERS = 15; 
-    static final int MAX_STATES = 10;
-    static final String LIST_TERMINATOR = "---END---";
+    public static final int MAX_DURATION = 365*10;
+    public static final int MAX_ELMS = 20;
+    public static final int MAX_TRNS = 40;
+    public static final int MAX_LEVELS = 20;
+    public static final int MAX_LAND_COVERS = 15; 
+    public static final int MAX_STATES = 10;
+    public static final String LIST_TERMINATOR = "---END---";
+    public static final int MAX_DEPO_RATES = 10;
     
     // Misc Settings for Formatting
-    static int precisionDay = 1; // number of decimal places to use in actual calcuations;
-    static int precisionHr = 2; 
-    static DecimalFormat fmtAnn = new DecimalFormat("#,##0");
-    static DecimalFormat fmtDay = new DecimalFormat("#,##0.0");
-    static DecimalFormat fmtHr = new DecimalFormat("#,##0.00");
+    public static int precisionDay = 1; // number of decimal places to use in actual calcuations;
+    public static int precisionHr = 2; 
+    public static DecimalFormat fmtAnn = new DecimalFormat("#,##0");
+    public static DecimalFormat fmtDay = new DecimalFormat("#,##0.0");
+    public static DecimalFormat fmtHr = new DecimalFormat("#,##0.00");
     
-    static DateTimeFormatter fmtdt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    public static DateTimeFormatter fmtdt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     
 
     /**
      * This method replaces the constructor as this class is fully static
      */
-    static void resetDefaults() {
+    public static void resetDefaults() {
         clientName = "CLIENT NAME";
         projectName = "PROJECT NAME";
         projectNumber = "NB101-###_#";

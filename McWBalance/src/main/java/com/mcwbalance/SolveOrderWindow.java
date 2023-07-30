@@ -4,6 +4,7 @@
  */
 package com.mcwbalance;
 
+import com.mcwbalance.flowchart.FlowChartCAD;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JButton;

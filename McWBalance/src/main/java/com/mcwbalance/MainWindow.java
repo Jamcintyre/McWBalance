@@ -1,6 +1,15 @@
 package com.mcwbalance;
 
 
+import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.util.ConfirmSaveDialog;
+import com.mcwbalance.transfer.ObjTRNWindow;
+import com.mcwbalance.transfer.ObjTRNList;
+import com.mcwbalance.element.ObjELMWindow;
+import com.mcwbalance.element.ObjELMList;
+import com.mcwbalance.util.WarningDialog;
+import com.mcwbalance.landcover.RunoffCoefficientWindow;
+import com.mcwbalance.climate.DataClimateSettingWindow;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
@@ -31,7 +40,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
@@ -56,8 +64,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     JPanel flowChartPanel = new JPanel(new BorderLayout()); // declair comment flow chart panel
     JScrollPane flowChartScPane = new JScrollPane(flowChartPanel); // moved from beginning to here. 
     // Turns out you need to construct the Panel into the Pane
-    static JFrame mainframe = new JFrame("McWBalance Pre-Release Non-Functional"); // JFrame declared here and as static so that ObjELMWindow can refer to it
-    static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
+    public static JFrame mainframe = new JFrame("McWBalance Pre-Release Non-Functional"); // JFrame declared here and as static so that ObjELMWindow can refer to it
+    public static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
     
     public void MainWindowFunct() {
         ImageIcon iconOpen = new ImageIcon("bin/icons/open.png");
@@ -241,6 +249,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         mainframe.add(flowChartScPane, BorderLayout.CENTER); // adds the FlowChart graphics area to the Frame
         mainframe.validate(); // done because set visible is before the menu additions
         mainframe.setIconImage(McWBalance.mainIcon30);
+        
+        mainframe.setLocationRelativeTo(null);
         mainframe.setVisible(true);
         //mainframe.repaint(); not needed unless a refesh is required
     }

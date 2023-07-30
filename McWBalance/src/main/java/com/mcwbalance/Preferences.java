@@ -12,16 +12,16 @@ import java.awt.Color;
  */
 public class Preferences {
     
-    static final int LIGHT_MODE = 0; 
-    static final int DARK_MODE = 1;
-    static final int NINETIES_MODE = 2;
-    static int currentMode = LIGHT_MODE;
-    static Color DEFAULT_DRAW_COLOR = Color.BLACK;
-    static Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+    public static final int LIGHT_MODE = 0; 
+    public static final int DARK_MODE = 1;
+    public static final int NINETIES_MODE = 2;
+    public static int currentMode = LIGHT_MODE;
+    public static Color DEFAULT_DRAW_COLOR = Color.BLACK;
+    public static Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     
-    static double zoomScale = .5;
+    public static double zoomScale = .5;
     
-    static void setDefaultColors(int viewmode){
+    public static void setDefaultColors(int viewmode){
         currentMode = viewmode;
         switch (viewmode){
             case LIGHT_MODE ->{
@@ -41,8 +41,11 @@ public class Preferences {
     }
     
     
-    
-    static String toSaveString(){
+    /**
+     * NOT COMPLETED
+     * @return 
+     */
+    public static String toSaveString(){
         StringBuilder outstring = new StringBuilder();
         
         

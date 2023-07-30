@@ -4,6 +4,9 @@
  */
 package com.mcwbalance;
 
+import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.transfer.ObjTRNList;
+import com.mcwbalance.element.ObjELMList;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -12,10 +15,10 @@ import javax.swing.table.AbstractTableModel;
  */
 public class SolveOrder extends AbstractTableModel{
     
-    int[] tRNIndex; //index for whichever TRN or ELM is being solved
-    String[] tRNName;
-    String[] tRNType;
-    String[] columnNames;
+    public int[] tRNIndex; //index for whichever TRN or ELM is being solved
+    public String[] tRNName;
+    public String[] tRNType;
+    public String[] columnNames;
     
     
     SolveOrder() {
