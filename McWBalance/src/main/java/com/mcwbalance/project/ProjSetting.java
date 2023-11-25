@@ -4,7 +4,7 @@ import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.flowchart.ImageLib;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.climate.TableClimateScenarios;
-import com.mcwbalance.element.ELMList;
+import com.mcwbalance.node.NodeList;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
@@ -49,7 +49,7 @@ public class ProjSetting {
     /**
      * Limit of how many ELMs (Basins, Process Plants, Ponds, Open Pits, Etc.) can be present in the model. Limit is needed
      * as ELMList is not of fixed length
-     * @see ELMList
+     * @see NodeList
      */
     
     

@@ -8,7 +8,7 @@ import com.mcwbalance.MainWindow;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.element.ELMList;
+import com.mcwbalance.node.NodeList;
 import static com.mcwbalance.MainWindow.mainframe;
 import com.mcwbalance.settings.Limit;
 import java.awt.Dialog;
@@ -56,7 +56,7 @@ public class ProjOpenExistingWindow extends JDialog{
                             InputStream istream;
                             String inbuffer;
                             int objNumber;
-                            FlowChartCAD.eLMList = new ELMList(); // wipes existing list data
+                            FlowChartCAD.eLMList = new NodeList(); // wipes existing list data
                             FlowChartCAD.tRNList = new TRNList(); // wipes existing list data
                             System.out.println(ProjSetting.pathFile.getName() + " has been opened");
 
@@ -86,10 +86,10 @@ public class ProjOpenExistingWindow extends JDialog{
                                     }
                                     case "elm" -> {
                                         objNumber = Integer.parseInt(entryName[0]); //
-                                        if(objNumber < Limit.MAX_ELMS){
+                                        if(objNumber < Limit.MAX_NODES){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
-                                            FlowChartCAD.eLMList.eLMs[objNumber].setFromString(inbuffer);
+                                            FlowChartCAD.eLMList.nodes[objNumber].setFromString(inbuffer);
                                             if (FlowChartCAD.eLMList.count < objNumber +1){
                                                 FlowChartCAD.eLMList.count = objNumber +1;
                                             }

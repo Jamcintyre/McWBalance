@@ -10,8 +10,8 @@ import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.util.ConfirmSaveDialog;
 import com.mcwbalance.transfer.TRNWindow;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.element.ELMWindow;
-import com.mcwbalance.element.ELMList;
+import com.mcwbalance.node.NodeWindow;
+import com.mcwbalance.node.NodeList;
 import com.mcwbalance.util.WarningDialog;
 import com.mcwbalance.landcover.RunoffCoefficientWindow;
 import com.mcwbalance.climate.DataClimateSettingWindow;
@@ -53,7 +53,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     
     FlowChartCAD flowChart = new FlowChartCAD(); // This is the Cad area handeled in a seperate class
     String requestedAction = "None"; // sets a switch to allow adding an ELM on next mouse click
-    int eLMOnTheMove = -1; // used to allow object to become mobile on mouse click
+    int nodeOnTheMove = -1; // used to allow object to become mobile on mouse click
     int tRNOnTheMove = -1; // used to allow object to become mobile on mouse click
     
     boolean isViewPanning = false;
@@ -135,7 +135,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         menueditdelete.setIcon(iconDelete);
         menuedit.add(menueditdelete);
  
-        JMenuItem menueditaddELM = new JMenuItem(McWBalance.langRB.getString("ADD_ELEMENT"), KeyEvent.VK_L);
+        JMenuItem menueditaddELM = new JMenuItem(McWBalance.langRB.getString("ADD_NODE"), KeyEvent.VK_L);
         menueditaddELM.setActionCommand("AddObjELM");
         menueditaddELM.addActionListener(this);
         menueditaddELM.setIcon(iconNewELM);
@@ -374,7 +374,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     } else if (mELMHit != -1) {
                         if (flowChart.checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
-                                ELMWindow objELMWindow = new ELMWindow();
+                                NodeWindow objELMWindow = new NodeWindow();
                                 objELMWindow.ObjELMWindowFunct(flowChart.getObjELM(mELMHit), mELMHit, FlowChartCAD.tRNList);
                             }
                             break;
@@ -386,6 +386,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         flowChart.clearSelection();
                     }
                 }
+
+
 
 
             }
@@ -405,9 +407,10 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     case "None" -> { // if no other action is pending then Move is possible
                         tRNOnTheMove = flowChart.checkTRNHit(mx, my); // Sets the moving object to whatever is hit
                         if (tRNOnTheMove == -1) {
-                            eLMOnTheMove = flowChart.checkELMHit(mx, my); // Transfers can move if Larger object isn't moving
+                            nodeOnTheMove = flowChart.checkELMHit(mx, my); // Transfers can move if Larger object isn't moving
                         }
                     }
+
                 }
             }
             case MouseEvent.BUTTON2 ->{
@@ -425,7 +428,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public void mouseReleased(MouseEvent me) {
         switch (me.getButton()) {
             case MouseEvent.BUTTON1 -> {
-                eLMOnTheMove = -1;
+                nodeOnTheMove = -1;
                 tRNOnTheMove = -1; // Halts movement of any object
             }
             case MouseEvent.BUTTON2 ->{
@@ -451,8 +454,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public void mouseDragged(MouseEvent mme){
         int mx = (int)(mme.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
         int my = (int)(mme.getY()/ FlowChartCAD.zoomscale);
-        if (eLMOnTheMove > -1){
-            flowChart.moveObjELM(mx, my, eLMOnTheMove);
+        if (nodeOnTheMove > -1){
+            flowChart.moveObjELM(mx, my, nodeOnTheMove);
             flowChartPanel.repaint(); 
         }
         else if (tRNOnTheMove > -1){
@@ -506,7 +509,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public void resetProject(){
         ProjSetting.resetDefaults();
                 FlowChartCAD.tRNList = new TRNList();
-                FlowChartCAD.eLMList = new ELMList();
+                FlowChartCAD.eLMList = new NodeList();
                 flowChart.repaint();
     }
         
@@ -546,7 +549,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             // Write ElementInformation
             for (int i = 0; i < zEntELM.length; i++) {
                 sfilezos.putNextEntry(zEntELM[i]);
-                bytedata = FlowChartCAD.eLMList.eLMs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
+                bytedata = FlowChartCAD.eLMList.nodes[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
                 sfilezos.write(bytedata, 0, bytedata.length);
                 sfilezos.closeEntry();
             }

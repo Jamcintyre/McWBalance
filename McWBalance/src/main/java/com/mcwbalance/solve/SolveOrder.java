@@ -7,7 +7,7 @@ package com.mcwbalance.solve;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.element.ELMList;
+import com.mcwbalance.node.NodeList;
 import com.mcwbalance.settings.Limit;
 import javax.swing.table.AbstractTableModel;
 
@@ -120,7 +120,7 @@ public class SolveOrder extends AbstractTableModel{
      * @param tRNList
      * @param eLMList 
      */
-    public void setAutoOrder(TRNList tRNList, ELMList eLMList){
+    public void setAutoOrder(TRNList tRNList, NodeList eLMList){
         int initSolveIndex[] = new int[Limit.MAX_TRNS];
         String initSolveType[] = new String[Limit.MAX_TRNS]; 
         int c = 0;
@@ -136,19 +136,19 @@ public class SolveOrder extends AbstractTableModel{
         }
         // first pass sets any fixed flow rates
         for (int i = 0; i < eLMList.count; i ++){
-            if(eLMList.eLMs[i].tailsTRN != -1){ // sets any tailings deposition to first solve order as it will be fixed
-                tr = eLMList.eLMs[i].tailsTRN;
+            if(eLMList.nodes[i].tailsTRN != -1){ // sets any tailings deposition to first solve order as it will be fixed
+                tr = eLMList.nodes[i].tailsTRN;
                 initSolveIndex[c] = tr;
                 initSolveType[c] = "SOLIDS";
                 tRNCounted[tr] = true;
                 c ++;
             }
-            for(int j = 0; j < eLMList.eLMs[i].inflowFixedTRN.count; j++){ //loops through the fixed inflows
+            for(int j = 0; j < eLMList.nodes[i].inflowFixedTRN.count; j++){ //loops through the fixed inflows
                 // need to check if it has no output or is not a demand then can solve
-                tr = eLMList.eLMs[i].inflowFixedTRN.getObjIndex(j);
+                tr = eLMList.nodes[i].inflowFixedTRN.getObjIndex(j);
                 if (!tRNCounted[tr]) {
                     el = tRNList.tRNs[tr].outObjNumber;
-                    if (el == -1 || eLMList.eLMs[el].outflowFixedTRN.getListIndex(tr) != -1) {
+                    if (el == -1 || eLMList.nodes[el].outflowFixedTRN.getListIndex(tr) != -1) {
                         initSolveIndex[c] = tr;
                         initSolveType[c] = "FIXED";
                         tRNCounted[tr] = true;
@@ -156,12 +156,12 @@ public class SolveOrder extends AbstractTableModel{
                     }
                 }
             }
-            for(int j = 0; j < eLMList.eLMs[i].outflowFixedTRN.count; j++){ //loops through the fixed outflows
+            for(int j = 0; j < eLMList.nodes[i].outflowFixedTRN.count; j++){ //loops through the fixed outflows
                 // need to check if it has no output or is not a demand then can solve
-                tr = eLMList.eLMs[i].outflowFixedTRN.getObjIndex(j);
+                tr = eLMList.nodes[i].outflowFixedTRN.getObjIndex(j);
                 if (!tRNCounted[tr]) {
                     el = tRNList.tRNs[tr].outObjNumber;
-                    if (el == -1 || eLMList.eLMs[el].inflowFixedTRN.getListIndex(tr) != -1) {
+                    if (el == -1 || eLMList.nodes[el].inflowFixedTRN.getListIndex(tr) != -1) {
                         initSolveIndex[c] = tr;
                         initSolveType[c] = "FIXED";
                         tRNCounted[tr] = true;
@@ -172,9 +172,9 @@ public class SolveOrder extends AbstractTableModel{
         }
         // Second Pass for the on demand rates
         for (int i = 0; i < eLMList.count; i++) {
-            for (int j = 0; j < eLMList.eLMs[i].inflowOnDemandTRN.count; j++) { //loops through the fixed inflows
+            for (int j = 0; j < eLMList.nodes[i].inflowOnDemandTRN.count; j++) { //loops through the fixed inflows
                 // need to check if it has no output or is not a demand then can solve
-                tr = eLMList.eLMs[i].inflowOnDemandTRN.getObjIndex(j);
+                tr = eLMList.nodes[i].inflowOnDemandTRN.getObjIndex(j);
                 if (!tRNCounted[tr]) {
                     initSolveIndex[c] = tr;
                     initSolveType[c] = "ON_DEMAND";
@@ -182,9 +182,9 @@ public class SolveOrder extends AbstractTableModel{
                     c++;
                 }
             }
-            for (int j = 0; j < eLMList.eLMs[i].outflowOnDemandTRN.count; j++) { //loops through the fixed outflows
+            for (int j = 0; j < eLMList.nodes[i].outflowOnDemandTRN.count; j++) { //loops through the fixed outflows
                 // need to check if it has no output or is not a demand then can solve
-                tr = eLMList.eLMs[i].outflowOnDemandTRN.getObjIndex(j);
+                tr = eLMList.nodes[i].outflowOnDemandTRN.getObjIndex(j);
                 if (!tRNCounted[tr]) {
                     initSolveIndex[c] = tr;
                     initSolveType[c] = "ON_DEMAND";
@@ -193,7 +193,7 @@ public class SolveOrder extends AbstractTableModel{
 
                 }
             }
-            tr = eLMList.eLMs[i].overflowTRN;
+            tr = eLMList.nodes[i].overflowTRN;
             if(tr != -1 && !tRNCounted[tr]){
                 initSolveIndex[c] = tr;
                 initSolveType[c] = "ON_DEMAND";
