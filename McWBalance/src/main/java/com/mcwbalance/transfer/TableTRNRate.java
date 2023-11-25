@@ -2,11 +2,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mcwbalance.element;
+package com.mcwbalance.transfer;
 
-import com.mcwbalance.generics.DataTimeDoubleSeries;
-import com.mcwbalance.project.ProjSetting;
-import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -16,28 +13,22 @@ import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
+ * Contains the data input format used for JTables where user is required to define a time dependent flow rate, 
+ * Column 0 i.e. data[][0] represents the date in days. Column 1 represents the daily flow rate in cu.m. per day. 
  * @author amcintyre
  */
-public class ObjELMLevelTableModel extends AbstractTableModel {
+public class TableTRNRate extends AbstractTableModel{
+    /**
+     * Column names for this model class are fixed as "Model Day" and "Rate (cu.m. per day)" modification of these 
+     * names must be carried out within this class.
+     */
+    private final String[] columnNames = {"Model Day", "Rate (cu.m. per day)"};
     
-    private final String[] columnNames = {"Model Day", "Level (m)"};
-    private final Object[][] data = new Object[Limit.MAX_LEVELS][2];
-    private int datalength;
     
-
-     private final static int DAY_NULL = DataTimeDoubleSeries.DAY_NULL;
-    private final static double VAL_NULL = DataTimeDoubleSeries.VAL_NULL; 
-    
-    ObjELMLevelTableModel(){
-        data[0][0] = 0;
-        data[0][1] = 0;
-        for (int i = 1; i < Limit.MAX_LEVELS; i ++){
-            data[i][0] = DAY_NULL;
-            data[i][1] = VAL_NULL;
-        }
-    }
-    
+    /**
+     * Data structure for this table model is of fixed size
+     */
+    private final Object[][] data = new Object[TRN.MAX_PUMP_RATES][2];
         
     @Override 
     public Object getValueAt(int row, int col){
@@ -61,7 +52,7 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
     }
     @Override 
     public boolean isCellEditable(int rowIndex, int columnIndex){
-        if (rowIndex == 0 && columnIndex == 0){
+        if (rowIndex ==0 && columnIndex == 0){
             return false;  
             // Must have a value for Day 0.
         }
@@ -72,30 +63,23 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
         data[row][col] = value;
         fireTableCellUpdated(row,col);
     }
-    public int[] getDayColumn(){
-        datalength = 0; 
-        for (int i = 0; i < Limit.MAX_LEVELS; i ++){
-            if((int)data[i][0] == DAY_NULL || data[i][0] == null){
-            break; 
-            }
-            datalength++;
-        }
-        if(datalength < 1){
-            datalength = 1;
-        }
-        int outColumn[] = new int[datalength];
-        for (int i = 0; i < datalength; i ++){
-            outColumn[i] = (int)data[i][0];
-        }
-         return outColumn;
+    /**
+     * Initializes and or resets the first row of data to 0 values.
+     */
+    public void setBlankFirstRow(){
+        data[0][0] = (int)0;
+        data[0][1] = (double)0;
     }
-    public double[] getLevelColumn(){
-        double outColumn[] = new double[datalength];
-        for (int i = 0; i < datalength; i ++){
-            outColumn[i] = (double)data[i][1];
-        }
-         return outColumn;
-    }
+    
+    
+    /**
+     * Allows data currently in the clipboard to be pasted into the active table view. The data is assumed to be cut or copied from
+     * MS Excel and is expected to be Tab delimited. 
+     * @param selectedrow Used to select the starting point for data pasting. Note that Data pasted will not be limited to 1 row if
+     * multiple rows of data are pasted
+     * @param selectedcol Used to select the starting point for data pasting. Note that Data pasted will not be limited to 1 column if
+     * multiple columns of data are pasted
+     */
     public void pasteFromClipboard(int[] selectedrow, int[] selectedcol){
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable content = clipboard.getContents(this);
@@ -112,10 +96,10 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
                         setValueAt(Double.valueOf(clippedValueSingleLine[1]),i+selectedrow[0], 1); // elevation column
                     }
                     if (clippedValueSingleLine.length == 1){ // if only 1 column present then will now need to find wich column
-                        if (selectedcol[0] == 0){ // if its 0 it must be date
+                        if (selectedcol[0] == 0){ // if its 0 it must be an int used for date
                             setValueAt(Integer.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 0);
                         }
-                        else if (selectedcol[0] == 1){ // if its 1 it must be level
+                        else if (selectedcol[0] == 1){ // if its 1 it must be a double used for rate
                             setValueAt(Double.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 1);
                         }
                     }
@@ -130,7 +114,12 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
             }
         } 
     }
-    
+    /**
+     * Method responsible for data deletion from this class of table model. Data deletion is carried out with basic rules to prevent 
+     * null values resulting in null class in row 0. 
+     * @param selectedrow Indicates the rows that data will be removed / deleted from
+     * @param selectedcol Indicates the columns that data will be removed / deleted from
+     */
     public void removeData(int[] selectedrow, int[] selectedcol){ //allow deletion of data but first row must remain
         for (int i = 0; i < selectedrow.length; i++){
             if (selectedrow[i] != 0){ // if isn't row 0 then run the normal sequence
@@ -150,18 +139,6 @@ public class ObjELMLevelTableModel extends AbstractTableModel {
             }
             fireTableDataChanged();     
         }
-    }
-     public void setAllData(int inDay[], double inLevel[]){
-        if (inDay.length <= inLevel.length){
-            datalength = inDay.length;
-        }else{
-            datalength = inLevel.length;
-        }
-        for (int i = 0; i < datalength; i ++){
-            data[i][0] = inDay[i];
-            data[i][1] = inLevel[i];
-        }
-        fireTableDataChanged();    
     }
 
 }

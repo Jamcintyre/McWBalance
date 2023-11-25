@@ -6,20 +6,20 @@ import com.mcwbalance.settings.Limit;
 
 /**
  * Contains a complete array of all ELMs present in the model as well as placeholder values. 
- * @see ObjELM
+ * @see ELM
  * @author amcintyre
  */
-public class ObjELMList {
+public class ELMList {
 
     public int count; // counter to keep track fo list size
-    public ObjELM[] eLMs= new ObjELM[Limit.MAX_ELMS]; 
+    public ELM[] eLMs= new ELM[Limit.MAX_ELMS]; 
     /**
      * Constructor initializes a blank array of ELMs of generally 0 values to avoid issues with null values
      */
-     public ObjELMList(){
+     public ELMList(){
         count = 0; // sets number of elements to 0 to start
         for (int i = 0; i < Limit.MAX_ELMS; i++){
-            eLMs[i] = new ObjELM(); // Constructs the element so there is a place in memory for it, only needed for Object arrays
+            eLMs[i] = new ELM(); // Constructs the element so there is a place in memory for it, only needed for Object arrays
             eLMs[i].x = 0;
             eLMs[i].y = 0;
             eLMs[i].objname = "Element " + i;
@@ -38,7 +38,7 @@ public class ObjELMList {
             System.out.println("Max Number of Objects");
         return -1; // returns -1 as error code, object could not be added
         }
-        eLMs[count] = new ObjELM(inX, inY, count + 1);
+        eLMs[count] = new ELM(inX, inY, count + 1);
         count ++; // increments to next element, only allowed if not at maximum
         return 0;
     }
@@ -72,7 +72,7 @@ public class ObjELMList {
     */
    public void removeTRN (int rTRN){
        for (int i = 0; i < count; i ++){
-           eLMs[i].removeTRN(rTRN);
+           eLMs[i].remove(rTRN);
        }
    }
   
@@ -83,7 +83,7 @@ public class ObjELMList {
      * @param inNumber Index number of element to be 
      * @param inObjELM Populated ELM data to be used to overwrite the selected index
      */
-    public void setObjELM(int inNumber, ObjELM inObjELM){
+    public void setObjELM(int inNumber, ELM inObjELM){
         eLMs[inNumber] = inObjELM;
     }
     

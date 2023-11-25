@@ -7,8 +7,8 @@ package com.mcwbalance.project;
 import com.mcwbalance.MainWindow;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
-import com.mcwbalance.transfer.ObjTRNList;
-import com.mcwbalance.element.ObjELMList;
+import com.mcwbalance.transfer.TRNList;
+import com.mcwbalance.element.ELMList;
 import static com.mcwbalance.MainWindow.mainframe;
 import com.mcwbalance.settings.Limit;
 import java.awt.Dialog;
@@ -56,8 +56,8 @@ public class ProjOpenExistingWindow extends JDialog{
                             InputStream istream;
                             String inbuffer;
                             int objNumber;
-                            FlowChartCAD.eLMList = new ObjELMList(); // wipes existing list data
-                            FlowChartCAD.tRNList = new ObjTRNList(); // wipes existing list data
+                            FlowChartCAD.eLMList = new ELMList(); // wipes existing list data
+                            FlowChartCAD.tRNList = new TRNList(); // wipes existing list data
                             System.out.println(ProjSetting.pathFile.getName() + " has been opened");
 
                             for (int i = 0; ifEntries.hasMoreElements() && i < 100; i++) {

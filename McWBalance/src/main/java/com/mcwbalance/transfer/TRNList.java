@@ -6,14 +6,14 @@ import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 
 
-public class ObjTRNList {
+public class TRNList {
     public int count; // counter to keep track fo list size
-    public ObjTRN[] tRNs= new ObjTRN[Limit.MAX_TRNS]; 
+    public TRN[] tRNs= new TRN[Limit.MAX_TRNS]; 
     
-   public ObjTRNList(){ // Constructor sets initial values
+   public TRNList(){ // Constructor sets initial values
         count = 0; // sets number of transfers to 0 to start
         for (int i = 0; i < Limit.MAX_TRNS; i++){
-            tRNs[i] = new ObjTRN(); // Constructs the element so there is a place in memory for it, only needed for Object arrays
+            tRNs[i] = new TRN(); // Constructs the element so there is a place in memory for it, only needed for Object arrays
             tRNs[i].x = 0;
             tRNs[i].y = 0;
             
@@ -26,7 +26,7 @@ public class ObjTRNList {
         if (count - 1 == Limit.MAX_TRNS){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
             System.err.println("Max Number of Tranfers Reached");
         }
-        tRNs[count] = new ObjTRN(inX, inY, count +1); 
+        tRNs[count] = new TRN(inX, inY, count +1); 
         count ++; // increments to next element, only allowed if not at maximum
     } 
     /**
@@ -212,7 +212,7 @@ public class ObjTRNList {
         tRNs[inTRN].inObjNumber = inELM;
     }
    
-   public void setObjTRN(int inNumber, ObjTRN inObjTRN){
+   public void setObjTRN(int inNumber, TRN inObjTRN){
        tRNs[inNumber] = inObjTRN; 
        System.out.println("ObjTRNList.setObjTRN has been called on TRN " + inNumber); // DEBUG
        

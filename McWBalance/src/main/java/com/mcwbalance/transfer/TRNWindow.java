@@ -31,14 +31,14 @@ import javax.swing.table.TableColumn;
  * 
  * @author Alex
  */
-public class ObjTRNWindow extends JDialog {
-    private ObjTRN buffObjTRN = new ObjTRN(); // container for storing and modifying object used for return at end
+public class TRNWindow extends JDialog {
+    private TRN buffObjTRN = new TRN(); // container for storing and modifying object used for return at end
     private int closeAction = 1;
     
     public static final int CLOSE_ACTION_SAVE = 1;
     public static final int CLOSE_ACTION_DISCARD = 2;
         
-    public ObjTRNWindow(ObjTRN inObjTRN, String[] eLMList){ // requires object number to edit
+    public TRNWindow(TRN inObjTRN, String[] eLMList){ // requires object number to edit
         super(MainWindow.mainframe, "Transfer Properties", true); // was orginally a frame but changed to dialog
         ProjSetting.hasChangedSinceSave = true; // assumes if this dialog is called then a change has been made
         buffObjTRN = inObjTRN; // sets buffered object to in object
@@ -52,10 +52,10 @@ public class ObjTRNWindow extends JDialog {
         
         //TAB 2
         JPanel tab2 = new JPanel();
-        ObjTRNRateTableModel tab2TableModelRate = new ObjTRNRateTableModel();
+        TableTRNRate tab2TableModelRate = new TableTRNRate();
         tab2TableModelRate.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
         
-        for(int i = 0; i < ObjTRN.MAX_PUMP_RATES; i++){
+        for(int i = 0; i < TRN.MAX_PUMP_RATES; i++){
             tab2TableModelRate.setValueAt((int)buffObjTRN.pumpTime[i], i, 0);
             tab2TableModelRate.setValueAt((double)buffObjTRN.pumpRateDay[i], i, 1);
         }
@@ -134,7 +134,7 @@ public class ObjTRNWindow extends JDialog {
         tab3TableState.setComponentPopupMenu(popupMenuStateTable);
         tab3TableState.setCellSelectionEnabled(true);
         
-        JComboBox cBoxTRNState = new JComboBox(ObjTRN.tRNStatesAllowed);
+        JComboBox cBoxTRNState = new JComboBox(TRN.tRNStatesAllowed);
         TableColumn stateColumn = tab3TableState.getColumnModel().getColumn(1);
         stateColumn.setCellEditor(new DefaultCellEditor(cBoxTRNState));
         
@@ -153,7 +153,7 @@ public class ObjTRNWindow extends JDialog {
         JTextField tfobjName = new JTextField(buffObjTRN.objname);
         tfobjName.setColumns(fmtTFColumnsDEF);
         JLabel lcbobjType = new JLabel ("Transfer Type");
-        JComboBox cbobjType = new JComboBox(ObjTRN.objSubTypesAllowed); // Pulls options list from ObjELM static
+        JComboBox cbobjType = new JComboBox(TRN.objSubTypesAllowed); // Pulls options list from ObjELM static
         cbobjType.setSelectedItem(buffObjTRN.subType);
         
         // Transfer from Location
@@ -161,10 +161,10 @@ public class ObjTRNWindow extends JDialog {
         JComboBox cbInObj = new JComboBox(eLMList); // Pulls from provided list of Elements
         cbInObj.setSelectedIndex(buffObjTRN.inObjNumber + 1); // adds 1 since first value is null -1
         JLabel lcbInSideFrom = new JLabel ("From ");
-        JComboBox cbInSideFrom = new JComboBox(ObjTRN.objSidesAllowed);
+        JComboBox cbInSideFrom = new JComboBox(TRN.objSidesAllowed);
         cbInSideFrom.setSelectedItem(buffObjTRN.inSideFrom);        
         JLabel lcbInSideTo = new JLabel ("To ");
-        JComboBox cbInSideTo = new JComboBox(ObjTRN.objSidesAllowed);
+        JComboBox cbInSideTo = new JComboBox(TRN.objSidesAllowed);
         cbInSideTo.setSelectedItem(buffObjTRN.inSideTo);
         JLabel ltfinSideFromOset = new JLabel ("Line Offset");
         SpinnerModel mspinSideFromOset = new SpinnerNumberModel(buffObjTRN.inSideFromOset,-200,200,5);
@@ -175,12 +175,12 @@ public class ObjTRNWindow extends JDialog {
         JComboBox cbOutObj = new JComboBox(eLMList); // Pulls from provided list of Elements
         cbOutObj.setSelectedIndex(buffObjTRN.outObjNumber + 1);  // adds 1 since first value is null -1
         JLabel lcbOutSideFrom = new JLabel ("From ");
-        JComboBox cbOutSideFrom = new JComboBox(ObjTRN.objSidesAllowed);
+        JComboBox cbOutSideFrom = new JComboBox(TRN.objSidesAllowed);
         cbOutSideFrom.setSelectedItem(buffObjTRN.outSideFrom);
         
         
         JLabel lcbOutSideTo = new JLabel ("To ");
-        JComboBox cbOutSideTo = new JComboBox(ObjTRN.objSidesAllowed);
+        JComboBox cbOutSideTo = new JComboBox(TRN.objSidesAllowed);
         cbOutSideTo.setSelectedItem(buffObjTRN.outSideTo);
         JLabel ltfOutSideToOset = new JLabel ("Line Offset");
         JFormattedTextField tfOutSideToOset = new JFormattedTextField(buffObjTRN.outSideToOset);
@@ -206,7 +206,7 @@ public class ObjTRNWindow extends JDialog {
             buffObjTRN.outSideToOset = (Integer)spOutSideToOset.getValue();
             buffObjTRN.outSideTo = String.valueOf(cbOutSideTo.getSelectedItem()); 
             
-            for(int i = 0; i < ObjTRN.MAX_PUMP_RATES; i++){ // Copy even if null, otherwise no mechnism for deleting values    
+            for(int i = 0; i < TRN.MAX_PUMP_RATES; i++){ // Copy even if null, otherwise no mechnism for deleting values    
                 buffObjTRN.pumpTime[i] = (int)tab2TableModelRate.getValueAt(i, 0);   
                 buffObjTRN.pumpRateDay[i] = (double)tab2TableModelRate.getValueAt(i, 1);                    
             }
@@ -315,7 +315,7 @@ public class ObjTRNWindow extends JDialog {
      * Object used to return input from the window
      * @return objTRN containing all data pertaining to the modified transfer 
      */
-    public ObjTRN getObjTRN(){
+    public TRN getObjTRN(){
         return buffObjTRN;
     } 
     /**

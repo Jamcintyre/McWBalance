@@ -8,10 +8,10 @@ import com.mcwbalance.settings.Preferences;
 import com.mcwbalance.solve.SolveOrderWindow;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.util.ConfirmSaveDialog;
-import com.mcwbalance.transfer.ObjTRNWindow;
-import com.mcwbalance.transfer.ObjTRNList;
-import com.mcwbalance.element.ObjELMWindow;
-import com.mcwbalance.element.ObjELMList;
+import com.mcwbalance.transfer.TRNWindow;
+import com.mcwbalance.transfer.TRNList;
+import com.mcwbalance.element.ELMWindow;
+import com.mcwbalance.element.ELMList;
 import com.mcwbalance.util.WarningDialog;
 import com.mcwbalance.landcover.RunoffCoefficientWindow;
 import com.mcwbalance.climate.DataClimateSettingWindow;
@@ -357,7 +357,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowChart.checkSelectionTRN(mTRNHit)) {
                             if (!editorIsActive) { 
                                 
-                                ObjTRNWindow objTRNWindow = new ObjTRNWindow(flowChart.getObjTRN(mTRNHit), FlowChartCAD.eLMList.getNameList());
+                                TRNWindow objTRNWindow = new TRNWindow(flowChart.getObjTRN(mTRNHit), FlowChartCAD.eLMList.getNameList());
                                 objTRNWindow.addWindowListener(new WindowAdapter(){
                                     @Override
                                     public void windowClosed(WindowEvent e){
@@ -374,7 +374,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     } else if (mELMHit != -1) {
                         if (flowChart.checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
-                                ObjELMWindow objELMWindow = new ObjELMWindow();
+                                ELMWindow objELMWindow = new ELMWindow();
                                 objELMWindow.ObjELMWindowFunct(flowChart.getObjELM(mELMHit), mELMHit, FlowChartCAD.tRNList);
                             }
                             break;
@@ -386,6 +386,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         flowChart.clearSelection();
                     }
                 }
+
+
             }
             flowChartPanel.repaint();
         }
@@ -503,8 +505,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     
     public void resetProject(){
         ProjSetting.resetDefaults();
-                FlowChartCAD.tRNList = new ObjTRNList();
-                FlowChartCAD.eLMList = new ObjELMList();
+                FlowChartCAD.tRNList = new TRNList();
+                FlowChartCAD.eLMList = new ELMList();
                 flowChart.repaint();
     }
         

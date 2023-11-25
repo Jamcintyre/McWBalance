@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
  * @see ObjELMList
  * @author amcintyre
  */
-public class ObjELM {
+public class ELM {
 
    
     public int x;
@@ -131,11 +131,11 @@ public class ObjELM {
     
     
 
-    ObjELM() {
+    ELM() {
         this(0, 0, 0);
     }
 
-    ObjELM(int inX, int inY, int number) {
+    ELM(int inX, int inY, int number) {
         x = inX;
         y = inY;
         hitBox = new Rectangle(0, 0, 20, 20);
@@ -311,7 +311,7 @@ public class ObjELM {
      *
      * @param rTRN
      */
-    public void removeTRN(int rTRN) {
+    public void remove(int rTRN) {
         inflows.trimFromList(rTRN);
         outflows.trimFromList(rTRN);
         tailsTRNOptions.trimFromList(rTRN);

@@ -6,10 +6,9 @@ import com.mcwbalance.generics.DataComboBoxModel;
 import com.mcwbalance.generics.DataNameListModel;
 import com.mcwbalance.MainWindow;
 import com.mcwbalance.generics.ObjStateTableModel;
-import com.mcwbalance.transfer.ObjTRNList;
+import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.dacapacity.DACPlotWindow;
-import com.mcwbalance.dacapacity.DataDACTableModel;
 import com.mcwbalance.settings.Limit;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,17 +42,17 @@ import javax.swing.table.TableColumn;
  * all information needed to populate an ELM with exception of location.
  * @author amcintyre
  */
-public class ObjELMWindow extends JFrame { // implements ActionListener not needed if lamba is used
+public class ELMWindow extends JFrame { // implements ActionListener not needed if lamba is used
     //int objELMNumber = -1;
     /**
      * Container for storing and modifying element used for return at end
      * Setting to static does not fix the problem with action listener making a seperate Copy...
      */
-    ObjELM buffObjELM = new ObjELM(); 
+    ELM buffObjELM = new ELM(); 
     /**
      * Container for allowing mainwindow access to returned value since return doesnt work in Jdialog
      */
-    static ObjELM returnedObjELM = new ObjELM();
+    static ELM returnedObjELM = new ELM();
     
     
     /**
@@ -63,7 +62,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
      * @param ctRNList Current TRN list must be provided to allow user to select from available TRNs for solve order planning
      * @return 
      */
-    public ObjELM ObjELMWindowFunct(ObjELM inObjELM, int eLMNumber, ObjTRNList ctRNList){ // requires object number to edit
+    public ELM ObjELMWindowFunct(ELM inObjELM, int eLMNumber, TRNList ctRNList){ // requires object number to edit
         
         ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
         
@@ -513,7 +512,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         // TABLE CONSTRUCTION 
         //tab4LabelTargetVol
         JLabel tab4LabelTargetVol = new JLabel("Target Operating Volume");
-        ObjELMVolumeTableModel tab4TableModelTargetVol = new ObjELMVolumeTableModel();
+        TableELMVolume tab4TableModelTargetVol = new TableELMVolume();
         tab4TableModelTargetVol.setAllData(buffObjELM.targetOperatingVol.getDays(),buffObjELM.targetOperatingVol.getValues());
         JTable tab4TableTargetVol = new JTable(tab4TableModelTargetVol);
         // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
@@ -525,7 +524,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tab4.add(tab4ScrollPaneTargetVol, tab4constrTargetVol);
         //tab4TableMinDepth
         JLabel tab4LabelMinDepth = new JLabel("Minimum Water Depth");
-        ObjELMLevelTableModel tab4TableModelMinDepth = new ObjELMLevelTableModel();
+        TableELMLevel tab4TableModelMinDepth = new TableELMLevel();
         tab4TableModelMinDepth.setAllData(buffObjELM.minDepth.getDays(),buffObjELM.minDepth.getValues());
         JTable tab4TableMinDepth = new JTable(tab4TableModelMinDepth);
         // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
@@ -537,7 +536,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tab4.add(tab4ScrollPaneMinDepth,tab4constrMinDepth);
         //tab4LabelMaxOpLevel
         JLabel tab4LabelMaxOpLevel = new JLabel("Maximum Operating Level");
-        ObjELMLevelTableModel tab4TableModelMaxOpLevel = new ObjELMLevelTableModel();
+        TableELMLevel tab4TableModelMaxOpLevel = new TableELMLevel();
         tab4TableModelMaxOpLevel.setAllData(buffObjELM.maxOpLevel.getDays(),buffObjELM.maxOpLevel.getValues());
         JTable tab4TableMaxOpLevel = new JTable(tab4TableModelMaxOpLevel);
         // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
@@ -549,7 +548,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tab4.add(tab4ScrollPaneMaxOpLevel,tab4constrMaxOpLevel);
         //tab4TableModelOverflowLevel
         JLabel tab4LabelOverflowLevel = new JLabel("Overflow Level");
-        ObjELMLevelTableModel tab4TableModelOverflowLevel = new ObjELMLevelTableModel();
+        TableELMLevel tab4TableModelOverflowLevel = new TableELMLevel();
         tab4TableModelOverflowLevel.setAllData(buffObjELM.overflowLevel.getDays(),buffObjELM.overflowLevel.getValues());
         JTable tab4TableOverflowLevel = new JTable(tab4TableModelOverflowLevel);
         // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
@@ -561,7 +560,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tab4.add(tab4ScrollPaneOverflowLevel,tab4constrOverflowLevel);
         //tab4TableModelCrestLevel
         JLabel tab4LabelCrestLevel = new JLabel("Crest Level");
-        ObjELMLevelTableModel tab4TableModelCrestLevel = new ObjELMLevelTableModel();
+        TableELMLevel tab4TableModelCrestLevel = new TableELMLevel();
         tab4TableModelCrestLevel.setAllData(buffObjELM.crestLevel.getDays(),buffObjELM.crestLevel.getValues());
         JTable tab4TableCrestLevel = new JTable(tab4TableModelCrestLevel);
         // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
@@ -649,7 +648,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tab6TableState.setComponentPopupMenu(popupMenuStateTable);
         tab6TableState.setCellSelectionEnabled(true);
         
-        JComboBox cBoxTRNState = new JComboBox(ObjELM.eLMStatesAllowed);
+        JComboBox cBoxTRNState = new JComboBox(ELM.eLMStatesAllowed);
         TableColumn stateColumn = tab6TableState.getColumnModel().getColumn(1);
         stateColumn.setCellEditor(new DefaultCellEditor(cBoxTRNState));
         
@@ -668,7 +667,7 @@ public class ObjELMWindow extends JFrame { // implements ActionListener not need
         tfobjName.setColumns(20); // Sets Width if Name Field
         
         JLabel lcbobjType = new JLabel ("Element Type");
-        JComboBox cbobjType = new JComboBox(ObjELM.objSubTypesAllowed); // Pulls options list from ObjELM static
+        JComboBox cbobjType = new JComboBox(ELM.objSubTypesAllowed); // Pulls options list from ObjELM static
         cbobjType.setSelectedItem(buffObjELM.objSubType);
         
         SpinnerModel tab1scaleXSpinnerModel = new SpinnerNumberModel(buffObjELM.scaleX,.05,5,.05);

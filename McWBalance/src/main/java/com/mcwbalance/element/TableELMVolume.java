@@ -19,7 +19,7 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author amcintyre
  */
-public class ObjELMVolumeTableModel extends AbstractTableModel  {
+public class TableELMVolume extends AbstractTableModel  {
     
     private final String[] columnNames = {"Model Day", "Volume (cu.m.)"}; // havent tested to see if Final works yet. 
     private final Object[][] data = new Object[Limit.MAX_LEVELS][2];
@@ -29,7 +29,7 @@ public class ObjELMVolumeTableModel extends AbstractTableModel  {
     private final static int VAL_NULL = DataTimeIntSeries.VAL_NULL; 
     
     
-    ObjELMVolumeTableModel(){
+    TableELMVolume(){
         data[0][0] = 0;
         data[0][1] = 0;
         for (int i = 1; i < Limit.MAX_LEVELS; i ++){

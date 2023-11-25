@@ -8,7 +8,7 @@ import com.mcwbalance.settings.Limit;
 import com.mcwbalance.settings.Preferences;
 import java.awt.Rectangle;
 
-public class ObjTRN {// class to catalog properties of a Pipe or other water transfer Mechanism
+public class TRN {// class to catalog properties of a Pipe or other water transfer Mechanism
     public String objname;
     public String subType;
     public int x; // Coordinates if Information Box
@@ -78,7 +78,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
     
     public ResultFlow result; 
     
-    ObjTRN(){
+    TRN(){
         x = 0;
         y = 0;
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
@@ -106,7 +106,7 @@ public class ObjTRN {// class to catalog properties of a Pipe or other water tra
         plotVolperAnnum = 0; 
         
     }
-    ObjTRN(int inX, int inY, int number) {
+    TRN(int inX, int inY, int number) {
         x = inX;
         y = inY;
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);

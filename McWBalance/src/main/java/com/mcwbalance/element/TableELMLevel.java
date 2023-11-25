@@ -2,8 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mcwbalance.dacapacity;
+package com.mcwbalance.element;
 
+import com.mcwbalance.generics.DataTimeDoubleSeries;
+import com.mcwbalance.project.ProjSetting;
+import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -13,30 +16,30 @@ import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @deprecated 
+ *
  * @author amcintyre
  */
-public class DataDACTableModel extends AbstractTableModel{
+public class TableELMLevel extends AbstractTableModel {
     
-    private String[] columnNames = {"Elevation (m)", "Area (sq.m.)", "Total Volume (c.m.)"};
-    private Object[][] data = new Object[DataDAC.MAX_LENGTH][3];
-    
+    private final String[] columnNames = {"Model Day", "Level (m)"};
+    private final Object[][] data = new Object[Limit.MAX_LEVELS][2];
     private int datalength;
-
     
-    public DataDACTableModel(){
-        datalength = DataDAC.MAX_LENGTH; 
-        System.out.println("DataDACTableModel Initializer called");
-        for( int i = 0; i < DataDAC.MAX_LENGTH; i++){
-            data[i][0] = DataDAC.ELEV_NULL;
-            data[i][1] = DataDAC.AREA_NULL;
-            data[i][2] = DataDAC.AREA_NULL;
+
+     private final static int DAY_NULL = DataTimeDoubleSeries.DAY_NULL;
+    private final static double VAL_NULL = DataTimeDoubleSeries.VAL_NULL; 
+    
+    TableELMLevel(){
+        data[0][0] = 0;
+        data[0][1] = 0;
+        for (int i = 1; i < Limit.MAX_LEVELS; i ++){
+            data[i][0] = DAY_NULL;
+            data[i][1] = VAL_NULL;
         }
-        fireTableDataChanged(); 
     }
     
-    
-    @Override     
+        
+    @Override 
     public Object getValueAt(int row, int col){
         return data[row][col];
     }
@@ -54,31 +57,25 @@ public class DataDACTableModel extends AbstractTableModel{
     }
     @Override 
     public Class getColumnClass(int c){        
-        return getValueAt(0,c).getClass();
+        return getValueAt(0,c).getClass();  
     }
     @Override 
     public boolean isCellEditable(int rowIndex, int columnIndex){
-        if (rowIndex ==0 && columnIndex > 0){
+        if (rowIndex == 0 && columnIndex == 0){
             return false;  
-            // first Area and First Volume must be 0, this will enforce it.
+            // Must have a value for Day 0.
         }
-        
-        return true; // sets all data to editable or should, does not seem to work
-        
+        return true; // sets all data to editable
     }
     @Override 
     public void setValueAt(Object value, int row, int col){
         data[row][col] = value;
         fireTableCellUpdated(row,col);
     }
-    /**
-     * This method also sets the datalength and should be called imediately prior to the getAreaColumn and getVolColumn to avoid missmatch;
-     * @return 
-     */
-    public double[] getElevColumn(){
+    public int[] getDayColumn(){
         datalength = 0; 
-        for (int i = 0; i < DataDAC.MAX_LENGTH; i ++){
-            if((double)data[i][0] == DataDAC.ELEV_NULL || data[i][0] == null){
+        for (int i = 0; i < Limit.MAX_LEVELS; i ++){
+            if((int)data[i][0] == DAY_NULL || data[i][0] == null){
             break; 
             }
             datalength++;
@@ -86,48 +83,19 @@ public class DataDACTableModel extends AbstractTableModel{
         if(datalength < 1){
             datalength = 1;
         }
+        int outColumn[] = new int[datalength];
+        for (int i = 0; i < datalength; i ++){
+            outColumn[i] = (int)data[i][0];
+        }
+         return outColumn;
+    }
+    public double[] getLevelColumn(){
         double outColumn[] = new double[datalength];
         for (int i = 0; i < datalength; i ++){
-            outColumn[i] = (double)data[i][0];
+            outColumn[i] = (double)data[i][1];
         }
          return outColumn;
     }
-    public int[] getAreaColumn(){
-        int outColumn[] = new int[datalength];
-        for (int i = 0; i < datalength; i ++){
-            outColumn[i] = (int)data[i][1];
-        }
-         return outColumn;
-    }
-    public int[] getVolColumn(){
-        int outColumn[] = new int[datalength];
-        for (int i = 0; i < datalength; i ++){
-            outColumn[i] = (int)data[i][2];
-        }
-         return outColumn;
-    }
-    public void setAllData(double[] inElev, int[] inArea, int inVol[]){
-        if (inElev.length <= inArea.length && inElev.length <= inVol.length){
-            datalength = inElev.length;
-        }else if(inArea.length <= inElev.length && inArea.length <= inVol.length){
-            datalength = inArea.length;
-        }else{
-            datalength = inVol.length;
-        }
-        for (int i = 0; i < datalength; i ++){
-            data[i][0] = inElev[i];
-            data[i][1] = inArea[i];
-            data[i][2] = inVol[i];
-        }
-        fireTableDataChanged();    
-    }
-    
-
-    /**
-     * @deprecated - moved to TableDAC
-     * @param selectedrow
-     * @param selectedcol 
-     */
     public void pasteFromClipboard(int[] selectedrow, int[] selectedcol){
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable content = clipboard.getContents(this);
@@ -139,10 +107,17 @@ public class DataDACTableModel extends AbstractTableModel{
                 
                 for (int i = 0; i < clippedValueLines.length; i++){
                     clippedValueSingleLine = clippedValueLines[i].split("\\t");
-                    if (clippedValueSingleLine.length == 3){ // if three columns are present then will assume all 3 columns are to be overwritten;
-                        setValueAt(Double.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 0); // elevation column
-                        setValueAt(Integer.valueOf(clippedValueSingleLine[1]),i+selectedrow[0], 1); // elevation column
-                        setValueAt(Integer.valueOf(clippedValueSingleLine[2]),i+selectedrow[0], 2); // elevation column                        
+                    if (clippedValueSingleLine.length == 2){ // if three columns are present then will assume all 2 columns are to be overwritten;
+                        setValueAt(Integer.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 0); // day column
+                        setValueAt(Double.valueOf(clippedValueSingleLine[1]),i+selectedrow[0], 1); // elevation column
+                    }
+                    if (clippedValueSingleLine.length == 1){ // if only 1 column present then will now need to find wich column
+                        if (selectedcol[0] == 0){ // if its 0 it must be date
+                            setValueAt(Integer.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 0);
+                        }
+                        else if (selectedcol[0] == 1){ // if its 1 it must be level
+                            setValueAt(Double.valueOf(clippedValueSingleLine[0]),i+selectedrow[0], 1);
+                        }
                     }
                 }
                 fireTableDataChanged();                
@@ -153,11 +128,10 @@ public class DataDACTableModel extends AbstractTableModel{
             catch (IOException e){
                 System.err.println("Data Consumed Exception " + e.getLocalizedMessage());
             }
-        }
+        } 
     }
     
-    public void removeData(int[] selectedrow, int[] selectedcol){
-        
+    public void removeData(int[] selectedrow, int[] selectedcol){ //allow deletion of data but first row must remain
         for (int i = 0; i < selectedrow.length; i++){
             if (selectedrow[i] != 0){ // if isn't row 0 then run the normal sequence
                 for(int j = 0; j < selectedcol.length; j++){
@@ -165,12 +139,29 @@ public class DataDACTableModel extends AbstractTableModel{
                 }
             }
             else if(selectedcol[0] == 0){ // confirms that elevation column is selected
-                data[0][0] = 0.0; // only deletes the first elevation value,  Area and Vol maintained as 0. 
+
+                data[0][0] = 0; // only deletes the first elevation value,  Area and Vol maintained as 0. 
+                if(selectedcol.length > 1){ // maximum columns for this data type is 2. 
+                    data[0][1] = 0.0;
+                }
             }
-            fireTableDataChanged();
-                
+            else if (selectedcol[0] == 1){
+                data[0][1] = 0.0;
+            }
+            fireTableDataChanged();     
         }
-        
     }
-    
+     public void setAllData(int inDay[], double inLevel[]){
+        if (inDay.length <= inLevel.length){
+            datalength = inDay.length;
+        }else{
+            datalength = inLevel.length;
+        }
+        for (int i = 0; i < datalength; i ++){
+            data[i][0] = inDay[i];
+            data[i][1] = inLevel[i];
+        }
+        fireTableDataChanged();    
+    }
+
 }

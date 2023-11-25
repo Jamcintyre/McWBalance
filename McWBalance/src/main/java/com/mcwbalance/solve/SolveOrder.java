@@ -6,8 +6,8 @@ package com.mcwbalance.solve;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
-import com.mcwbalance.transfer.ObjTRNList;
-import com.mcwbalance.element.ObjELMList;
+import com.mcwbalance.transfer.TRNList;
+import com.mcwbalance.element.ELMList;
 import com.mcwbalance.settings.Limit;
 import javax.swing.table.AbstractTableModel;
 
@@ -120,7 +120,7 @@ public class SolveOrder extends AbstractTableModel{
      * @param tRNList
      * @param eLMList 
      */
-    public void setAutoOrder(ObjTRNList tRNList, ObjELMList eLMList){
+    public void setAutoOrder(TRNList tRNList, ELMList eLMList){
         int initSolveIndex[] = new int[Limit.MAX_TRNS];
         String initSolveType[] = new String[Limit.MAX_TRNS]; 
         int c = 0;

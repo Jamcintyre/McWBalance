@@ -10,10 +10,10 @@ import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.flowchart.TitleBlockTabloidFigure;
 import com.mcwbalance.flowchart.TitleBlock;
 import com.mcwbalance.util.CalcBasics;
-import com.mcwbalance.transfer.ObjTRN;
-import com.mcwbalance.transfer.ObjTRNList;
-import com.mcwbalance.element.ObjELM;
-import com.mcwbalance.element.ObjELMList;
+import com.mcwbalance.transfer.TRN;
+import com.mcwbalance.transfer.TRNList;
+import com.mcwbalance.element.ELM;
+import com.mcwbalance.element.ELMList;
 import com.mcwbalance.settings.Limit;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -63,11 +63,11 @@ public class FlowChartCAD extends JComponent{
     /**
      * This is the active list of Elements
      */
-    public static ObjELMList eLMList = new ObjELMList();
+    public static ELMList eLMList = new ELMList();
     /**
      * This is the active list of Transfers
      */
-    public static ObjTRNList tRNList = new ObjTRNList();
+    public static TRNList tRNList = new TRNList();
     
     private int drawX = 0;
     private int drawY = 0;
@@ -400,20 +400,20 @@ public class FlowChartCAD extends JComponent{
        ProjSetting.hasChangedSinceSave = true;
    }
    
-   public ObjELM getObjELM (int inNumber){
+   public ELM getObjELM (int inNumber){
        return eLMList.eLMs[inNumber];
    }
-   public ObjTRN getObjTRN (int inNumber){
+   public TRN getObjTRN (int inNumber){
        return tRNList.tRNs[inNumber];
    }
 
-   public void setObjELM (int inNumber, ObjELM inObjELM){
+   public void setObjELM (int inNumber, ELM inObjELM){
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
        inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width/2, inObjELM.y - inObjELM.hitBox.getSize().height/2);  
        eLMList.setObjELM (inNumber, inObjELM); // passes command to active object list; 
        ProjSetting.hasChangedSinceSave = true;
    }
-   public void setObjTRN (int inNumber, ObjTRN inObjTRN){
+   public void setObjTRN (int inNumber, TRN inObjTRN){
        tRNList.setObjTRN (inNumber, inObjTRN);
        ProjSetting.hasChangedSinceSave = true;
    }
