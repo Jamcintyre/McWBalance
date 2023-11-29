@@ -6,6 +6,9 @@ to be developed. Existing tools for this work include Excel and GoldSim. Both ha
 when compared to eachother. This tool aims to combine the visual nature of Goldsim, and the transparency of Excel, with hopefully
 a bit more ease of use and reduced learning curve. 
 
+Dependencies
+- Java 17
+
 Philosophy:
 1) The balance must balance, above all, inputs and outputs must add up, no rounding error
 2) The tool must be intuitive and behave similarly to other progams
