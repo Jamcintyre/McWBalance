@@ -278,9 +278,6 @@ public class Node {
     }
     
     
-    
-    
-
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
      * object Subtype is changed
