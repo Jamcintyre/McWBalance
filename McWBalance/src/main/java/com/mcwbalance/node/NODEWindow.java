@@ -8,7 +8,7 @@ import com.mcwbalance.MainWindow;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.project.ProjSetting;
-import com.mcwbalance.dacapacity.DACPlotWindow;
+import com.mcwbalance.dacapacity.DACWindow;
 import com.mcwbalance.settings.Limit;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -420,49 +420,8 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
         
         // TAB 3 for handelling Depth Area Capacity
         JPanel tab3 = new JPanel();
- 
-        JTable tab3TableDAC = new JTable(buffNode.dAC);
-        
-        JPopupMenu popupMenuDACTable = new JPopupMenu();
-        JMenuItem popupMenuItemDACSelectAll = new JMenuItem("Select All");
-        popupMenuItemDACSelectAll.addActionListener(e->{
-                tab3TableDAC.setColumnSelectionInterval(0, 2);
-                tab3TableDAC.setRowSelectionInterval(0, tab3TableDAC.getRowCount()-1);
-        });
-        JMenuItem popupMenuItemDACDelete = new JMenuItem("Delete Rows (not Implemented");
-        popupMenuItemDACDelete.addActionListener(e->{
-                //buffObjELM.dAC.removeRows(tab3TableDAC.getSelectedRows());
-        });
-        JMenuItem popupMenuItemDACCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemDACCopy.addActionListener(e->{
-                System.out.println("popup menu Copy button hit");
-        });
 
-        JMenuItem popupMenuItemDACPaste = new JMenuItem("Paste");
-        popupMenuItemDACPaste.addActionListener(e->{
-                buffNode.dAC.pasteFromClipboard(tab3TableDAC.getSelectedRows(),tab3TableDAC.getSelectedColumns());
-        });
         
-        popupMenuDACTable.add(popupMenuItemDACSelectAll);
-        popupMenuDACTable.add(popupMenuItemDACDelete);
-        popupMenuDACTable.add(popupMenuItemDACCopy);
-        popupMenuDACTable.add(popupMenuItemDACPaste);
-        tab3TableDAC.setComponentPopupMenu(popupMenuDACTable);
-        tab3TableDAC.setCellSelectionEnabled(true);
-        //tab3TableDAC.
-        JScrollPane tab3ScrollDAC = new JScrollPane(tab3TableDAC);
-        
-        
-        JButton tab3buttonPlotDAC = new JButton("Show DAC");
-        tab3buttonPlotDAC.addActionListener(e -> {
-            DACPlotWindow DACplotwindow = new DACPlotWindow();
-            DACplotwindow.plotWindow(buffNode.dAC);
-
-        });
-        
-        
-        tab3.add(tab3ScrollDAC);
-        tab3.add(tab3buttonPlotDAC);
 
        // TAB 4 for handelling Operating Levels
         JPanel tab4 = new JPanel();
@@ -715,6 +674,13 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
             buffNode.hasStorage = tab1CheckBoxhasStorage.isSelected();
         });
         
+        JButton tab1ButtonDACWindow = new JButton("Show DAC");
+        tab1ButtonDACWindow.addActionListener(e -> {
+            DACWindow dACWindow = new DACWindow(this, buffNode.dAC);
+        });
+
+        
+        
         JCheckBox tab1CheckBoxshowStorage = new JCheckBox("Show Net Storage on Flowsheet");
         tab1CheckBoxshowStorage.setSelected(buffNode.showStorage);
         tab1CheckBoxshowStorage.addActionListener(e-> {
@@ -791,12 +757,14 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
         
         tab1.add(tab1CheckBoxhasStorage);
         tab1.add(tab1CheckBoxshowStorage);
+        
+        tab1.add(tab1ButtonDACWindow);
+        
         tab1.add(tab1LabelStorageXoSet);
         tab1.add(tab1SpinnerStorageXoSet);
         tab1.add(tab1LabelStorageYoSet);
         tab1.add(tab1SpinnerStorageYoSet);
-        
-        
+          
         
         tab1.add(tab1CheckBoxhasStorageEvapandPrecip);
         tab1.add(bSave);
@@ -842,6 +810,11 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
                 
         layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorage, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasSolids); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1ButtonDACWindow, hPadLabels, SpringLayout.EAST, tab1CheckBoxhasStorage);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1ButtonDACWindow, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasStorage); 
+        
+        
         
         layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxshowStorage, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxshowStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorage); 
