@@ -6,6 +6,7 @@ package com.mcwbalance.dacapacity;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -84,8 +85,19 @@ public class DACPlotGraphics extends JComponent{
         10000000,15000000,20000000,25000000,30000000,40000000,50000000,
         100000000,150000000,200000000,250000000,300000000,400000000,500000000
     };
+    /**
+     * Sets left of draw area
+     */
+    public int tx = 0;
+    
+    /**
+     * Sets top of draw area
+     */
+    public int ty = 0;
 
     DACPlotGraphics(DAC dAC){
+        this.setPreferredSize(new Dimension(PAGE_WIDTH,PAGE_HEIGHT));
+        
         minElev = dAC.elev[0];
         rangeElev =  dAC.elev[dAC.elev.length-1] - minElev;
         rangeArea =  dAC.area[dAC.vol.length-1] - minArea;
@@ -176,6 +188,7 @@ public class DACPlotGraphics extends JComponent{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         AffineTransform at = new AffineTransform();
+        at.setToTranslation(tx, ty);
         g2.setTransform(at); // in event windows scale is not 100%, then at transform is needed first
         g2.setColor(Color.WHITE); // used to set background color, would have preferred use setbackground to preserve transparancy but doesnt seem to work
         g2.fillRect(0, 0, PAGE_WIDTH, PAGE_HEIGHT);
@@ -302,4 +315,16 @@ public class DACPlotGraphics extends JComponent{
         g2.setTransform(at);
 
     }
+    
+    /**
+     * Sets top left corner of draw area
+     * @param x left side of draw area
+     * @param y top of draw area
+     */
+    public void setTranslation(int x, int y){
+        tx = x;
+        ty = y;
+    }
 }
+
+

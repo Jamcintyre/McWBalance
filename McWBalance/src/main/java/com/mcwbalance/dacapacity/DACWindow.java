@@ -6,11 +6,14 @@ package com.mcwbalance.dacapacity;
 
 import com.mcwbalance.McWBalance;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -36,6 +39,37 @@ public class DACWindow extends JFrame{
         table.setRowHeight(TABLE_ROW_HEIGHT);
         table.setPreferredScrollableViewportSize(TABLE_PREF_DIMENSION);
         
+        JPopupMenu popupMenuDACTable = new JPopupMenu();
+        JMenuItem popupMenuItemDACSelectAll = new JMenuItem("Select All");
+        popupMenuItemDACSelectAll.addActionListener(e->{
+                table.setColumnSelectionInterval(0, 2);
+                table.setRowSelectionInterval(0, table.getRowCount()-1);
+        });
+        JMenuItem popupMenuItemDACDelete = new JMenuItem("Delete Rows (not Implemented");
+        popupMenuItemDACDelete.addActionListener(e->{
+                //buffObjELM.dAC.removeRows(tab3TableDAC.getSelectedRows());
+        });
+        JMenuItem popupMenuItemDACCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
+        popupMenuItemDACCopy.addActionListener(e->{
+                System.out.println("popup menu Copy button hit");
+        });
+
+        JMenuItem popupMenuItemDACPaste = new JMenuItem("Paste");
+        popupMenuItemDACPaste.addActionListener(e->{
+                dAC.pasteFromClipboard(table.getSelectedRows(),table.getSelectedColumns());
+        });
+        
+        popupMenuDACTable.add(popupMenuItemDACSelectAll);
+        popupMenuDACTable.add(popupMenuItemDACDelete);
+        popupMenuDACTable.add(popupMenuItemDACCopy);
+        popupMenuDACTable.add(popupMenuItemDACPaste);
+        table.setComponentPopupMenu(popupMenuDACTable);
+        table.setCellSelectionEnabled(true);        
+     
+        dAC.setPlotGraphic();
+        JPanel ppanel = new JPanel();
+        ppanel.add(dAC.plotGraphic);
+        
         JButton addRow = new JButton(McWBalance.langRB.getString("ADD_ROW"));
         addRow.addActionListener(l ->{
             dAC.addRow();
@@ -44,12 +78,19 @@ public class DACWindow extends JFrame{
         JButton deleteRow = new JButton(McWBalance.langRB.getString("DELETE_ROW"));
         deleteRow.addActionListener(l ->{
             dAC.deleteRow(table.getSelectedRow());
+            
         });
         
-        JButton viewData = new JButton(McWBalance.langRB.getString("VIEW_DATA"));
-        viewData.addActionListener(l ->{
-            // to be implemented
+        JButton updatePlot = new JButton(McWBalance.langRB.getString("UPDATE_PLOT"));
+        updatePlot.addActionListener(l ->{
+            dAC.setPlotGraphic();
         });
+        
+        
+        
+        
+        
+        
         
         setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table);
@@ -58,12 +99,18 @@ public class DACWindow extends JFrame{
         JPanel bpanel = new JPanel();
         bpanel.add(addRow);
         bpanel.add(deleteRow);
-        bpanel.add(viewData);
-
-        this.add(cpanel, BorderLayout.CENTER); 
+        bpanel.add(updatePlot);
+        
+        
+        
+        this.add(ppanel, BorderLayout.CENTER);
+        this.add(cpanel, BorderLayout.WEST); 
         this.add(bpanel, BorderLayout.SOUTH); 
         this.pack();
         this.setLocationRelativeTo(owner);
+
+        dAC.plotGraphic.setTranslation(ppanel.getX(), ppanel.getY()); // sets location relative to panel
+   
         this.setVisible(true);
 
     }

@@ -21,7 +21,7 @@ public class Preferences {
     public static Color DEFAULT_DRAW_COLOR = Color.BLACK;
     public static Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     
-    public static double zoomScale = .5;
+    public static double zoomScale = .65;
     
     public static void setDefaultColors(int viewmode){
         currentMode = viewmode;

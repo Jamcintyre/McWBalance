@@ -10,6 +10,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import javax.swing.JComponent;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -23,6 +24,8 @@ public class DAC extends AbstractTableModel{
     int[] vol;
     
     
+    DACPlotGraphics plotGraphic;
+    
     /**
      * Constructs a DAC table with 1 row of 0's to start
      */
@@ -33,10 +36,11 @@ public class DAC extends AbstractTableModel{
         area[0] = 0;
         vol = new int[1];
         vol[0] = 0; 
+        plotGraphic = new DACPlotGraphics(this);
     }
     
     public void addRow(){
-        resize(elev.length+2);
+        resize(elev.length+1);
     }
     /**
      * Returns the volume corresponding to a given elevation using linear 
@@ -241,10 +245,14 @@ public class DAC extends AbstractTableModel{
      */
     public void deleteRow(int row){
         if(row < 0 || row >= elev.length){
-            //Do Nothing
+            return;//Do Nothing
         }
-        // TO BE COMPLETED
-        
+        for (int i = row; i < elev.length; i++){
+            elev[row] = elev[row+1];
+            area[row] = area[row+1];
+            vol[row] = vol[row+1];
+        }
+        this.resize(elev.length -1);
     }
     
     public void removeDoupAndNulls(){
@@ -284,7 +292,7 @@ public class DAC extends AbstractTableModel{
     
     
     private void resize(int rows){
-        if(rows == elev.length + 1){
+        if(rows == elev.length){
             return;
         }
         else if (rows > Limit.MAX_DAC_SIZE){
@@ -371,6 +379,14 @@ public class DAC extends AbstractTableModel{
         
         
         return sb.toString();
+    }
+    /**
+     * Provides a graphic plot of the DAC by calling DACPlotGraphics on this
+     * @return 
+     */
+    public void setPlotGraphic(){
+        plotGraphic = new DACPlotGraphics(this);
+      
     }
     
     
