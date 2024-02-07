@@ -33,7 +33,6 @@ public class DataClimateSettingWindow extends JFrame{
         super(McWBalance.langRB.getString("CLIMATE_SCENARIOS"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
-        
         JTable table = new JTable(ProjSetting.climateScenarios);
         
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
@@ -115,6 +114,7 @@ public class DataClimateSettingWindow extends JFrame{
         this.add(cpanel, BorderLayout.CENTER); 
         this.add(bpanel, BorderLayout.SOUTH); 
         this.pack();
+        
         this.setLocationRelativeTo(owner);
         this.setVisible(true);
         

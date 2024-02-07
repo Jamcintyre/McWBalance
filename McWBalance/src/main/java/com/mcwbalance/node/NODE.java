@@ -281,6 +281,8 @@ public class Node {
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
      * object Subtype is changed
+     * @param inState state from StatesAllowed, if no match is found then
+     * imageLib returns a default sprite
      */
     public void setSubType(String inSubType, String inState) {
         objSubType = inSubType;

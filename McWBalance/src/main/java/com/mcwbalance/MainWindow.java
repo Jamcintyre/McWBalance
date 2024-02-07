@@ -305,13 +305,13 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 requestedAction = "DeleteObj";
             }
             case "ClimateSetting" -> {
-                JFrame climateSettingWindow = new DataClimateSettingWindow(this);
+                JFrame climateSettingWindow = new DataClimateSettingWindow(mainframe);
             }
             case "SolveOrderWindow" -> {
-                JFrame solveOrderWindow = new SolveOrderWindow(this);
+                JFrame solveOrderWindow = new SolveOrderWindow(mainframe);
             }
             case "RunoffCoefficientsWindow" ->{
-                JFrame runoffCoefficientWindow = new RunoffCoefficientWindow(this);
+                JFrame runoffCoefficientWindow = new RunoffCoefficientWindow(mainframe);
             }
             
             
