@@ -28,7 +28,7 @@ public class DataClimateSettingWindow extends JFrame{
     private final int TABLE_ROW_HEIGHT = 20;
     private final Dimension TABLE_PREF_DIMENSION = new Dimension(TABLE_FIRST_COL_WIDTH+TABLE_SECOND_COL_WIDTH+(TableClimateScenarios.NUMBER_OF_COLUMNS-1)*TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*5);
     
-    public DataClimateSettingWindow(JFrame owner){
+    public DataClimateSettingWindow(JFrame owner, ProjSetting projSetting){
         
         super(McWBalance.langRB.getString("CLIMATE_SCENARIOS"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -46,7 +46,7 @@ public class DataClimateSettingWindow extends JFrame{
         
         JButton addClimate = new JButton(McWBalance.langRB.getString("ADD_CLIMATE_SCENARIO"));
         addClimate.addActionListener(l ->{
-            DataClimateImportWindow importWindow = new DataClimateImportWindow(this);   
+            DataClimateImportWindow importWindow = new DataClimateImportWindow(this, projSetting);   
             if(importWindow.getStatus() == DataClimateImportWindow.FILE_OBTAINED){
                 ProjSetting.climateScenarios.addClimateScenario(importWindow.getString());
             }

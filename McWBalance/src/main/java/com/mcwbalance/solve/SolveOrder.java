@@ -21,10 +21,11 @@ public class SolveOrder extends AbstractTableModel{
     public String[] tRNName;
     public String[] tRNType;
     public String[] columnNames;
+    FlowChartCAD flowchart;
     
     
-    public SolveOrder() {
-
+    public SolveOrder(FlowChartCAD flowchart) {
+        this.flowchart = flowchart;
         columnNames = McWBalance.langRB.getString("SOLVE_ORDER_TABLE_HEADINGS").split(",");
         
         tRNIndex = new int[1];
@@ -47,7 +48,7 @@ public class SolveOrder extends AbstractTableModel{
             case 2 -> {
                 if (tRNIndex[row] >=0){
 
-                    return FlowChartCAD.tRNList.tRNs[tRNIndex[row]].objname;
+                    return flowchart.getTRNList().tRNs[tRNIndex[row]].objname;
                 }
                 else {
                     return "None";

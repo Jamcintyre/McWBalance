@@ -38,8 +38,8 @@ public class TRNWindow extends JDialog {
     public static final int CLOSE_ACTION_SAVE = 1;
     public static final int CLOSE_ACTION_DISCARD = 2;
         
-    public TRNWindow(TRN inObjTRN, String[] eLMList){ // requires object number to edit
-        super(MainWindow.mainframe, "Transfer Properties", true); // was orginally a frame but changed to dialog
+    public TRNWindow(JFrame owner, TRN inObjTRN, String[] eLMList){ // requires object number to edit
+        super(owner, "Transfer Properties", true); // was orginally a frame but changed to dialog
         ProjSetting.hasChangedSinceSave = true; // assumes if this dialog is called then a change has been made
         buffObjTRN = inObjTRN; // sets buffered object to in object
         int fmtTFColumnsDEF = 30; // number of columns used for Name fields

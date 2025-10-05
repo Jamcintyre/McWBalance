@@ -31,11 +31,11 @@ public class DataClimateImportWindow extends JDialog{
     private StringBuilder stringBuilder = new StringBuilder();
     private String ls = System.getProperty("line.separator");
     
-    DataClimateImportWindow(JFrame owner) {
+    DataClimateImportWindow(JFrame owner, ProjSetting projSetting) {
         super(owner, McWBalance.langRB.getString("SELECT_CLIMATE_DATASET"), true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(owner);
-        JFileChooser fileChooser = new JFileChooser(ProjSetting.pathFolder);
+        JFileChooser fileChooser = new JFileChooser(projSetting.getPathFolder());
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(CLIMATE_FILE_FILTER);
         fileChooser.addActionListener(l -> {

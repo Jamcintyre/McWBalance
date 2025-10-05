@@ -22,10 +22,10 @@ public class ConfirmSaveDialog extends JDialog{
     public static final int SELECTION_CANCEL = 3;
     private int selection = SELECTION_CANCEL;
     
-    public ConfirmSaveDialog(JFrame owner){
+    public ConfirmSaveDialog(JFrame owner,ProjSetting projSetting){
         super(owner,"McWBalance",true);
         
-        JLabel message = new JLabel(ProjSetting.pathFile.getName() + " has been changed since last save, would you like to Save");
+        JLabel message = new JLabel(projSetting.getSaveFile().getName() + " has been changed since last save, would you like to Save");
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(l-> {
             selection = SELECTION_SAVE;

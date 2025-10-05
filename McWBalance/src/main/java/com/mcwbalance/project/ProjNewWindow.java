@@ -4,8 +4,8 @@
  */
 package com.mcwbalance.project;
 
-import com.mcwbalance.MainWindow;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.SpringLayout;
 
 /**
@@ -15,21 +15,14 @@ import javax.swing.SpringLayout;
 public class ProjNewWindow extends JDialog{
     
     
-    
-    
-    
-    public void ProjNewWindowFunc(){
+    public void ProjNewWindowFunc(JFrame owner){
             
             SpringLayout layout = new SpringLayout();
             
-            JDialog subframe = new JDialog(MainWindow.mainframe, "New Project Path", true); // was orginally a frame but changed to dialog
+            JDialog subframe = new JDialog(owner, "New Project Path", true); // was orginally a frame but changed to dialog
             subframe.setLayout(layout);
             
             
-            
-            
-            
-            
-            
+
     }
 }

@@ -273,9 +273,10 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     
     /**
      * method to call constructor on result variables
+     * @param projSetting
      */
-    public void initializeResults() {
-        result = new ResultFlow(ProjSetting.duration, objname);
+    public void initializeResults(ProjSetting projSetting) {
+        result = new ResultFlow(projSetting.getDuration(), objname);
     }
 
     /**

@@ -40,7 +40,12 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
     
     private int length; 
     
-    public TableTailingsDepositionRates(){
+    ProjSetting projSetting; 
+    
+    public TableTailingsDepositionRates(ProjSetting projSetting){
+        
+        this.projSetting = projSetting;
+        
         data[0][0] = (int)0;//"Model Day", 
         data[0][1] = (double)0; //"Rate (Tonnes per Day)",
         data[0][2] = (double)0; //"Solids Content (by mass)",
@@ -168,13 +173,13 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
                 //double voidLoss = vSSolids*(1-rate/sG); //"Voidloss (cu.m./day)"
                 double voidLoss = (1-vSSolidsperM)*rate/sDens;
                 
-                CalcBasics.roundDbl(wWSolids, ProjSetting.precisionDay); // rounds off value based on project setting
+                CalcBasics.roundDbl(wWSolids, projSetting.getPrecisionDay()); // rounds off value based on project setting
                 data[row][5] = wWSolids;
                 
-                CalcBasics.roundDbl(voidLoss, ProjSetting.precisionDay); // rounds off value based on project setting
+                CalcBasics.roundDbl(voidLoss, projSetting.getPrecisionDay()); // rounds off value based on project setting
                 data[row][6] = voidLoss;
                 
-                CalcBasics.roundDbl(vSSolidsandVoids, ProjSetting.precisionDay); // rounds off value based on project setting
+                CalcBasics.roundDbl(vSSolidsandVoids, projSetting.getPrecisionDay()); // rounds off value based on project setting
                 data[row][7] = vSSolidsandVoids;
                 fireTableDataChanged(); 
             }else {

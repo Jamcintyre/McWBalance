@@ -71,7 +71,7 @@ public class McWBalance {
 
             //UIManager.setLookAndFeel                     UIManager.getSystemLookAndFeelClassName());
             UIManager.setLookAndFeel(new FlatDarkLaf());
-            Preferences.setDefaultColors(Preferences.DARK_MODE);
+            Preferences.setDefaultColors(Preferences.LIGHT_MODE);
             
         } catch (UnsupportedLookAndFeelException e) {
             // handle exception
@@ -87,8 +87,7 @@ public class McWBalance {
 
          
         System.out.println("McBalance Version " + ProjSetting.verInfo + " is loading");
-        MainWindow mainWin = new MainWindow();
-        mainWin.MainWindowFunct(); 
+        MainWindow mainWin = new MainWindow(); 
     }
     /**
      * note this doesn't work correctly, once data bundle is loaded it appears the data cannot change

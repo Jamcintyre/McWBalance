@@ -9,7 +9,6 @@ import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.node.NodeList;
-import static com.mcwbalance.MainWindow.mainframe;
 import com.mcwbalance.settings.Limit;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -31,13 +30,13 @@ public class ProjOpenExistingWindow extends JDialog{
     private static int MAX_ITTERATIONS = 100; 
     
     
-    public void ProjNewWindowFunc(){
-            JDialog subframe = new JDialog(MainWindow.mainframe, "Choose Existing Project", true); // was orginally a frame but changed to dialog
+    public ProjOpenExistingWindow(JFrame owner, FlowChartCAD flowchart, ProjSetting projSetting){
+            JDialog subframe = new JDialog(owner, "Choose Existing Project", true); // was orginally a frame but changed to dialog
 
             subframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             subframe.setLocationRelativeTo(null);
                         
-            JFileChooser filechooser = new JFileChooser(ProjSetting.pathFolder);
+            JFileChooser filechooser = new JFileChooser(projSetting.getPathFolder());
             filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);      
             filechooser.setFileFilter(McWBalance.DEFAULT_FILEEXTENSION_FILTER);
             
@@ -45,20 +44,20 @@ public class ProjOpenExistingWindow extends JDialog{
                 switch (l.getActionCommand()) {
                     case JFileChooser.APPROVE_SELECTION -> {
                         
-                        ProjSetting.pathFolder = filechooser.getCurrentDirectory();
-                        ProjSetting.pathFile = filechooser.getSelectedFile();
+                        projSetting.setSavePath(filechooser.getCurrentDirectory());
+                        projSetting.setFileName(filechooser.getSelectedFile());
 
                         try {
-                            ZipFile ifile = new ZipFile(ProjSetting.pathFile);
+                            ZipFile ifile = new ZipFile(projSetting.getSaveFile());
                             Enumeration<? extends ZipEntry> ifEntries = ifile.entries();
                             ZipEntry entry;
                             String entryName[]; // = new String [2];
                             InputStream istream;
                             String inbuffer;
                             int objNumber;
-                            FlowChartCAD.eLMList = new NodeList(); // wipes existing list data
-                            FlowChartCAD.tRNList = new TRNList(); // wipes existing list data
-                            System.out.println(ProjSetting.pathFile.getName() + " has been opened");
+                            flowchart.setNodeList(new NodeList(projSetting)); // wipes existing list data
+                            flowchart.setTRNList(new TRNList()); // wipes existing list data
+                            System.out.println(projSetting.getSaveFile().getName() + " has been opened");
 
                             for (int i = 0; ifEntries.hasMoreElements() && i < 100; i++) {
                                 entry = ifEntries.nextElement();
@@ -77,9 +76,9 @@ public class ProjOpenExistingWindow extends JDialog{
                                         if(objNumber < Limit.MAX_TRNS){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
-                                            FlowChartCAD.tRNList.tRNs[objNumber].setFromString(inbuffer);
-                                            if (FlowChartCAD.tRNList.count < objNumber +1){
-                                                FlowChartCAD.tRNList.count = objNumber +1;
+                                            flowchart.getTRNList().tRNs[objNumber].setFromString(inbuffer);
+                                            if (flowchart.getTRNList().count < objNumber +1){
+                                                flowchart.getTRNList().count = objNumber +1;
                                             }
                                         }
                                         System.out.println("found TRN"); // DEBUG PRINTING
@@ -89,9 +88,9 @@ public class ProjOpenExistingWindow extends JDialog{
                                         if(objNumber < Limit.MAX_NODES){
                                             istream = ifile.getInputStream(entry);
                                             inbuffer = new String(istream.readAllBytes(), "UTF-8");
-                                            FlowChartCAD.eLMList.nodes[objNumber].setFromString(inbuffer);
-                                            if (FlowChartCAD.eLMList.count < objNumber +1){
-                                                FlowChartCAD.eLMList.count = objNumber +1;
+                                            flowchart.getNodeList().nodes[objNumber].setFromString(inbuffer);
+                                            if (flowchart.getNodeList().count < objNumber +1){
+                                                flowchart.getNodeList().count = objNumber +1;
                                             }
                                         }
                                     }
@@ -102,11 +101,11 @@ public class ProjOpenExistingWindow extends JDialog{
                             
 
                         } catch (FileNotFoundException fe) {
-                            JDialog warningDialog = new JDialog(mainframe, "Error File Not Found", Dialog.ModalityType.DOCUMENT_MODAL);
+                            JDialog warningDialog = new JDialog(owner, "Error File Not Found", Dialog.ModalityType.DOCUMENT_MODAL);
                             // to add OK button and more descriptive text
                             warningDialog.setVisible(true);
                         } catch (IOException fe) {
-                            JDialog warningDialog = new JDialog(mainframe, "Error IO Exception", Dialog.ModalityType.DOCUMENT_MODAL);
+                            JDialog warningDialog = new JDialog(owner, "Error IO Exception", Dialog.ModalityType.DOCUMENT_MODAL);
                             // to add OK button and more descriptive text
                             warningDialog.setVisible(true);
                         }

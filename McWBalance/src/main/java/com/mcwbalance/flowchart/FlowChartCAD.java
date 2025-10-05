@@ -15,6 +15,7 @@ import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.node.Node;
 import com.mcwbalance.node.NodeList;
 import com.mcwbalance.settings.Limit;
+import com.mcwbalance.solve.SolveOrder;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -59,50 +60,51 @@ public class FlowChartCAD extends JComponent{
      */
     static TitleBlock tb = new TitleBlock();
     
-    
     /**
      * This is the active list of Elements
      */
-    public static NodeList eLMList = new NodeList();
+    public NodeList eLMList;
     /**
      * This is the active list of Transfers
      */
-    public static TRNList tRNList = new TRNList();
+    public TRNList tRNList;
     
-    private int drawX = 0;
-    private int drawY = 0;
+    private int drawX;
+    private int drawY;
     
-    private Dimension eLMdim = new Dimension(0,0); // variable for holding dimesion of origin elm
-    private int eLMx =0;
-    private int eLMy =0;
-    private Rectangle eLMrect = new Rectangle(); // used in flow line drawing
+    private Dimension eLMdim; // variable for holding dimesion of origin elm
+    private int eLMx;
+    private int eLMy;
+    private Rectangle eLMrect; // used in flow line drawing
     
     public final static int TRN_BOX_WIDTH = 60;
     public final static int TRN_BOX_HEIGHT = 60;
     
-    private Dimension tRNdim = new Dimension(TRN_BOX_WIDTH,TRN_BOX_HEIGHT); // placeholder sizing
-    private int tRNx =0;
-    private int tRNy =0;
-    private Rectangle tRNrect = new Rectangle(); // used in flow line drawing
+    private Dimension tRNdim; // placeholder sizing
+    private int tRNx;
+    private int tRNy;
+    private Rectangle tRNrect; // used in flow line drawing
     
-    private FlowChartLines fpline = new FlowChartLines(); // sets up a bin to hold a polyline
+    private FlowChartLines fpline; // sets up a bin to hold a polyline
     
-    BasicStroke FLOW_LINE = new BasicStroke(1);
-    BasicStroke THIN_LINE = new BasicStroke(1);
-    BasicStroke THICK_LINE = new BasicStroke(3);
-    Color defaultDrawColor = Preferences.DEFAULT_DRAW_COLOR;
-    Color defaultBGColor = Preferences.DEFAULT_BACKGROUND_COLOR;
-    Color SELECTED = new Color(153,209,255);
+    BasicStroke FLOW_LINE;
+    BasicStroke THIN_LINE;
+    BasicStroke THICK_LINE;
+    Color defaultDrawColor;
+    Color defaultBGColor;
+    Color SELECTED;
     
     private boolean isPageOutlineVisible = false; 
     
-    private final int minLineLength = 25; // used to set stublines from objects
+    private int minLineLength; // used to set stublines from objects
     
-    private final int vlableoffset = 5; 
+    private int vlableoffset; 
     private double nameWidthDouble; // used for centering the name
     private int nameWidth; // used for centering the name
     private double nameHeightDouble; // used for centering the name
     private int nameHeight; // used for centering the name
+    
+    ProjSetting projSetting;
     private int pVolWidth; // used for centering volume values in transfer 
     private int pVolHeight; // used for centering volume values in transfer;
     private String pVolAnn;
@@ -110,16 +112,66 @@ public class FlowChartCAD extends JComponent{
     private String pVolHr;
     
     private BufferedImage buffIcon; // used for buffering Icon to Print
-    private final Font lfont = new Font("Arial", Font.PLAIN, 14);
-    private final Font mfont = new Font("Arial", Font.PLAIN, 12);
-    private final Font sfont = new Font("Arial", Font.PLAIN, 10);
-    private final int lpadding = 4; // used to set padding around Text Boxs and White outs
-    private final int lshadow = 4; // used to size the shaddow box shadow
-    private final int spadding = 2; // used to pad bottom of numbers. 
+    private Font lfont = new Font("Arial", Font.PLAIN, 14);
+    private Font mfont = new Font("Arial", Font.PLAIN, 12);
+    private Font sfont = new Font("Arial", Font.PLAIN, 10);
+    private int lpadding = 4; // used to set padding around Text Boxs and White outs
+    private int lshadow = 4; // used to size the shaddow box shadow
+    private int spadding = 2; // used to pad bottom of numbers. 
    
-    public static double zoomscale = Preferences.zoomScale; 
-    public static int drawdate = -1; 
+    public static double zoomscale; 
+    public static int drawdate; 
     
+    SolveOrder solveorder;
+    
+    
+    public FlowChartCAD(ProjSetting projSetting){
+        this.projSetting = projSetting;
+        drawX = 0;
+        drawY = 0;
+        
+        defaultDrawColor = Preferences.DEFAULT_DRAW_COLOR;
+        defaultBGColor = Preferences.DEFAULT_BACKGROUND_COLOR;
+        
+        eLMList = new NodeList(projSetting);
+        eLMdim = new Dimension(0,0); // variable for holding dimesion of origin elm
+        eLMx =0;
+        eLMy =0;
+        eLMrect = new Rectangle(); // used in flow line drawing
+    
+        fpline = new FlowChartLines(); // sets up a bin to hold a polyline
+        
+        tb = new TitleBlock();
+        titleBlockVisible = true; 
+        
+        tRNList = new TRNList();
+        tRNdim = new Dimension(TRN_BOX_WIDTH,TRN_BOX_HEIGHT); // placeholder sizing
+        tRNx =0;
+        tRNy =0;
+        tRNrect = new Rectangle(); // used in flow line drawing
+    
+        FLOW_LINE = new BasicStroke(1);
+        THIN_LINE = new BasicStroke(1);
+        THICK_LINE = new BasicStroke(3);
+        SELECTED = new Color(153,209,255);
+    
+        isPageOutlineVisible = false; 
+    
+        minLineLength = 25; // used to set stublines from objects
+    
+        vlableoffset = 5; 
+
+        lfont = new Font("Arial", Font.PLAIN, 14);
+        mfont = new Font("Arial", Font.PLAIN, 12);
+        sfont = new Font("Arial", Font.PLAIN, 10);
+        lpadding = 4; // used to set padding around Text Boxs and White outs
+        lshadow = 4; // used to size the shaddow box shadow
+        spadding = 2; // used to pad bottom of numbers. 
+   
+        zoomscale = Preferences.zoomScale; 
+        drawdate = -1; 
+        solveorder = new SolveOrder(this);
+    }
     
     @Override
     public void paintComponent(Graphics g){
@@ -289,9 +341,9 @@ public class FlowChartCAD extends JComponent{
             // Plots Annual Number
             
             //pVolAnn = String.valueOf(tRNList.tRNs[i].plotVolperAnnum);
-            pVolAnn = ProjSetting.fmtAnn.format(tRNList.tRNs[i].plotVolperAnnum);
-            pVolDay = ProjSetting.fmtDay.format(tRNList.tRNs[i].plotVolperDay);
-            pVolHr = ProjSetting.fmtHr.format(tRNList.tRNs[i].plotVolperHr);
+            pVolAnn = projSetting.getFmtAnn().format(tRNList.tRNs[i].plotVolperAnnum);
+            pVolDay = projSetting.getFmtDay().format(tRNList.tRNs[i].plotVolperDay);
+            pVolHr = projSetting.getFmtHr().format(tRNList.tRNs[i].plotVolperHr);
             
             pVolWidth = (int)g2.getFontMetrics().getStringBounds(pVolAnn, g2).getWidth();
             pVolHeight = (int)g2.getFontMetrics().getStringBounds(pVolAnn, g2).getHeight();
@@ -306,14 +358,14 @@ public class FlowChartCAD extends JComponent{
         }
     }
     
-   public void addObjELM (int inX, int inY){
+    public void addObjELM (int inX, int inY){
        eLMList.addNode(inX, inY);
        ProjSetting.hasChangedSinceSave = true;
-   }
-   public void addObjTRN (int inX, int inY){
+    }
+    public void addObjTRN (int inX, int inY){
        tRNList.addTRN(inX, inY);
        ProjSetting.hasChangedSinceSave = true;
-   }
+    }
     public void addSelectionELM(int inNumber){
         if(inNumber >=0 && inNumber <= Limit.MAX_NODES){
             eLMList.nodes[inNumber].isSelected = true; 
@@ -406,6 +458,19 @@ public class FlowChartCAD extends JComponent{
    public TRN getObjTRN (int inNumber){
        return tRNList.tRNs[inNumber];
    }
+   
+   public NodeList getNodeList(){
+       return eLMList;
+   }
+   
+   public SolveOrder getSolveOrder(){
+       return solveorder;
+   }
+   
+   public TRNList getTRNList(){
+       return tRNList;
+   }
+   
 
    public void setObjELM (int inNumber, Node inObjELM){
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
@@ -418,7 +483,15 @@ public class FlowChartCAD extends JComponent{
        ProjSetting.hasChangedSinceSave = true;
    }
    
+   
+   public void setNodeList(NodeList nodelist){
+       this.eLMList = nodelist;
+   }
 
+   public void setTRNList(TRNList trnlist){
+       this.tRNList = trnlist;
+   }
+   
     public int checkELMHit (int inX, int inY){ // will need updating to allow for TRNs... 
         for (int i = 0; i < eLMList.count; i++){
             if(eLMList.nodes[i].hitBox.x <= inX && eLMList.nodes[i].hitBox.x + eLMList.nodes[i].hitBox.width >= inX){
@@ -446,7 +519,7 @@ public class FlowChartCAD extends JComponent{
     * This is the method that calculates the balance given a balance run setting
     * @param s 
     */
-   public void solveBalance(){
+   public void solveBalance(ProjSetting projSetting){
        
        int obj; 
         int i;
@@ -462,12 +535,12 @@ public class FlowChartCAD extends JComponent{
         int pondAreaSubtraction = 0;
         
         //Constructs result arrays
-        tRNList.initializeResults();
+        tRNList.initializeResults(projSetting);
         eLMList.initializeResults();
         
         for (int c = 0; c < ProjSetting.climateScenarios.getRowCount(); c++) {
 
-            for (day = 1; day < ProjSetting.duration; day++) { // must start at 1 since solver will need previous days numbers to work;
+            for (day = 1; day < projSetting.getDuration(); day++) { // must start at 1 since solver will need previous days numbers to work;
                 // set month;...
                 month = CalcBasics.getMonth(day);
 
@@ -512,9 +585,9 @@ public class FlowChartCAD extends JComponent{
 
                 }
 
-                for (i = 0; i < ProjSetting.solveOrder.tRNIndex.length; i++) {
-                    obj = ProjSetting.solveOrder.tRNIndex[i];
-                    switch (ProjSetting.solveOrder.tRNType[i]) {
+                for (i = 0; i < solveorder.tRNIndex.length; i++) {
+                    obj = solveorder.tRNIndex[i];
+                    switch (solveorder.tRNType[i]) {
                         case "FIXED": // Transfers solved by themselves assume max pumping rate. otherwise must be resolved by element; 
                             tRNList.tRNs[i].result.daily[day] = tRNList.tRNs[obj].getMaxPumpRate(day);
 

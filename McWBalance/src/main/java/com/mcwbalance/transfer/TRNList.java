@@ -202,9 +202,9 @@ public class TRNList {
         return nameListIndex;
     }
     
-    public void initializeResults(){
+    public void initializeResults(ProjSetting projSetting){
         for (int i = 0; i < count; i ++){
-            tRNs[i].initializeResults();
+            tRNs[i].initializeResults(projSetting);
         }
     }
     

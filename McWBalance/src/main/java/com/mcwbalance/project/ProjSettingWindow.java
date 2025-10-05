@@ -36,11 +36,11 @@ public class ProjSettingWindow extends JDialog{
     private int closeAction = 1;
     
 
-   public ProjSettingWindow(){
+   public ProjSettingWindow(JFrame owner, ProjSetting projSetting){
         
-        super(MainWindow.mainframe, "Project Settings", true);
+        super(owner, "Project Settings", true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(MainWindow.mainframe);
+        this.setLocationRelativeTo(owner);
         JTabbedPane tabPane = new JTabbedPane();
         
         //Beginning of Tab 1 General
@@ -54,7 +54,7 @@ public class ProjSettingWindow extends JDialog{
         tab1PathFolderLabelConstr.gridy = 0;
         tab1PathFolderLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1PathFolderLabel,tab1PathFolderLabelConstr);
-        JTextField tab1PathFolderField = new JTextField(ProjSetting.pathFolder.getPath());
+        JTextField tab1PathFolderField = new JTextField(projSetting.getPathFolder().getPath());
         tab1PathFolderField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1PathFolderFieldConstr = new GridBagConstraints();
         tab1PathFolderFieldConstr.gridx = 1;
@@ -63,10 +63,10 @@ public class ProjSettingWindow extends JDialog{
         tab1.add(tab1PathFolderField,tab1PathFolderFieldConstr);
         tab1PathFolderField.addActionListener(e-> {
             if(new File(tab1PathFolderField.getText()).isDirectory()){
-                ProjSetting.pathFolder = new File(tab1PathFolderField.getText());
+                projSetting.setSavePath(tab1PathFolderField.getText());
             }else{
-                new WarningDialog(MainWindow.mainframe,"Directory Does Not Exist or is not Accessible");
-                tab1PathFolderField.setText(ProjSetting.pathFolder.getPath());
+                new WarningDialog(owner,"Directory Does Not Exist or is not Accessible");
+                tab1PathFolderField.setText(projSetting.getPathFolder().getPath());
             }
         });
         
@@ -76,7 +76,7 @@ public class ProjSettingWindow extends JDialog{
         tab1FileNameLabelConstr.gridy = 1;
         tab1FileNameLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1FileNameLabel,tab1FileNameLabelConstr);
-        JTextField tab1FileNameField = new JTextField(ProjSetting.pathFile.getName());
+        JTextField tab1FileNameField = new JTextField(projSetting.getSaveFile().getName());
         tab1FileNameField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1FileNameFieldConstr = new GridBagConstraints();
         tab1FileNameFieldConstr.gridx = 1;
@@ -93,7 +93,7 @@ public class ProjSettingWindow extends JDialog{
         tab1ClientNameLabelConstr.gridy = 2;
         tab1ClientNameLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1ClientNameLabel,tab1ClientNameLabelConstr);
-        JTextField tab1ClientNameField = new JTextField(ProjSetting.clientName);
+        JTextField tab1ClientNameField = new JTextField(projSetting.getClientName());
         tab1ClientNameField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1ClientNameFieldConstr = new GridBagConstraints();
         tab1ClientNameFieldConstr.gridx = 1;
@@ -101,7 +101,7 @@ public class ProjSettingWindow extends JDialog{
         tab1ClientNameFieldConstr.anchor = GridBagConstraints.WEST;
         tab1.add(tab1ClientNameField,tab1ClientNameFieldConstr);
         tab1ClientNameField.addActionListener(e-> {
-            ProjSetting.clientName = tab1ClientNameField.getText();
+            projSetting.setClientName(tab1ClientNameField.getText());
             // TODO - add a length control, as well as a null control; 
         });
         JLabel tab1ProjectNameLabel = new JLabel("Project Name: ");
@@ -110,7 +110,7 @@ public class ProjSettingWindow extends JDialog{
         tab1ProjectNameLabelConstr.gridy = 3;
         tab1ProjectNameLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1ProjectNameLabel,tab1ProjectNameLabelConstr);
-        JTextField tab1ProjectNameField = new JTextField(ProjSetting.projectName);
+        JTextField tab1ProjectNameField = new JTextField(projSetting.getProjectName());
         tab1ProjectNameField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1ProjectNameFieldConstr = new GridBagConstraints();
         tab1ProjectNameFieldConstr.gridx = 1;
@@ -118,8 +118,8 @@ public class ProjSettingWindow extends JDialog{
         tab1ProjectNameFieldConstr.anchor = GridBagConstraints.WEST;
         tab1.add(tab1ProjectNameField,tab1ProjectNameFieldConstr);
         tab1ProjectNameField.addActionListener(e-> {
-            ProjSetting.projectName = tab1ProjectNameField.getText();
-            // TODO - add a length control, as well as a null control; 
+            projSetting.setProjectName(tab1ProjectNameField.getText());
+            // TODO - add a null control; 
         });
         JLabel tab1ProjectNumberLabel = new JLabel("Project Number: ");
         GridBagConstraints tab1ProjectNumberLabelConstr = new GridBagConstraints();
@@ -127,7 +127,7 @@ public class ProjSettingWindow extends JDialog{
         tab1ProjectNumberLabelConstr.gridy = 4;
         tab1ProjectNumberLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1ProjectNumberLabel,tab1ProjectNumberLabelConstr);
-        JTextField tab1ProjectNumberField = new JTextField(ProjSetting.projectNumber);
+        JTextField tab1ProjectNumberField = new JTextField(projSetting.getProjectNumber());
         tab1ProjectNumberField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1ProjectNumberFieldConstr = new GridBagConstraints();
         tab1ProjectNumberFieldConstr.gridx = 1;
@@ -135,8 +135,8 @@ public class ProjSettingWindow extends JDialog{
         tab1ProjectNumberFieldConstr.anchor = GridBagConstraints.WEST;
         tab1.add(tab1ProjectNumberField,tab1ProjectNumberFieldConstr);
         tab1ProjectNumberField.addActionListener(e-> {
-            ProjSetting.projectNumber = tab1ProjectNumberField.getText();
-            // TODO - add a length control, as well as a null control; 
+            projSetting.setProjectNumber(tab1ProjectNumberField.getText());
+            // TODO - add a null control; 
         });
         JLabel tab1BalanceNameLabel = new JLabel("Balance Name: ");
         GridBagConstraints tab1BalanceNameLabelConstr = new GridBagConstraints();
@@ -144,7 +144,7 @@ public class ProjSettingWindow extends JDialog{
         tab1BalanceNameLabelConstr.gridy = 5;
         tab1BalanceNameLabelConstr.anchor = GridBagConstraints.EAST; 
         tab1.add(tab1BalanceNameLabel,tab1BalanceNameLabelConstr);
-        JTextField tab1BalanceNameField = new JTextField(ProjSetting.balanceName);
+        JTextField tab1BalanceNameField = new JTextField(projSetting.getBalanceName());
         tab1BalanceNameField.setColumns(TEXTBOX_WIDTH);
         GridBagConstraints tab1BalanceNameFieldConstr = new GridBagConstraints();
         tab1BalanceNameFieldConstr.gridx = 1;
@@ -152,8 +152,8 @@ public class ProjSettingWindow extends JDialog{
         tab1BalanceNameFieldConstr.anchor = GridBagConstraints.WEST;
         tab1.add(tab1BalanceNameField,tab1BalanceNameFieldConstr);
         tab1BalanceNameField.addActionListener(e-> {
-            ProjSetting.balanceName = tab1BalanceNameField.getText();
-            // TODO - add a length control, as well as a null control; 
+            projSetting.setBalanceName( tab1BalanceNameField.getText());
+            // TODO - add a null control; 
         });
         
         JLabel tab1DurationLabel = new JLabel("Balance Duration (days): ");
@@ -162,7 +162,7 @@ public class ProjSettingWindow extends JDialog{
         tab1DurationLabelConstr.gridy = 6;
         tab1DurationLabelConstr.anchor = GridBagConstraints.EAST;
         tab1.add(tab1DurationLabel,tab1DurationLabelConstr);
-        SpinnerModel tab1DurationSpinnerModel = new SpinnerNumberModel(ProjSetting.duration,1,Limit.MAX_DURATION,1);
+        SpinnerModel tab1DurationSpinnerModel = new SpinnerNumberModel(projSetting.getDuration(),1,Limit.MAX_DURATION,1);
         JSpinner tab1DurationSpinner = new JSpinner(tab1DurationSpinnerModel);
         GridBagConstraints tab1DurationSpinnerConstr = new GridBagConstraints();
         tab1DurationSpinnerConstr.gridx = 1;
@@ -170,7 +170,7 @@ public class ProjSettingWindow extends JDialog{
         tab1DurationSpinnerConstr.anchor = GridBagConstraints.WEST; 
         tab1.add(tab1DurationSpinner,tab1DurationSpinnerConstr);
         tab1DurationSpinner.addChangeListener(e-> {
-            ProjSetting.duration = (int)tab1DurationSpinnerModel.getValue();
+            projSetting.setDuration((int)tab1DurationSpinnerModel.getValue());
         });
 
         tabPane.addTab("General",tab1);

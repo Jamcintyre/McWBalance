@@ -27,12 +27,12 @@ public class SolveOrderWindow extends JFrame{
     private final int TABLE_ROW_HEIGHT = 20;
     private final Dimension TABLE_PREF_DIMENSION = new Dimension(360,TABLE_ROW_HEIGHT*20);
     
-    public SolveOrderWindow(JFrame owner){
+    public SolveOrderWindow(JFrame owner, FlowChartCAD flowchart, ProjSetting projSetting){
         super(McWBalance.langRB.getString("SOLVE_ORDER"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         
-        JTable table = new JTable(ProjSetting.solveOrder);
+        JTable table = new JTable(flowchart.getSolveOrder());
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
         table.getColumnModel().getColumn(1).setPreferredWidth(TABLE_SECOND_COL_WIDTH);
         table.getColumnModel().getColumn(2).setPreferredWidth(TABLE_THIRD_COL_WIDTH);
@@ -42,17 +42,17 @@ public class SolveOrderWindow extends JFrame{
         
         JButton moveUp = new JButton(McWBalance.langRB.getString("MOVE_UP"));
         moveUp.addActionListener(l ->{
-            ProjSetting.solveOrder.moveUp(table.getSelectedRow());
+            flowchart.getSolveOrder().moveUp(table.getSelectedRow());
         });
         
         JButton moveDown = new JButton(McWBalance.langRB.getString("MOVE_DOWN"));
         moveDown.addActionListener(l ->{
-            ProjSetting.solveOrder.moveUp(table.getSelectedRow());
+            flowchart.getSolveOrder().moveUp(table.getSelectedRow());
         });
         
         JButton autoOrder = new JButton(McWBalance.langRB.getString("AUTO"));
         autoOrder.addActionListener(l ->{
-            ProjSetting.solveOrder.setAutoOrder(FlowChartCAD.tRNList, FlowChartCAD.eLMList);
+            flowchart.getSolveOrder().setAutoOrder(flowchart.getTRNList(), flowchart.getNodeList());
         });
         
         setLayout(new BorderLayout());
