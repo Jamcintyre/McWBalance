@@ -94,6 +94,8 @@ public class Node {
         "UNDERGROUND",
         "WELL"
     };
+    
+    ProjSetting projsetting;
     /**
      * Used for selecting symbol on flowchart, will not be used in the
      * calculations directly
@@ -131,11 +133,12 @@ public class Node {
     
     
 
-    Node() {
-        this(0, 0, 0);
+    Node(ProjSetting projSetting) {
+        this(0, 0, 0, projSetting);
     }
 
-    Node(int inX, int inY, int number) {
+    Node(int inX, int inY, int number, ProjSetting projSetting) {
+        this.projsetting = projSetting;
         x = inX;
         y = inY;
         hitBox = new Rectangle(0, 0, 20, 20);
@@ -145,7 +148,7 @@ public class Node {
         scaleX = 1.0;
         scaleY = 1.0;
         objSubType = "DEFAULT";
-        objSprite = ProjSetting.imageLib.getImage(objSubType, "ACTIVE", scaleX, scaleY);
+        objSprite = projsetting.getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
         hitBox.x = x - objSprite.getWidth() / 2;
         hitBox.y = y - objSprite.getHeight() / 2;
         hitBox.width = objSprite.getWidth();
@@ -169,7 +172,7 @@ public class Node {
         overflowLevel = new DataTimeDoubleSeries(1);
         crestLevel = new DataTimeDoubleSeries(1);
         
-        depositionRates = new TableTailingsDepositionRates();
+        depositionRates = new TableTailingsDepositionRates(projsetting);
 
         inflows = new IndexList(Limit.MAX_TRNS);
         outflows = new IndexList(Limit.MAX_TRNS);
@@ -235,22 +238,22 @@ public class Node {
      * method to initialize result variables to current project duration and names
      */
     public void initializeResults() {
-        resultWaterLevel = new ResultLevel(ProjSetting.duration, objname + " Water Level");
-        resultSolidsLevel = new ResultLevel(ProjSetting.duration, objname + " Solids Level");
-        resultSolidsInflow = new ResultFlow(ProjSetting.duration, objname + " Solids Inflow");
+        resultWaterLevel = new ResultLevel(projsetting.getDuration(), objname + " Water Level");
+        resultSolidsLevel = new ResultLevel(projsetting.getDuration(), objname + " Solids Level");
+        resultSolidsInflow = new ResultFlow(projsetting.getDuration(), objname + " Solids Inflow");
         
-        resultTotalVolume = new ResultStorageVolume(ProjSetting.duration, objname + " Total Stored Volume");
+        resultTotalVolume = new ResultStorageVolume(projsetting.getDuration(), objname + " Total Stored Volume");
         
-        resultPondVolume = new ResultStorageVolume(ProjSetting.duration, objname + " Pond Volume");
+        resultPondVolume = new ResultStorageVolume(projsetting.getDuration(), objname + " Pond Volume");
         
         resultRunoff = new ResultFlow[ProjSetting.runoffCoefficients.getLength()];
         for (int i = 0; i < resultRunoff.length; i++) {
-            resultRunoff[i] = new ResultFlow(ProjSetting.duration, objname + ProjSetting.runoffCoefficients.getLandRunoffName(i));
+            resultRunoff[i] = new ResultFlow(projsetting.getDuration(), objname + ProjSetting.runoffCoefficients.getLandRunoffName(i));
         }
-        resultDirectPrecip = new ResultFlow(ProjSetting.duration, objname + " Direct Precip");
+        resultDirectPrecip = new ResultFlow(projsetting.getDuration(), objname + " Direct Precip");
         
-        resultEvaporation = new ResultFlow(ProjSetting.duration, objname + " Evaporation");
-        resultSeepage = new ResultFlow(ProjSetting.duration, objname + " Seepage");
+        resultEvaporation = new ResultFlow(projsetting.getDuration(), objname + " Evaporation");
+        resultSeepage = new ResultFlow(projsetting.getDuration(), objname + " Seepage");
     }
     
     public void setFromString(String inData){
@@ -286,7 +289,7 @@ public class Node {
      */
     public void setSubType(String inSubType, String inState) {
         objSubType = inSubType;
-        objSprite = ProjSetting.imageLib.getImage(objSubType, inState, scaleX, scaleY);
+        objSprite = projsetting.getImageLib().getImage(objSubType, inState, scaleX, scaleY);
         hitBox.x = x - objSprite.getWidth() / 2;
         hitBox.y = y - objSprite.getHeight() / 2;
         hitBox.width = objSprite.getWidth();
@@ -301,7 +304,7 @@ public class Node {
      * imageLib returns a default sprite
      */
     public void setSpriteState(String inState) {
-        objSprite = ProjSetting.imageLib.getImage(objSubType, inState, scaleX, scaleY);
+        objSprite = projsetting.getImageLib().getImage(objSubType, inState, scaleX, scaleY);
     }
 
     /**

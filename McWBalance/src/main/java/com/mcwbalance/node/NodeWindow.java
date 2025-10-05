@@ -48,11 +48,11 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
      * Container for storing and modifying element used for return at end
      * Setting to static does not fix the problem with action listener making a seperate Copy...
      */
-    Node buffNode = new Node(); 
+    Node buffNode; 
     /**
      * Container for allowing mainwindow access to returned value since return doesnt work in Jdialog
      */
-    static Node returnedObjELM = new Node();
+    //static Node returnedObjELM = new Node();
     
     
     /**
@@ -62,14 +62,16 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
      * @param ctRNList Current TRN list must be provided to allow user to select from available TRNs for solve order planning
      * @return 
      */
-    public Node ObjELMWindowFunct(Node inNode, int nodeNumber, TRNList ctRNList){ // requires object number to edit
+    public Node ObjELMWindowFunct(Node inNode, int nodeNumber, TRNList ctRNList, ProjSetting projSetting){ // requires object number to edit
+        
+        buffNode = new Node(projSetting);
         
         ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
         
         //objELMNumber = inNumber; // sets value for save and loads, needs to be called external to this function in action listener
         MainWindow.editorIsActive = true; 
         buffNode = inNode; // sets buffered object to in object
-        returnedObjELM = inNode; // sets default return to whatever was provided
+        //returnedObjELM = inNode; // sets default return to whatever was provided
       
         int hPadLabels = 10; // padding relative to left side of window
         int hPadBoxes = 100; // padding relative to left side of window
@@ -731,7 +733,7 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
             
 
             
-            returnedObjELM = buffNode; // sets returned value to 
+            //returnedObjELM = buffNode; // sets returned value to 
         });
         
         tfobjName.getText(); // not sure what this is doing DELETE? 
