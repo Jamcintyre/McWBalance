@@ -28,9 +28,12 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.swing.AbstractAction;
@@ -48,6 +51,14 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
     
@@ -593,9 +604,18 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public void saveProject() {
         StringBuilder sverInfoFile = new StringBuilder();
         sverInfoFile.append(ProjSetting.verInfo);
+        
+        //XML builder // not useful yet... 
+        TransformerFactory xmltf= TransformerFactory.newInstance();
+
         try (FileOutputStream sfileos = new FileOutputStream(projSetting.getSaveFile());
             ZipOutputStream sfilezos = new ZipOutputStream(sfileos)){
-
+            
+            Transformer xmltrans = xmltf.newTransformer();
+            xmltrans.setOutputProperty(OutputKeys.INDENT, "yes");
+            xmltrans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            
+            
             // initializes ZipEntry info for files to include
             ZipEntry zEntVersion = new ZipEntry("Version.ver");
 
@@ -615,13 +635,29 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             sfilezos.write(bytedata, 0, bytedata.length);
             sfilezos.closeEntry();
 
-            // Write Transfer Information
+            // Write Transfer Information to ascii
             for (int i = 0; i < zEntTRN.length; i++) {
                 sfilezos.putNextEntry(zEntTRN[i]);
                 bytedata = flowchart.getTRNList().tRNs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
                 sfilezos.write(bytedata, 0, bytedata.length);
                 sfilezos.closeEntry();
             }
+            
+            
+            // write transfer information to xml
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            
+            DOMSource source = new DOMSource(flowchart.tRNList.getXMLDoc());
+            StreamResult  result = new  StreamResult(bos);
+            xmltrans.transform(source, result);
+            
+            //Debug
+            //System.out.println(result.getOutputStream());
+            //System.out.println(source.toString());
+            ZipEntry zEntTRNXML = new ZipEntry("Transfers.xml");
+            sfilezos.putNextEntry(zEntTRNXML);
+            sfilezos.write(bos.toByteArray());
+            sfilezos.closeEntry();
 
             // Write ElementInformation
             for (int i = 0; i < zEntELM.length; i++) {
@@ -640,6 +676,12 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             new WarningDialog(this, fe.getMessage());
         } catch (IOException fe) {
             new WarningDialog(this, fe.getMessage());
+        } catch (TransformerConfigurationException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (TransformerException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

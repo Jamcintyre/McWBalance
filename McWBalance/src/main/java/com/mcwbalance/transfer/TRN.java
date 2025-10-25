@@ -16,7 +16,6 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     public Rectangle hitBox;
     public boolean isSelected;
     
-
     //flow direction
     public int inObjNumber;
     public int outObjNumber;

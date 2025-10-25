@@ -3,7 +3,11 @@ package com.mcwbalance.transfer;
 
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
-import java.awt.Rectangle;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 public class TRNList {
@@ -202,6 +206,72 @@ public class TRNList {
         return nameListIndex;
     }
     
+    /**
+     * Not finished, will have to add info to the doc
+     * @return
+     * @throws ParserConfigurationException 
+     */
+    public Document getXMLDoc() throws ParserConfigurationException{
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document XMLDoc = builder.newDocument();
+        //Element mainroot = XMLDoc.getDocumentElement();
+        
+        Element root = XMLDoc.createElement("Transfers");
+        XMLDoc.appendChild(root);
+        for (int i = 0; i < count; i++){
+            String tagName;
+            // need to add leading zeros,  allow 999 elements
+            tagName = "TRN" + String.valueOf(i+1);
+            Element tran = XMLDoc.createElement(tagName);
+            tran.setAttribute("ObjName", tRNs[i].objname);
+            tran.setAttribute("SubType", tRNs[i].subType);
+            tran.setAttribute("x", String.valueOf(tRNs[i].x));
+            tran.setAttribute("y", String.valueOf(tRNs[i].y));
+            
+            Element inflow = XMLDoc.createElement("INFLOW");
+            inflow.setAttribute("inObjNumber", String.valueOf(tRNs[i].inObjNumber));
+            inflow.setAttribute("inSideFrom", tRNs[i].inSideFrom);
+            inflow.setAttribute("inSideFromOset", String.valueOf(tRNs[i].inSideFromOset));
+            inflow.setAttribute("inSideTo", tRNs[i].inSideTo);
+            tran.appendChild(inflow);
+            
+            Element outflow = XMLDoc.createElement("OUTFLOW");
+            outflow.setAttribute("outObjNumber", String.valueOf(tRNs[i].outObjNumber));
+            outflow.setAttribute("outSideFrom", tRNs[i].outSideFrom);
+            outflow.setAttribute("outSideTo", tRNs[i].outSideTo);
+            outflow.setAttribute("outSideToOset", String.valueOf(tRNs[i].outSideToOset));
+
+            tran.appendChild(outflow);
+            
+            
+            /*
+            need to add Pump rates, and object states 
+    
+    //Plotting Storage Values;
+    public double plotVolperDay; // seepage per day may be less then 1 m3 so base units must be double.
+    public double plotVolperHr;
+    public int plotVolperAnnum;
+    
+    //Pump Limits
+    public static final int MAX_PUMP_RATES = 20; // allows 20 different pumping rates over project duration
+    public int[] pumpTime = new int[MAX_PUMP_RATES]; // start time of pump install 
+    public double[] pumpRateDay = new double[MAX_PUMP_RATES]; // rate must be in m3 per day
+    public int pumpRateCount;
+            
+            */
+          
+            
+            root.appendChild(tran);
+        }    
+
+        
+        return XMLDoc;
+
+        
+    }
     public void initializeResults(ProjSetting projSetting){
         for (int i = 0; i < count; i ++){
             tRNs[i].initializeResults(projSetting);
