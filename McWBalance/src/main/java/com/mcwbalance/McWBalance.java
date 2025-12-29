@@ -6,7 +6,7 @@ package com.mcwbalance;
 
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Preferences;
-import com.formdev.flatlaf.FlatDarkLaf;
+//import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +66,8 @@ public class McWBalance {
         } catch (IOException e) {
             System.out.println("IconFile Not Found");
         }
+        
+        /*
         try {
             // Set System L&F
 
@@ -74,16 +76,9 @@ public class McWBalance {
             Preferences.setDefaultColors(Preferences.LIGHT_MODE);
             
         } catch (UnsupportedLookAndFeelException e) {
-            // handle exception
-            /*
-        } catch (ClassNotFoundException e) {
-            // handle exception
-        } catch (InstantiationException e) {
-            // handle exception
-        } catch (IllegalAccessException e) {
-            // handle exception
-            */
+        
         }
+        */
 
          
         System.out.println("McBalance Version " + ProjSetting.verInfo + " is loading");

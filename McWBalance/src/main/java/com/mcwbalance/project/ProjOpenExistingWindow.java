@@ -8,7 +8,7 @@ import com.mcwbalance.MainWindow;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.node.NodeList;
+import com.mcwbalance.node.NodList;
 import com.mcwbalance.settings.Limit;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -55,7 +55,7 @@ public class ProjOpenExistingWindow extends JDialog{
                             InputStream istream;
                             String inbuffer;
                             int objNumber;
-                            flowchart.setNodeList(new NodeList(projSetting)); // wipes existing list data
+                            flowchart.setNodeList(new NodList(projSetting)); // wipes existing list data
                             flowchart.setTRNList(new TRNList()); // wipes existing list data
                             System.out.println(projSetting.getSaveFile().getName() + " has been opened");
 

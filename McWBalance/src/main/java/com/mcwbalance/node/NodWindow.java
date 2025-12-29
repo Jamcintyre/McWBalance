@@ -42,13 +42,13 @@ import javax.swing.table.TableColumn;
  * all information needed to populate an ELM with exception of location.
  * @author amcintyre
  */
-public class NodeWindow extends JFrame { // implements ActionListener not needed if lamba is used
+public class NodWindow extends JFrame { // implements ActionListener not needed if lamba is used
     //int objELMNumber = -1;
     /**
      * Container for storing and modifying element used for return at end
      * Setting to static does not fix the problem with action listener making a seperate Copy...
      */
-    Node buffNode; 
+    Nod buffNode; 
     /**
      * Container for allowing mainwindow access to returned value since return doesnt work in Jdialog
      */
@@ -62,9 +62,9 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
      * @param ctRNList Current TRN list must be provided to allow user to select from available TRNs for solve order planning
      * @return 
      */
-    public Node ObjELMWindowFunct(Node inNode, int nodeNumber, TRNList ctRNList, ProjSetting projSetting){ // requires object number to edit
+    public Nod ObjELMWindowFunct(Nod inNode, int nodeNumber, TRNList ctRNList, ProjSetting projSetting){ // requires object number to edit
         
-        buffNode = new Node(projSetting);
+        buffNode = new Nod(projSetting);
         
         ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
         
@@ -609,7 +609,7 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
         tab6TableState.setComponentPopupMenu(popupMenuStateTable);
         tab6TableState.setCellSelectionEnabled(true);
         
-        JComboBox cBoxTRNState = new JComboBox(Node.StatesAllowed);
+        JComboBox cBoxTRNState = new JComboBox(Nod.StatesAllowed);
         TableColumn stateColumn = tab6TableState.getColumnModel().getColumn(1);
         stateColumn.setCellEditor(new DefaultCellEditor(cBoxTRNState));
         
@@ -628,7 +628,7 @@ public class NodeWindow extends JFrame { // implements ActionListener not needed
         tfobjName.setColumns(20); // Sets Width if Name Field
         
         JLabel lcbobjType = new JLabel ("Type");
-        JComboBox cbobjType = new JComboBox(Node.objSubTypesAllowed); // Pulls options list from ObjELM static
+        JComboBox cbobjType = new JComboBox(Nod.objSubTypesAllowed); // Pulls options list from ObjELM static
         cbobjType.setSelectedItem(buffNode.objSubType);
         
         SpinnerModel tab1scaleXSpinnerModel = new SpinnerNumberModel(buffNode.scaleX,.05,5,.05);

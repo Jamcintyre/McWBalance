@@ -12,8 +12,8 @@ import com.mcwbalance.flowchart.TitleBlock;
 import com.mcwbalance.util.CalcBasics;
 import com.mcwbalance.transfer.TRN;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.node.Node;
-import com.mcwbalance.node.NodeList;
+import com.mcwbalance.node.Nod;
+import com.mcwbalance.node.NodList;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.solve.SolveOrder;
 import java.awt.BasicStroke;
@@ -63,7 +63,7 @@ public class FlowChartCAD extends JComponent{
     /**
      * This is the active list of Elements
      */
-    public NodeList eLMList;
+    public NodList eLMList;
     /**
      * This is the active list of Transfers
      */
@@ -133,7 +133,7 @@ public class FlowChartCAD extends JComponent{
         defaultDrawColor = Preferences.DEFAULT_DRAW_COLOR;
         defaultBGColor = Preferences.DEFAULT_BACKGROUND_COLOR;
         
-        eLMList = new NodeList(projSetting);
+        eLMList = new NodList(projSetting);
         eLMdim = new Dimension(0,0); // variable for holding dimesion of origin elm
         eLMx =0;
         eLMy =0;
@@ -452,14 +452,14 @@ public class FlowChartCAD extends JComponent{
        ProjSetting.hasChangedSinceSave = true;
    }
    
-   public Node getObjELM (int inNumber){
+   public Nod getObjELM (int inNumber){
        return eLMList.nodes[inNumber];
    }
    public TRN getObjTRN (int inNumber){
        return tRNList.tRNs[inNumber];
    }
    
-   public NodeList getNodeList(){
+   public NodList getNodeList(){
        return eLMList;
    }
    
@@ -472,7 +472,7 @@ public class FlowChartCAD extends JComponent{
    }
    
 
-   public void setObjELM (int inNumber, Node inObjELM){
+   public void setObjELM (int inNumber, Nod inObjELM){
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
        inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width/2, inObjELM.y - inObjELM.hitBox.getSize().height/2);  
        eLMList.set (inNumber, inObjELM); // passes command to active object list; 
@@ -484,7 +484,7 @@ public class FlowChartCAD extends JComponent{
    }
    
    
-   public void setNodeList(NodeList nodelist){
+   public void setNodeList(NodList nodelist){
        this.eLMList = nodelist;
    }
 

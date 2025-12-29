@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
  * @see NODEList
  * @author amcintyre
  */
-public class Node {
+public class Nod {
 
    
     public int x;
@@ -133,11 +133,11 @@ public class Node {
     
     
 
-    Node(ProjSetting projSetting) {
+    Nod(ProjSetting projSetting) {
         this(0, 0, 0, projSetting);
     }
 
-    Node(int inX, int inY, int number, ProjSetting projSetting) {
+    Nod(int inX, int inY, int number, ProjSetting projSetting) {
         this.projsetting = projSetting;
         x = inX;
         y = inY;

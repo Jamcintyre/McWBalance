@@ -10,8 +10,8 @@ import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.util.ConfirmSaveDialog;
 import com.mcwbalance.transfer.TRNWindow;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.node.NodeWindow;
-import com.mcwbalance.node.NodeList;
+import com.mcwbalance.node.NodWindow;
+import com.mcwbalance.node.NodList;
 import com.mcwbalance.util.WarningDialog;
 import com.mcwbalance.landcover.RunoffCoefficientWindow;
 import com.mcwbalance.climate.DataClimateSettingWindow;
@@ -460,7 +460,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                     } else if (mELMHit != -1) {
                         if (flowchart.checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
-                                NodeWindow objELMWindow = new NodeWindow();
+                                NodWindow objELMWindow = new NodWindow();
                                 objELMWindow.ObjELMWindowFunct(flowchart.getObjELM(mELMHit), mELMHit, flowchart.getTRNList(), projSetting);
                             }
                             break;
@@ -472,6 +472,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         flowchart.clearSelection();
                     }
                 }
+
 
 
 
@@ -597,7 +598,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         
         projSetting = new ProjSetting();
         flowchart.setTRNList(new TRNList());
-        flowchart.setNodeList(new NodeList(projSetting));
+        flowchart.setNodeList(new NodList(projSetting));
         flowchart.repaint();
     }
         

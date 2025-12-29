@@ -6,23 +6,23 @@ import com.mcwbalance.settings.Limit;
 
 /**
  * Contains a complete array of all Nodes present in the model as well as placeholder values. 
- * @see Node
+ * @see Nod
  * @author amcintyre
  */
-public class NodeList {
+public class NodList {
 
     public int count; // counter to keep track fo list size
-    public Node[] nodes= new Node[Limit.MAX_NODES]; 
+    public Nod[] nodes= new Nod[Limit.MAX_NODES]; 
     
     ProjSetting projSetting;
     /**
      * Constructor initializes a blank array of Nodes of generally 0 values to avoid issues with null values
      */
-    public NodeList(ProjSetting projSetting){
+    public NodList(ProjSetting projSetting){
         this.projSetting = projSetting;
         count = 0; // sets number of elements to 0 to start
         for (int i = 0; i < Limit.MAX_NODES; i++){
-            nodes[i] = new Node(projSetting); // Constructs the node so there is a place in memory for it, only needed for Object arrays
+            nodes[i] = new Nod(projSetting); // Constructs the node so there is a place in memory for it, only needed for Object arrays
             nodes[i].x = 0;
             nodes[i].y = 0;
             nodes[i].objname = "Node " + i;
@@ -41,7 +41,7 @@ public class NodeList {
             System.out.println("Max Number of Objects");
         return -1; // returns -1 as error code, object could not be added
         }
-        nodes[count] = new Node(inX, inY, count + 1,projSetting);
+        nodes[count] = new Nod(inX, inY, count + 1,projSetting);
         count ++; // increments to next element, only allowed if not at maximum
         return 0;
     }
@@ -86,7 +86,7 @@ public class NodeList {
      * @param inNumber Index number of element to be 
      * @param inNode Populated Node data to be used to overwrite the selected index
      */
-    public void set(int inNumber, Node inNode){
+    public void set(int inNumber, Nod inNode){
         nodes[inNumber] = inNode;
     }
     
