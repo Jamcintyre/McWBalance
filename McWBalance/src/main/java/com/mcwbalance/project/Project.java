@@ -1,25 +1,19 @@
 package com.mcwbalance.project;
 
-import com.mcwbalance.MainWindow;
-import com.mcwbalance.McWBalance;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.util.CalcBasics;
-import com.mcwbalance.util.WarningDialog;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -180,9 +174,9 @@ public class Project {
      * should check for 
      */
     public void solve(){
-        String warnings = new String();
+        String warnings;;
         //check warnings, 
-        verify(warnings);
+        warnings = verify();
         //IF ALL IS GOOD
         calc();
         
@@ -195,9 +189,15 @@ public class Project {
      * @param warnings
      * @return True if no critical errors are found
      */
-    private Boolean verify(String warnings){
+    private String verify(){
+        Boolean minor = false;
+        Boolean critical = false;
         
-        return true;
+        
+        if(!minor && !critical){
+            return "Valid";
+        }
+        return "Valid";
         
     }
     

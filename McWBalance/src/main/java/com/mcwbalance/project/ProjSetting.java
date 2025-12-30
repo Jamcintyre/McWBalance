@@ -4,8 +4,12 @@ import com.mcwbalance.flowchart.ImageLib;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.climate.TableClimateScenarios;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 
 /**
 * This Class is for storage and retrieval of all key project software related settings. 
@@ -39,6 +43,8 @@ public class ProjSetting {
      * Name of save file including extension
      */
     String fileName;
+    
+    static final String DEFAULTS_PATH = java.io.File.separator + "ProjectDefaults.properties"; 
 
     /**
      * Name of project as would like to appear on figures
@@ -110,32 +116,42 @@ public class ProjSetting {
      */
     public ProjSetting(){
         
-        balancename = "SITE WATER BALANCE";
+        Properties prop = new Properties();
+        URL propURL = getClass().getResource(DEFAULTS_PATH);
+        if (propURL != null){
+            try {
+                prop.load(propURL.openStream());
+            } catch (IOException ex) {
+                System.getLogger(ProjSetting.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        } else{
+            System.err.println("Error: Properties file not found at path " + DEFAULTS_PATH);
+        }
+                
+        balancename = prop.getProperty("BALANCENAME", "BALANCE");
+        clientname = prop.getProperty("CLIENTNAME","CLIENT");
+        fmtAnn = new DecimalFormat(prop.getProperty("FMTANN","#,##0"));
+        fmtDay = new DecimalFormat(prop.getProperty("FMTDAY","#,##0.0"));
+        fmtHr = new DecimalFormat(prop.getProperty("FMTHR","#,##0.00"));
+        fmtdt = DateTimeFormatter.ofPattern(prop.getProperty("FMTDATE","yyyy/MM/dd HH:mm:ss"));
+        fileName = prop.getProperty("FILENAME","File.mcbl");
+        /**
+         * Number of time steps to run analysis
+         */
+        duration = Integer.parseInt(prop.getProperty("DURATION", "25"));
+        /**
+         * number of decimal places to use in actual calculations
+         */
+        precisionDay = Integer.parseInt(prop.getProperty("PRECISIONDAY", "1"));
+        precisionHr = Integer.parseInt(prop.getProperty("PRECISIONHR", "2"));
         
-        fmtAnn = new DecimalFormat("#,##0");
+        projectname = prop.getProperty("PROJECTNAME","New Project");
+        projectnumber = prop.getProperty("PROJECTNUMBER","P001");
         
-        fmtDay = new DecimalFormat("#,##0.0");
+        String userHome = System.getProperty("user.home");
+        savepathfolder = userHome + java.io.File.separator + prop.getProperty("SAVEFOLDER","McBalance");
         
-        fmtHr = new DecimalFormat("#,##0.00");
-        
-        fmtdt = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        
-        fileName = "TestFile.mcbl";
-        
-        clientname = "CLIENT NAME";
-        
-        duration = 25; 
-    
-        precisionDay = 1; // number of decimal places to use in actual calcuations;
-        
-        precisionHr = 2; 
-        
-        projectname = "PROJECT NAME";
-        
-        projectnumber = "NB101-###_#";
-        
-        savepathfolder = "C:\\Temp\\McBalance\\";
-        
+               
         runoffCoefficients = new TableRunoffCoefficients();
         
         climateScenarios = new TableClimateScenarios(1);
@@ -146,17 +162,7 @@ public class ProjSetting {
         
     }
     
-    /**
-     * @deprecated method is no longer static. 
-     */
-    public void resetDefaults() {
-        clientname = "CLIENT NAME";
-        projectname = "PROJECT NAME";
-        projectnumber = "NB101-###_#";
-        balancename = "SITE WATER BALANCE";
-        runoffCoefficients = new TableRunoffCoefficients();
-        climateScenarios = new TableClimateScenarios(1);
-    }
+
     
     public StringBuilder getSaveString(){
         StringBuilder savestring = new StringBuilder();
@@ -236,7 +242,7 @@ public class ProjSetting {
     }
 
     public File getSaveFile(){
-        return new File(savepathfolder+fileName);
+        return new File(savepathfolder + java.io.File.separator + fileName);
     }
     
     /**

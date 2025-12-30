@@ -9,14 +9,12 @@ import com.mcwbalance.settings.Preferences;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.flowchart.TitleBlockTabloidFigure;
 import com.mcwbalance.flowchart.TitleBlock;
-import com.mcwbalance.util.CalcBasics;
 import com.mcwbalance.transfer.TRN;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.node.Nod;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
-import com.mcwbalance.solve.SolveOrder;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -102,10 +100,7 @@ public class FlowChartCAD extends JComponent{
     private int nameWidth; // used for centering the name
     private double nameHeightDouble; // used for centering the name
     private int nameHeight; // used for centering the name
-    /**
-     * @deprecated 
-     */
-    ProjSetting projSetting;
+
     private int pVolWidth; // used for centering volume values in transfer 
     private int pVolHeight; // used for centering volume values in transfer;
     private String pVolAnn;
@@ -127,7 +122,6 @@ public class FlowChartCAD extends JComponent{
     
     
     public FlowChartCAD(Project project){
-        this.projSetting = projSetting;
         this.prj = project;
         
         drawX = 0;
@@ -346,9 +340,9 @@ public class FlowChartCAD extends JComponent{
             // Plots Annual Number
             
             //pVolAnn = String.valueOf(tRNList.tRNs[i].plotVolperAnnum);
-            pVolAnn = projSetting.getFmtAnn().format(tRNList.tRNs[i].plotVolperAnnum);
-            pVolDay = projSetting.getFmtDay().format(tRNList.tRNs[i].plotVolperDay);
-            pVolHr = projSetting.getFmtHr().format(tRNList.tRNs[i].plotVolperHr);
+            pVolAnn = prj.getProjectSetting().getFmtAnn().format(tRNList.tRNs[i].plotVolperAnnum);
+            pVolDay = prj.getProjectSetting().getFmtDay().format(tRNList.tRNs[i].plotVolperDay);
+            pVolHr = prj.getProjectSetting().getFmtHr().format(tRNList.tRNs[i].plotVolperHr);
             
             pVolWidth = (int)g2.getFontMetrics().getStringBounds(pVolAnn, g2).getWidth();
             pVolHeight = (int)g2.getFontMetrics().getStringBounds(pVolAnn, g2).getHeight();
