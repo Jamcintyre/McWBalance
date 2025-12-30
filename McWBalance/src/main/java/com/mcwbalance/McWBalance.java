@@ -5,7 +5,6 @@
 package com.mcwbalance;
 
 import com.mcwbalance.project.ProjSetting;
-import com.mcwbalance.settings.Preferences;
 //import com.formdev.flatlaf.FlatDarkLaf;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,8 +13,6 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -30,8 +27,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class McWBalance {
     static BufferedImage mainIcon30;
-    static String FILE_EXTENSION = "mcbl";
-    static String LANGUAGE_RESOURCE = "Language";
+    static final String FILE_EXTENSION = "mcbl";
+    static final String LANGUAGE_RESOURCE = "Language";
     static String localeOptions;
     static Locale currentLocale;
     

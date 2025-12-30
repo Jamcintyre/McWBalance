@@ -5,9 +5,9 @@
 package com.mcwbalance.solve;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.node.NodList;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import javax.swing.table.AbstractTableModel;
 
@@ -21,11 +21,12 @@ public class SolveOrder extends AbstractTableModel{
     public String[] tRNName;
     public String[] tRNType;
     public String[] columnNames;
-    FlowChartCAD flowchart;
+
+    Project prj;
     
     
-    public SolveOrder(FlowChartCAD flowchart) {
-        this.flowchart = flowchart;
+    public SolveOrder(Project prj) {
+        this.prj = prj;
         columnNames = McWBalance.langRB.getString("SOLVE_ORDER_TABLE_HEADINGS").split(",");
         
         tRNIndex = new int[1];
@@ -48,7 +49,7 @@ public class SolveOrder extends AbstractTableModel{
             case 2 -> {
                 if (tRNIndex[row] >=0){
 
-                    return flowchart.getTRNList().tRNs[tRNIndex[row]].objname;
+                    return prj.getTransferList().tRNs[tRNIndex[row]].objname;
                 }
                 else {
                     return "None";

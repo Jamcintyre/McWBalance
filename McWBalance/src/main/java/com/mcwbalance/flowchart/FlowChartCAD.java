@@ -14,6 +14,7 @@ import com.mcwbalance.transfer.TRN;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.node.Nod;
 import com.mcwbalance.node.NodList;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.solve.SolveOrder;
 import java.awt.BasicStroke;
@@ -60,14 +61,12 @@ public class FlowChartCAD extends JComponent{
      */
     static TitleBlock tb = new TitleBlock();
     
+
+    
     /**
-     * This is the active list of Elements
+     * Active project which contains the main data model, nodes, transfers, results
      */
-    public NodList eLMList;
-    /**
-     * This is the active list of Transfers
-     */
-    public TRNList tRNList;
+    private Project prj; 
     
     private int drawX;
     private int drawY;
@@ -103,7 +102,9 @@ public class FlowChartCAD extends JComponent{
     private int nameWidth; // used for centering the name
     private double nameHeightDouble; // used for centering the name
     private int nameHeight; // used for centering the name
-    
+    /**
+     * @deprecated 
+     */
     ProjSetting projSetting;
     private int pVolWidth; // used for centering volume values in transfer 
     private int pVolHeight; // used for centering volume values in transfer;
@@ -122,18 +123,19 @@ public class FlowChartCAD extends JComponent{
     public static double zoomscale; 
     public static int drawdate; 
     
-    SolveOrder solveorder;
+
     
     
-    public FlowChartCAD(ProjSetting projSetting){
+    public FlowChartCAD(Project project){
         this.projSetting = projSetting;
+        this.prj = project;
+        
         drawX = 0;
         drawY = 0;
         
         defaultDrawColor = Preferences.DEFAULT_DRAW_COLOR;
         defaultBGColor = Preferences.DEFAULT_BACKGROUND_COLOR;
         
-        eLMList = new NodList(projSetting);
         eLMdim = new Dimension(0,0); // variable for holding dimesion of origin elm
         eLMx =0;
         eLMy =0;
@@ -144,7 +146,6 @@ public class FlowChartCAD extends JComponent{
         tb = new TitleBlock();
         titleBlockVisible = true; 
         
-        tRNList = new TRNList();
         tRNdim = new Dimension(TRN_BOX_WIDTH,TRN_BOX_HEIGHT); // placeholder sizing
         tRNx =0;
         tRNy =0;
@@ -170,12 +171,16 @@ public class FlowChartCAD extends JComponent{
    
         zoomscale = Preferences.zoomScale; 
         drawdate = -1; 
-        solveorder = new SolveOrder(this);
+        
     }
     
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
+        
+        NodList eLMList = prj.getNodeList();
+        TRNList tRNList = prj.getTransferList();
+        
         Graphics2D g2 = (Graphics2D) g; // its a bit unclear what this will all do, but Graphics 2D is needed to allow for line thicknesses
         
         // note items drawn before setting the transform will ignore the transform... 
@@ -359,41 +364,41 @@ public class FlowChartCAD extends JComponent{
     }
     
     public void addObjELM (int inX, int inY){
-       eLMList.addNode(inX, inY);
+       prj.getNodeList().addNode(inX, inY);
        ProjSetting.hasChangedSinceSave = true;
     }
     public void addObjTRN (int inX, int inY){
-       tRNList.addTRN(inX, inY);
+       prj.getTransferList().addTRN(inX, inY);
        ProjSetting.hasChangedSinceSave = true;
     }
     public void addSelectionELM(int inNumber){
         if(inNumber >=0 && inNumber <= Limit.MAX_NODES){
-            eLMList.nodes[inNumber].isSelected = true; 
+            prj.getNodeList().nodes[inNumber].isSelected = true; 
         }
         ProjSetting.hasChangedSinceSave = true;
     }
     public void addSelectionTRN(int inNumber){
         if(inNumber >=0 && inNumber <= Limit.MAX_TRNS){
-            tRNList.tRNs[inNumber].isSelected = true; 
+            prj.getTransferList().tRNs[inNumber].isSelected = true; 
         }
         ProjSetting.hasChangedSinceSave = true;
     }
     public boolean checkSelectionELM(int inNumber){
-        return eLMList.nodes[inNumber].isSelected;
+        return prj.getNodeList().nodes[inNumber].isSelected;
     }
     public boolean checkSelectionTRN(int inNumber){
-        return tRNList.tRNs[inNumber].isSelected;
+        return prj.getTransferList().tRNs[inNumber].isSelected;
     }
     public void clearSelection(){
         for (int i = 0; i < Limit.MAX_NODES; i ++){
-           eLMList.nodes[i].isSelected = false;
+           prj.getNodeList().nodes[i].isSelected = false;
         }
         for (int i = 0; i < Limit.MAX_TRNS; i ++){
-           tRNList.tRNs[i].isSelected = false;
+           prj.getTransferList().tRNs[i].isSelected = false;
         }
     }
     /**
-     * Not written,  intend to copy selected ELMS and TRNS to clipboard in sacii (unicode) format tab delimited
+     * Not written,  intend to copy selected ELMS and TRNS to clipboard in ascii (unicode) format tab delimited
      */
     public void copySelectiontoClipboard(){
         
@@ -407,12 +412,12 @@ public class FlowChartCAD extends JComponent{
      * using delete key
      */
     public void deleteSelection(){
-        for (int i = 0; i < eLMList.count; i ++){
+        for (int i = 0; i < prj.getNodeList().count; i ++){
            if (checkSelectionELM(i)){
                removeELM(i);
            }
         }
-        for (int i = 0; i < tRNList.count; i ++){
+        for (int i = 0; i < prj.getTransferList().count; i ++){
            if (checkSelectionTRN(i)){
                removeTRN(i);
            }
@@ -421,30 +426,34 @@ public class FlowChartCAD extends JComponent{
     }
    
    public void removeELM (int inNumber){
-       eLMList.removeNode(inNumber);
-       tRNList.removeELM(inNumber);
+       prj.getNodeList().removeNode(inNumber);
+       prj.getTransferList().removeELM(inNumber);
        ProjSetting.hasChangedSinceSave = true;
    }
    public void removeTRN (int tRNNumber){
-       eLMList.removeTRN(tRNNumber);
-       tRNList.removeTRN(tRNNumber);
+       prj.getNodeList().removeTRN(tRNNumber);
+       prj.getTransferList().removeTRN(tRNNumber);
        ProjSetting.hasChangedSinceSave = true;
    }
    
    public void moveObjELM (int inX, int inY, int inNumber){
-       eLMList.nodes[inNumber].x = inX;
-       eLMList.nodes[inNumber].y = inY;
-       eLMList.nodes[inNumber].hitBox.setLocation(inX - eLMList.nodes[inNumber].hitBox.getSize().width/2, inY - eLMList.nodes[inNumber].hitBox.getSize().height/2);
+       prj.getNodeList().nodes[inNumber].x = inX;
+       prj.getNodeList().nodes[inNumber].y = inY;
+       prj.getNodeList().nodes[inNumber].hitBox.setLocation(
+               inX - prj.getNodeList().nodes[inNumber].hitBox.getSize().width/2, 
+               inY - prj.getNodeList().nodes[inNumber].hitBox.getSize().height/2);
        ProjSetting.hasChangedSinceSave = true;
    }
    public void moveObjTRN(int inX, int inY, int inNumber){
-       tRNList.tRNs[inNumber].x = inX;
-       tRNList.tRNs[inNumber].y = inY;
-       tRNList.tRNs[inNumber].hitBox.setLocation(inX - tRNList.tRNs[inNumber].hitBox.getSize().width/2, inY - tRNList.tRNs[inNumber].hitBox.getSize().height/2);
+       prj.getTransferList().tRNs[inNumber].x = inX;
+       prj.getTransferList().tRNs[inNumber].y = inY;
+       prj.getTransferList().tRNs[inNumber].hitBox.setLocation(
+               inX - prj.getTransferList().tRNs[inNumber].hitBox.getSize().width/2, 
+               inY - prj.getTransferList().tRNs[inNumber].hitBox.getSize().height/2);
        ProjSetting.hasChangedSinceSave = true;
    }
    /**
-    * method for adding ELMs and TRNs direct from clipboard, indended to allow
+    * method for adding ELMs and TRNs direct from clipboard, intended to allow
     * transfer between 2 instances of McWBalance
     */
    public void pasteFromClipBoard(){
@@ -452,50 +461,74 @@ public class FlowChartCAD extends JComponent{
        ProjSetting.hasChangedSinceSave = true;
    }
    
+   /**
+    * @deprecated should pull direct from project
+    * @param inNumber
+    * @return 
+    */
    public Nod getObjELM (int inNumber){
-       return eLMList.nodes[inNumber];
+       return prj.getNodeList().nodes[inNumber];
    }
+   
+   /**
+    * @deprecated should pull direct from Project
+    * @param inNumber
+    * @return 
+    */
    public TRN getObjTRN (int inNumber){
-       return tRNList.tRNs[inNumber];
+       return prj.getTransferList().tRNs[inNumber];
    }
    
+   /**
+    * @deprecated should pull direct from project
+    * @return 
+    */
    public NodList getNodeList(){
-       return eLMList;
+       return prj.getNodeList();
    }
    
-   public SolveOrder getSolveOrder(){
-       return solveorder;
-   }
-   
+
+   /**
+    * @deprecated should pull direct from project
+    * @return 
+    */
    public TRNList getTRNList(){
-       return tRNList;
+       return prj.getTransferList();
    }
    
 
    public void setObjELM (int inNumber, Nod inObjELM){
        // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
        inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width/2, inObjELM.y - inObjELM.hitBox.getSize().height/2);  
-       eLMList.set (inNumber, inObjELM); // passes command to active object list; 
+       prj.getNodeList().set (inNumber, inObjELM); // passes command to active object list; 
        ProjSetting.hasChangedSinceSave = true;
    }
    public void setObjTRN (int inNumber, TRN inObjTRN){
-       tRNList.setObjTRN (inNumber, inObjTRN);
+       prj.getTransferList().setObjTRN (inNumber, inObjTRN);
        ProjSetting.hasChangedSinceSave = true;
    }
    
-   
+   /**
+    * @deprecated should action on project directly
+    * @param nodelist 
+    */
    public void setNodeList(NodList nodelist){
-       this.eLMList = nodelist;
+       prj.nODEList = nodelist;
    }
-
+   
+   
+   /**
+    * @deprecated should action on project directly
+    * @param trnlist 
+    */
    public void setTRNList(TRNList trnlist){
-       this.tRNList = trnlist;
+       prj.tRNList = trnlist;
    }
    
     public int checkELMHit (int inX, int inY){ // will need updating to allow for TRNs... 
-        for (int i = 0; i < eLMList.count; i++){
-            if(eLMList.nodes[i].hitBox.x <= inX && eLMList.nodes[i].hitBox.x + eLMList.nodes[i].hitBox.width >= inX){
-                    if(eLMList.nodes[i].hitBox.y <= inY && eLMList.nodes[i].hitBox.y + eLMList.nodes[i].hitBox.height >= inY){
+        for (int i = 0; i < prj.getNodeList().count; i++){
+            if(prj.getNodeList().nodes[i].hitBox.x <= inX && prj.getNodeList().nodes[i].hitBox.x + prj.getNodeList().nodes[i].hitBox.width >= inX){
+                    if(prj.getNodeList().nodes[i].hitBox.y <= inY && prj.getNodeList().nodes[i].hitBox.y + prj.getNodeList().nodes[i].hitBox.height >= inY){
                     return i;  
                 }
             }
@@ -504,9 +537,9 @@ public class FlowChartCAD extends JComponent{
        
    }
    public int checkTRNHit (int inX, int inY){ 
-       for (int i = 0; i < tRNList.count; i++){
-           if(tRNList.tRNs[i].hitBox.x <= inX && tRNList.tRNs[i].hitBox.x + tRNList.tRNs[i].hitBox.width >= inX){
-               if(tRNList.tRNs[i].hitBox.y <= inY && tRNList.tRNs[i].hitBox.y + tRNList.tRNs[i].hitBox.height >= inY){
+       for (int i = 0; i < prj.getTransferList().count; i++){
+           if(prj.getTransferList().tRNs[i].hitBox.x <= inX && prj.getTransferList().tRNs[i].hitBox.x + prj.getTransferList().tRNs[i].hitBox.width >= inX){
+               if(prj.getTransferList().tRNs[i].hitBox.y <= inY && prj.getTransferList().tRNs[i].hitBox.y + prj.getTransferList().tRNs[i].hitBox.height >= inY){
                    return i;
                }
            }
@@ -515,100 +548,4 @@ public class FlowChartCAD extends JComponent{
    }
    
    
-   /**
-    * This is the method that calculates the balance given a balance run setting
-    * @param s 
-    */
-   public void solveBalance(ProjSetting projSetting){
-       
-       int obj; 
-        int i;
-        int j;
-        int day;
-        int dayofyear;
-        int sodpondArea;
-        double sodTotalVol; // tracker for start of Day Volume used for Pond area calcs
-        int month;
-        double rainandmelt;
-        double totaler;
-        int runArea;
-        int pondAreaSubtraction = 0;
-        
-        //Constructs result arrays
-        tRNList.initializeResults(projSetting);
-        eLMList.initializeResults();
-        
-        for (int c = 0; c < ProjSetting.climateScenarios.getRowCount(); c++) {
-
-            for (day = 1; day < projSetting.getDuration(); day++) { // must start at 1 since solver will need previous days numbers to work;
-                // set month;...
-                month = CalcBasics.getMonth(day);
-
-                for (i = 0; i < eLMList.count; i++) {
-                    // resets Pond Areas
-
-                    if (eLMList.nodes[i].hasStorage) {
-                        sodTotalVol = eLMList.nodes[i].resultTotalVolume.daily[day - 1];
-                        sodpondArea = eLMList.nodes[i].dAC.getAreafromVol((int) sodTotalVol);
-                    } else {
-                        sodpondArea = 0;
-                    }
-
-                    // Direct Precip and Evaporation
-                    if (eLMList.nodes[i].hasStorageEvapandPrecip) {
-                        eLMList.nodes[i].resultDirectPrecip.daily[day] = ProjSetting.climateScenarios.climateScenarios[c].precip[day] * sodpondArea / 1000;
-                        eLMList.nodes[i].resultEvaporation.daily[day] = ProjSetting.climateScenarios.climateScenarios[c].evap[day] * sodpondArea / 1000;
-                    }
-                    // Upstream Runoff
-                    /*
-                        if(eLM.eLMs[obj].hasCatchment){
-                            totaler = 0;
-                            rainandmelt = climate.rain[day] +climate.melt[day];
-                            pondAreaSubtraction = sodpondArea;
-                            for (j = 0; j < nLandCovers; j++){
-                                if (pondAreaSubtraction >= eLM.eLMs[obj].Catchment[j].getArea(day)){ // runoff area needs to be trimmed down to not double count the pond
-                                    runArea = 0;     
-                                }else if (pondAreaSubtraction > 0){
-                                    runArea = eLM.eLMs[obj].Catchment[j].getArea(day);
-                                    pondAreaSubtraction = pondAreaSubtraction - runArea;
-                                }else{
-                                    runArea = eLM.eLMs[obj].Catchment[j].getArea(day);
-                                }
-                                runoff[eLM.eLMs[obj].indexRunoffTracker][j].daily[day] = runArea * rainandmelt * rc.landCovers[j].getMonthlyCoeff(month) / 1000;
-                                totaler = totaler + runoff[eLM.eLMs[obj].indexRunoffTracker][j].daily[day];
-                            }
-                            runoff[eLM.eLMs[obj].indexRunoffTracker][nLandCovers + 1].daily[day] = totaler; 
-                            
-                        }
-                     */
-                    // if Contains Solids need to add a tonnage of solids
-
-                }
-
-                for (i = 0; i < solveorder.tRNIndex.length; i++) {
-                    obj = solveorder.tRNIndex[i];
-                    switch (solveorder.tRNType[i]) {
-                        case "FIXED": // Transfers solved by themselves assume max pumping rate. otherwise must be resolved by element; 
-                            tRNList.tRNs[i].result.daily[day] = tRNList.tRNs[obj].getMaxPumpRate(day);
-
-                            // Manditory Inflow Transfers
-                            // Manditory Outflow Transfers
-                            // Seepage  // can be handeled as a manditory transfer if varies by time. 
-                            break;
-                        case "SOLIDS":
-
-                            // Solids Storage
-                            // Void Losses
-                            break;
-                        case "ONDEMAND":
-
-                            // Optional Inflow Transders
-                            // Optional Ouflow Transfers
-                            break;
-
-                    }
-                }
-            }
-        }
-    }
 }

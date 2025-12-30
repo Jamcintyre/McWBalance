@@ -1,6 +1,5 @@
 package com.mcwbalance.project;
 
-import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.flowchart.ImageLib;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.climate.TableClimateScenarios;

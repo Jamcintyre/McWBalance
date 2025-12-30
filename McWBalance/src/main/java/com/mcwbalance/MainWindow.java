@@ -15,6 +15,7 @@ import com.mcwbalance.node.NodList;
 import com.mcwbalance.util.WarningDialog;
 import com.mcwbalance.landcover.RunoffCoefficientWindow;
 import com.mcwbalance.climate.DataClimateSettingWindow;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -28,14 +29,12 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -52,13 +51,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 public class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
     
@@ -110,8 +104,14 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     
     /**
      * container for project settings
+     * @deprecated
      */
     ProjSetting projSetting; 
+    
+    /**
+     * current active project
+     */
+    public Project aP;
     
     /**
      * Spinner for selecting zoom level on CAD interface
@@ -158,17 +158,69 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         
         projSetting = new ProjSetting();
         
-        flowchart = new FlowChartCAD(projSetting);
+        aP = new Project();
         
-        // Placeholders, pull from resource list
-        iconOpen = new ImageIcon("bin/icons/open.png");
-        iconSave = new ImageIcon("bin/icons/save.png");
-        iconSaveAs = new ImageIcon("bin/icons/saveAs.png");
-        iconNewProject = new ImageIcon("bin/icons/newProject.png");
-        iconSettings = new ImageIcon("bin/icons/settings.png");
-        iconDelete = new ImageIcon("bin/icons/delete.png");
-        iconNewELM = new ImageIcon("bin/icons/newELM.png");
-        iconNewTRN = new ImageIcon("bin/icons/newTRN.png");
+        /**
+         * active flowchart
+         */
+        flowchart = new FlowChartCAD(aP);
+        
+        //Can replace with enum list.. 
+        URL imageUrl = getClass().getResource("/icons/Open.png");
+        if (imageUrl != null) {
+            iconOpen = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/Open.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/Save.png");
+        if (imageUrl != null) {
+            iconSave = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/Save.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/SaveAs.png");
+        if (imageUrl != null) {
+            iconSaveAs = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/SaveAs.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/NewProject.png");
+        if (imageUrl != null) {
+            iconNewProject = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/NewProject.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/Settings.png");
+        if (imageUrl != null) {
+            iconSettings = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/Settings.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/Delete.png");
+        if (imageUrl != null) {
+            iconDelete = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/Delete.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/NewNode.png");
+        if (imageUrl != null) {
+            iconNewELM = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/NewNode.png");
+        }
+        
+        imageUrl = getClass().getResource("/icons/NewTRN.png");
+        if (imageUrl != null) {
+            iconNewTRN = new ImageIcon(imageUrl);
+        } else {
+        System.err.println("Error: Image not found at path /icons/NewTRN.png");
+        }
         
         zoomSpinnerModel = new SpinnerNumberModel(FlowChartCAD.zoomscale,ZOOM_MIN,ZOOM_MAX,ZOOM_STEP);
         
@@ -353,7 +405,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         switch (e.getActionCommand()) {
             case "New" -> {
                 if (ProjSetting.hasChangedSinceSave) {
-                    ConfirmSaveDialog dialog = new ConfirmSaveDialog(this, projSetting);
+                    ConfirmSaveDialog dialog = new ConfirmSaveDialog(this, aP.getProjectSetting());
                     dialog.addWindowListener(new WindowAdapter() {
                         @Override
                         @SuppressWarnings("empty-statement")
@@ -372,14 +424,14 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             }
             case "Open" -> {
 
-                ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow(this, flowchart, projSetting);
+                ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow(this, flowchart, aP.getProjectSetting());
                 flowchart.repaint();
             }
             case "Save" -> {
                 saveProject();
             }
             case "PSettings" -> {
-                ProjSettingWindow projSettingWindow = new ProjSettingWindow(this,projSetting);
+                ProjSettingWindow projSettingWindow = new ProjSettingWindow(this,aP.getProjectSetting());
             }
             case "AddObjELM" -> {
                 requestedAction = "AddObjELM";
@@ -391,10 +443,10 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 requestedAction = "DeleteObj";
             }
             case "ClimateSetting" -> {
-                JFrame climateSettingWindow = new DataClimateSettingWindow(this,projSetting);
+                JFrame climateSettingWindow = new DataClimateSettingWindow(this,aP.getProjectSetting());
             }
             case "SolveOrderWindow" -> {
-                JFrame solveOrderWindow = new SolveOrderWindow(this, flowchart, projSetting);
+                JFrame solveOrderWindow = new SolveOrderWindow(this, aP);
             }
             case "RunoffCoefficientsWindow" ->{
                 JFrame runoffCoefficientWindow = new RunoffCoefficientWindow(this);
@@ -461,7 +513,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowchart.checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
                                 NodWindow objELMWindow = new NodWindow();
-                                objELMWindow.ObjELMWindowFunct(flowchart.getObjELM(mELMHit), mELMHit, flowchart.getTRNList(), projSetting);
+                                objELMWindow.ObjELMWindowFunct(flowchart.getObjELM(mELMHit), mELMHit, flowchart.getTRNList(), aP.getProjectSetting());
                             }
                             break;
                         } else {
@@ -596,93 +648,20 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public void resetProject(){
         
         
-        projSetting = new ProjSetting();
+        aP = new Project();
         flowchart.setTRNList(new TRNList());
-        flowchart.setNodeList(new NodList(projSetting));
+        flowchart.setNodeList(new NodList(aP.getProjectSetting()));
         flowchart.repaint();
     }
         
     public void saveProject() {
-        StringBuilder sverInfoFile = new StringBuilder();
-        sverInfoFile.append(ProjSetting.verInfo);
-        
-        //XML builder // not useful yet... 
-        TransformerFactory xmltf= TransformerFactory.newInstance();
-
-        try (FileOutputStream sfileos = new FileOutputStream(projSetting.getSaveFile());
-            ZipOutputStream sfilezos = new ZipOutputStream(sfileos)){
-            
-            Transformer xmltrans = xmltf.newTransformer();
-            xmltrans.setOutputProperty(OutputKeys.INDENT, "yes");
-            xmltrans.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            
-            
-            // initializes ZipEntry info for files to include
-            ZipEntry zEntVersion = new ZipEntry("Version.ver");
-
-            ZipEntry zEntTRN[] = new ZipEntry[flowchart.getTRNList().count];
-            for (int i = 0; i < flowchart.getTRNList().count; i++) {
-                zEntTRN[i] = new ZipEntry(i + ".trn");
-            }
-            ZipEntry zEntELM[] = new ZipEntry[flowchart.getNodeList().count];
-            for (int i = 0; i < flowchart.getNodeList().count; i++) {
-                zEntELM[i] = new ZipEntry(i + ".elm");
-                
-            }
-
-            // Write Version Information
-            sfilezos.putNextEntry(zEntVersion);
-            byte[] bytedata = sverInfoFile.toString().getBytes(); // converts string data to byte data
-            sfilezos.write(bytedata, 0, bytedata.length);
-            sfilezos.closeEntry();
-
-            // Write Transfer Information to ascii
-            for (int i = 0; i < zEntTRN.length; i++) {
-                sfilezos.putNextEntry(zEntTRN[i]);
-                bytedata = flowchart.getTRNList().tRNs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                sfilezos.write(bytedata, 0, bytedata.length);
-                sfilezos.closeEntry();
-            }
-            
-            
-            // write transfer information to xml
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            
-            DOMSource source = new DOMSource(flowchart.tRNList.getXMLDoc());
-            StreamResult  result = new  StreamResult(bos);
-            xmltrans.transform(source, result);
-            
-            //Debug
-            //System.out.println(result.getOutputStream());
-            //System.out.println(source.toString());
-            ZipEntry zEntTRNXML = new ZipEntry("Transfers.xml");
-            sfilezos.putNextEntry(zEntTRNXML);
-            sfilezos.write(bos.toByteArray());
-            sfilezos.closeEntry();
-
-            // Write ElementInformation
-            for (int i = 0; i < zEntELM.length; i++) {
-                sfilezos.putNextEntry(zEntELM[i]);
-                bytedata = flowchart.getNodeList().nodes[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                sfilezos.write(bytedata, 0, bytedata.length);
-                sfilezos.closeEntry();
-            }
-
-            //writeToZipFile()
-            sfilezos.close();
-            sfileos.close();
-            ProjSetting.hasChangedSinceSave = false; // Debug - does not confirm successful save
-            new WarningDialog(this, McWBalance.langRB.getString("SAVE_SUCCESSFUL"));
+        try (OutputStream success = aP.saveToFile()){;
+            new WarningDialog(this, "Save Succeeded");
+ 
         } catch (FileNotFoundException fe) {
             new WarningDialog(this, fe.getMessage());
         } catch (IOException fe) {
             new WarningDialog(this, fe.getMessage());
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

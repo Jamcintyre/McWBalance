@@ -7,6 +7,7 @@ package com.mcwbalance.solve;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.project.Project;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JButton;
@@ -27,12 +28,12 @@ public class SolveOrderWindow extends JFrame{
     private final int TABLE_ROW_HEIGHT = 20;
     private final Dimension TABLE_PREF_DIMENSION = new Dimension(360,TABLE_ROW_HEIGHT*20);
     
-    public SolveOrderWindow(JFrame owner, FlowChartCAD flowchart, ProjSetting projSetting){
+    public SolveOrderWindow(JFrame owner, Project prj){
         super(McWBalance.langRB.getString("SOLVE_ORDER"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         
-        JTable table = new JTable(flowchart.getSolveOrder());
+        JTable table = new JTable(prj.getSolveOrder());
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
         table.getColumnModel().getColumn(1).setPreferredWidth(TABLE_SECOND_COL_WIDTH);
         table.getColumnModel().getColumn(2).setPreferredWidth(TABLE_THIRD_COL_WIDTH);
@@ -42,17 +43,17 @@ public class SolveOrderWindow extends JFrame{
         
         JButton moveUp = new JButton(McWBalance.langRB.getString("MOVE_UP"));
         moveUp.addActionListener(l ->{
-            flowchart.getSolveOrder().moveUp(table.getSelectedRow());
+            prj.getSolveOrder().moveUp(table.getSelectedRow());
         });
         
         JButton moveDown = new JButton(McWBalance.langRB.getString("MOVE_DOWN"));
         moveDown.addActionListener(l ->{
-            flowchart.getSolveOrder().moveUp(table.getSelectedRow());
+            prj.getSolveOrder().moveUp(table.getSelectedRow());
         });
         
         JButton autoOrder = new JButton(McWBalance.langRB.getString("AUTO"));
         autoOrder.addActionListener(l ->{
-            flowchart.getSolveOrder().setAutoOrder(flowchart.getTRNList(), flowchart.getNodeList());
+            prj.getSolveOrder().setAutoOrder(prj.getTransferList(), prj.getNodeList());
         });
         
         setLayout(new BorderLayout());
