@@ -130,16 +130,24 @@ public class Project {
             
             // write transfer information to xml
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            StreamResult  result = new  StreamResult(bos);
             
             DOMSource source = new DOMSource(tRNList.getXMLDoc());
-            StreamResult  result = new  StreamResult(bos);
             xmltrans.transform(source, result);
             
-            //Debug
-            //System.out.println(result.getOutputStream());
-            //System.out.println(source.toString());
             ZipEntry zEntTRNXML = new ZipEntry("Transfers.xml");
             sfilezos.putNextEntry(zEntTRNXML);
+            sfilezos.write(bos.toByteArray());
+            sfilezos.closeEntry();
+            
+            // Reset to write Nodes to xml
+            bos = new ByteArrayOutputStream();
+            result = new  StreamResult(bos);
+            source = new DOMSource(nODEList.getXMLDoc());
+            xmltrans.transform(source, result);
+            
+            ZipEntry zEntNodeXML = new ZipEntry("Nodes.xml");
+            sfilezos.putNextEntry(zEntNodeXML);
             sfilezos.write(bos.toByteArray());
             sfilezos.closeEntry();
 
@@ -192,6 +200,10 @@ public class Project {
     private String verify(){
         Boolean minor = false;
         Boolean critical = false;
+        
+        
+        //CHECK FOR CIRCULAR OVERFLOW DEPENDENCIES,  i.e. basin 1 cannot overflow back into itself
+        //check that overflowing basins have capacity... 
         
         
         if(!minor && !critical){

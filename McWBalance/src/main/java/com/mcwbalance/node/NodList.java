@@ -3,6 +3,11 @@ package com.mcwbalance.node;
 
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Contains a complete array of all Nodes present in the model as well as placeholder values. 
@@ -133,6 +138,46 @@ public class NodList {
         }
         return copyString;
     }
+    
+        /**
+     * Not finished, will have to add info to the doc
+     * @return
+     * @throws ParserConfigurationException 
+     */
+    public Document getXMLDoc() throws ParserConfigurationException{
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document XMLDoc = builder.newDocument();
+        //Element mainroot = XMLDoc.getDocumentElement();
+        
+        Element root = XMLDoc.createElement("Nodes");
+        XMLDoc.appendChild(root);
+        for (int i = 0; i < count; i++){
+            // need to add leading zeros,  allow 999 elements
+            String tagName = "Node" + String.valueOf(i+1);
+            Element node = XMLDoc.createElement(tagName);
+            node.setAttribute("ObjName", nodes[i].objname);
+            node.setAttribute("SubType", nodes[i].objSubType);
+            node.setAttribute("x", String.valueOf(nodes[i].x));
+            node.setAttribute("y", String.valueOf(nodes[i].y));
+            
+            
+            /**
+            Element inflow = XMLDoc.createElement("INFLOW");
+            inflow.setAttribute("inObjNumber", String.valueOf(nodes[i].inObjNumber));
+            inflow.setAttribute("inSideFrom", tRNs[i].inSideFrom);
+            inflow.setAttribute("inSideFromOset", String.valueOf(tRNs[i].inSideFromOset));
+            inflow.setAttribute("inSideTo", tRNs[i].inSideTo);
+            tran.appendChild(inflow);
+            **/
+            
+            root.appendChild(node);
+        }    
+        return XMLDoc;
+    }
+    
     
     /**
      * calls on each Node to construct its result arrays.

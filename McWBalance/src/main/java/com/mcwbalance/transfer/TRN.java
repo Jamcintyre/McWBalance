@@ -45,6 +45,7 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     
     /**
      * Used to select what side the flow arrow gets drawn from
+     * @deprecated 
      */
     public static String[] objSidesAllowed = { 
         "RIGHT",
@@ -52,16 +53,51 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
         "TOP",
         "BOTTOM"
     };
+    
+    /**
+     * Used to select what side the flow arrow gets drawn from
+     */
+    public static enum SIDE {
+        RIGHT,
+        LEFT,
+        TOP,
+        BOTTOM;
+    }
+    
     /**
      * Used to select calculation method for the transfer
+     * @deprecated 
      */
     public static String[] objSubTypesAllowed = { // Note list also exitss in IconLibrary
         "FIXED RATE PUMPING", // transfer rate based on pump rates // these will be first to solve
         "ON DEMAND SUPPLY", // transfer rate based on pump rate and only on if reciever is in defict during previous day;
         "ON DEMAND DISCHARGE", // transfer rate based on pump rate and only on if supplier is in surplus previous day; 
         "OVERFLOW"
-            
     };
+    
+    
+    /**
+     * Used to select calculation method for the transfer
+     */
+    public static enum TYPE {
+        /**
+         * Transfer rate based on pump rates // these will be first to solve
+         */
+        FIXEDRATE,
+        /**
+         * transfer rate based on pump rate and only on if receiver is requested during previous day;
+         */
+        SUPPLY, 
+        /**
+         * transfer rate based on pump rate and only on if supplier is in surplus previous day;
+         */
+        DEMAND,
+        /**
+         * Transfer rate not limited by pump rate, will overflow based on basin dac;
+         */
+        OVERFLOW;
+    }
+    
     /**
      * Used primarily for plotting purposes in the flowsheet
      */
@@ -137,8 +173,8 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     
     
     /**
-     * Calculates hourly and daily flow rates, and assignes the provided values to plotVolperDay, PlotVolperHr, and PlotVolPerAnnum. This is indended for use in the
-     * flowchart plotting part of the code. the indention is that these values will be picked from presolved results. 
+     * Calculates hourly and daily flow rates, and assigns the provided values to plotVolperDay, PlotVolperHr, and PlotVolPerAnnum. This is intended for use in the
+     * flowchart plotting part of the code. the indention is that these values will be picked from pre-solved results. 
      * @param volPerDay 
      */
     public void setPlotValues(double volPerDay){

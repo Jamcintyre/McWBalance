@@ -221,8 +221,8 @@ public class TRNList {
         
         Element root = XMLDoc.createElement("Transfers");
         XMLDoc.appendChild(root);
+        String tagName;
         for (int i = 0; i < count; i++){
-            String tagName;
             // need to add leading zeros,  allow 999 elements
             tagName = "TRN" + String.valueOf(i+1);
             Element tran = XMLDoc.createElement(tagName);
@@ -262,15 +262,10 @@ public class TRNList {
     public int pumpRateCount;
             
             */
-          
-            
+
             root.appendChild(tran);
         }    
-
-        
-        return XMLDoc;
-
-        
+        return XMLDoc; 
     }
     public void initializeResults(ProjSetting projSetting){
         for (int i = 0; i < count; i ++){

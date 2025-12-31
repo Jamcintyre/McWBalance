@@ -2,6 +2,7 @@
 package com.mcwbalance.transfer;
 
 import com.mcwbalance.MainWindow;
+import com.mcwbalance.McWBalance;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
@@ -32,21 +33,44 @@ import javax.swing.table.TableColumn;
  * @author Alex
  */
 public class TRNWindow extends JDialog {
-    private TRN buffObjTRN = new TRN(); // container for storing and modifying object used for return at end
+    private TRN transfer;
     private int closeAction = 1;
     
     public static final int CLOSE_ACTION_SAVE = 1;
     public static final int CLOSE_ACTION_DISCARD = 2;
         
     public TRNWindow(JFrame owner, TRN inObjTRN, String[] eLMList){ // requires object number to edit
-        super(owner, "Transfer Properties", true); // was orginally a frame but changed to dialog
+        super(owner, McWBalance.langRB.getString("TRANSFER_PROPERTIES"), true); // was orginally a frame but changed to dialog
         ProjSetting.hasChangedSinceSave = true; // assumes if this dialog is called then a change has been made
-        buffObjTRN = inObjTRN; // sets buffered object to in object
+        transfer = inObjTRN; // sets buffered object to in object
         int fmtTFColumnsDEF = 30; // number of columns used for Name fields
-        
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(400, 300);
         this.setLocationRelativeTo(null);
+        
+        
+        /**
+         * Load localized phrases
+         */
+        String p_DELETE_SELECTION = McWBalance.langRB.getString("DELETE_SELECTION");
+        String p_GENERAL = McWBalance.langRB.getString("GENERAL");
+        String p_MAXIMUM_TRANSFER_RATE = McWBalance.langRB.getString("MAXIMUM_TRANSFER_RATE");
+        String p_OBJECT_STATE = McWBalance.langRB.getString("OBJECT_STATE"); 
+        String p_PASTE = McWBalance.langRB.getString("PASTE");
+        String p_SELECT_ALL = McWBalance.langRB.getString("SELECT_ALL");
+        
+        
+        String p_DELIVERS_WATER_TO = McWBalance.langRB.getString("DELIVERS_WATER_TO");
+        String p_FROM = McWBalance.langRB.getString("FROM");
+        String p_LINE_OFFSET = McWBalance.langRB.getString("LINE_OFFSET");
+        String p_SAVE =  McWBalance.langRB.getString("SAVE");
+        String p_TAKES_WATER_FROM = McWBalance.langRB.getString("TAKES_WATER_FROM");
+        String p_TO = McWBalance.langRB.getString("TO");
+        String p_TRANSFER_NAME = McWBalance.langRB.getString("TRANSFER_NAME");
+        String p_TRANSFER_TYPE = McWBalance.langRB.getString("TRANSFER_TYPE");
+        
+        
+        
         
         JTabbedPane tabPane = new JTabbedPane();
         
@@ -56,20 +80,20 @@ public class TRNWindow extends JDialog {
         tab2TableModelRate.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
         
         for(int i = 0; i < TRN.MAX_PUMP_RATES; i++){
-            tab2TableModelRate.setValueAt((int)buffObjTRN.pumpTime[i], i, 0);
-            tab2TableModelRate.setValueAt((double)buffObjTRN.pumpRateDay[i], i, 1);
+            tab2TableModelRate.setValueAt((int)transfer.pumpTime[i], i, 0);
+            tab2TableModelRate.setValueAt((double)transfer.pumpRateDay[i], i, 1);
         }
 
         JTable tab2TableRate = new JTable(tab2TableModelRate);
         
         JPopupMenu popupMenuRateTable = new JPopupMenu();
-        JMenuItem popupMenuItemRateSelectAll = new JMenuItem("Select All");
+        JMenuItem popupMenuItemRateSelectAll = new JMenuItem(p_SELECT_ALL);
         popupMenuItemRateSelectAll.addActionListener(e -> {
             tab2TableRate.setColumnSelectionInterval(0, 1);
             tab2TableRate.setRowSelectionInterval(0, tab2TableRate.getRowCount() - 1);
         });
 
-        JMenuItem popupMenuItemRateDelete = new JMenuItem("Delete Selection");
+        JMenuItem popupMenuItemRateDelete = new JMenuItem(p_DELETE_SELECTION);
         popupMenuItemRateDelete.addActionListener(e -> {
             tab2TableModelRate.removeData(tab2TableRate.getSelectedRows(), tab2TableRate.getSelectedColumns());
         });
@@ -79,7 +103,7 @@ public class TRNWindow extends JDialog {
             System.out.println("popup menu Copy button hit");
         });
 
-        JMenuItem popupMenuItemRatePaste = new JMenuItem("Paste");
+        JMenuItem popupMenuItemRatePaste = new JMenuItem(p_PASTE);
         popupMenuItemRatePaste.addActionListener(e -> {
             tab2TableModelRate.pasteFromClipboard(tab2TableRate.getSelectedRows(), tab2TableRate.getSelectedColumns());
         });
@@ -101,18 +125,18 @@ public class TRNWindow extends JDialog {
         JTable tab3TableState = new JTable(tab3TableModelState);
         
         for(int i = 0; i < Limit.MAX_STATES; i++){
-            tab3TableModelState.setValueAt((int)buffObjTRN.stateTime[i], i, 0);
-            tab3TableModelState.setValueAt((String)buffObjTRN.state[i], i, 1);
+            tab3TableModelState.setValueAt((int)transfer.stateTime[i], i, 0);
+            tab3TableModelState.setValueAt((String)transfer.state[i], i, 1);
         }
         
         JPopupMenu popupMenuStateTable = new JPopupMenu();
-        JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
+        JMenuItem popupMenuItemStateSelectAll = new JMenuItem(p_SELECT_ALL);
         popupMenuItemStateSelectAll.addActionListener( e-> {
             tab3TableState.setColumnSelectionInterval(0, 1);
             tab3TableState.setRowSelectionInterval(0, tab3TableState.getRowCount()-1);
         });
         
-        JMenuItem popupMenuItemStateDelete = new JMenuItem("Delete Selection");
+        JMenuItem popupMenuItemStateDelete = new JMenuItem(p_DELETE_SELECTION);
         popupMenuItemStateDelete.addActionListener(e ->{
             tab3TableModelState.removeData(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());    
         });
@@ -122,7 +146,7 @@ public class TRNWindow extends JDialog {
             System.out.println("popup menu Copy button hit");
         });
 
-        JMenuItem popupMenuItemStatePaste = new JMenuItem("Paste");
+        JMenuItem popupMenuItemStatePaste = new JMenuItem(p_PASTE);
         popupMenuItemStatePaste.addActionListener(e ->{
                 tab3TableModelState.pasteFromClipboard(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());
         });
@@ -149,70 +173,70 @@ public class TRNWindow extends JDialog {
         tab1.setLayout(tab1layout);
         
         // Name and Type
-        JLabel ltfobjName = new JLabel("Transfer Name");
-        JTextField tfobjName = new JTextField(buffObjTRN.objname);
+        JLabel ltfobjName = new JLabel(p_TRANSFER_NAME);
+        JTextField tfobjName = new JTextField(transfer.objname);
         tfobjName.setColumns(fmtTFColumnsDEF);
-        JLabel lcbobjType = new JLabel ("Transfer Type");
+        JLabel lcbobjType = new JLabel (p_TRANSFER_TYPE);
         JComboBox cbobjType = new JComboBox(TRN.objSubTypesAllowed); // Pulls options list from ObjELM static
-        cbobjType.setSelectedItem(buffObjTRN.subType);
+        cbobjType.setSelectedItem(transfer.subType);
         
         // Transfer from Location
-        JLabel lcbInObj = new JLabel ("Takes Water From");
+        JLabel lcbInObj = new JLabel (p_TAKES_WATER_FROM);
         JComboBox cbInObj = new JComboBox(eLMList); // Pulls from provided list of Elements
-        cbInObj.setSelectedIndex(buffObjTRN.inObjNumber + 1); // adds 1 since first value is null -1
-        JLabel lcbInSideFrom = new JLabel ("From ");
+        cbInObj.setSelectedIndex(transfer.inObjNumber + 1); // adds 1 since first value is null -1
+        JLabel lcbInSideFrom = new JLabel (p_FROM + " ");
         JComboBox cbInSideFrom = new JComboBox(TRN.objSidesAllowed);
-        cbInSideFrom.setSelectedItem(buffObjTRN.inSideFrom);        
-        JLabel lcbInSideTo = new JLabel ("To ");
+        cbInSideFrom.setSelectedItem(transfer.inSideFrom);        
+        JLabel lcbInSideTo = new JLabel (p_TO + " ");
         JComboBox cbInSideTo = new JComboBox(TRN.objSidesAllowed);
-        cbInSideTo.setSelectedItem(buffObjTRN.inSideTo);
-        JLabel ltfinSideFromOset = new JLabel ("Line Offset");
-        SpinnerModel mspinSideFromOset = new SpinnerNumberModel(buffObjTRN.inSideFromOset,-200,200,5);
+        cbInSideTo.setSelectedItem(transfer.inSideTo);
+        JLabel ltfinSideFromOset = new JLabel (p_LINE_OFFSET);
+        SpinnerModel mspinSideFromOset = new SpinnerNumberModel(transfer.inSideFromOset,-200,200,5);
         JSpinner spinSideFromOset = new JSpinner(mspinSideFromOset);
         
         // Transfer to Location
-        JLabel lcbOutObj = new JLabel ("Delivers Water To");
+        JLabel lcbOutObj = new JLabel (p_DELIVERS_WATER_TO);
         JComboBox cbOutObj = new JComboBox(eLMList); // Pulls from provided list of Elements
-        cbOutObj.setSelectedIndex(buffObjTRN.outObjNumber + 1);  // adds 1 since first value is null -1
-        JLabel lcbOutSideFrom = new JLabel ("From ");
+        cbOutObj.setSelectedIndex(transfer.outObjNumber + 1);  // adds 1 since first value is null -1
+        JLabel lcbOutSideFrom = new JLabel (p_FROM + " ");
         JComboBox cbOutSideFrom = new JComboBox(TRN.objSidesAllowed);
-        cbOutSideFrom.setSelectedItem(buffObjTRN.outSideFrom);
+        cbOutSideFrom.setSelectedItem(transfer.outSideFrom);
         
         
-        JLabel lcbOutSideTo = new JLabel ("To ");
+        JLabel lcbOutSideTo = new JLabel (p_TO + " ");
         JComboBox cbOutSideTo = new JComboBox(TRN.objSidesAllowed);
-        cbOutSideTo.setSelectedItem(buffObjTRN.outSideTo);
-        JLabel ltfOutSideToOset = new JLabel ("Line Offset");
-        JFormattedTextField tfOutSideToOset = new JFormattedTextField(buffObjTRN.outSideToOset);
-        SpinnerModel mspoutSideToOset = new SpinnerNumberModel(buffObjTRN.outSideToOset,-200,200,5);
+        cbOutSideTo.setSelectedItem(transfer.outSideTo);
+        JLabel ltfOutSideToOset = new JLabel (p_LINE_OFFSET);
+        JFormattedTextField tfOutSideToOset = new JFormattedTextField(transfer.outSideToOset);
+        SpinnerModel mspoutSideToOset = new SpinnerNumberModel(transfer.outSideToOset,-200,200,5);
         JSpinner spOutSideToOset = new JSpinner(mspoutSideToOset);
                 
-        JButton bSave = new JButton("Save");
+        JButton bSave = new JButton(p_SAVE);
         //Tab 1 Save Button listener moved to end to allow saving variables from all tabs
         bSave.addActionListener(e ->{ 
             closeAction = CLOSE_ACTION_SAVE;
 
-            buffObjTRN.objname = tfobjName.getText();
-            buffObjTRN.subType = String.valueOf(cbobjType.getSelectedItem());
+            transfer.objname = tfobjName.getText();
+            transfer.subType = String.valueOf(cbobjType.getSelectedItem());
             
-            buffObjTRN.inObjNumber = cbInObj.getSelectedIndex() -1; // assumes 1 nullValue
-            buffObjTRN.inSideFrom = String.valueOf(cbInSideFrom.getSelectedItem());            
-            buffObjTRN.inSideFromOset = (Integer)spinSideFromOset.getValue();
-            buffObjTRN.inSideTo = String.valueOf(cbInSideTo.getSelectedItem());
+            transfer.inObjNumber = cbInObj.getSelectedIndex() -1; // assumes 1 nullValue
+            transfer.inSideFrom = String.valueOf(cbInSideFrom.getSelectedItem());            
+            transfer.inSideFromOset = (Integer)spinSideFromOset.getValue();
+            transfer.inSideTo = String.valueOf(cbInSideTo.getSelectedItem());
             
-            buffObjTRN.outObjNumber = cbOutObj.getSelectedIndex() -1; // assumes 1 nullValue
-            buffObjTRN.outSideFrom = String.valueOf(cbOutSideFrom.getSelectedItem());
+            transfer.outObjNumber = cbOutObj.getSelectedIndex() -1; // assumes 1 nullValue
+            transfer.outSideFrom = String.valueOf(cbOutSideFrom.getSelectedItem());
             
-            buffObjTRN.outSideToOset = (Integer)spOutSideToOset.getValue();
-            buffObjTRN.outSideTo = String.valueOf(cbOutSideTo.getSelectedItem()); 
+            transfer.outSideToOset = (Integer)spOutSideToOset.getValue();
+            transfer.outSideTo = String.valueOf(cbOutSideTo.getSelectedItem()); 
             
             for(int i = 0; i < TRN.MAX_PUMP_RATES; i++){ // Copy even if null, otherwise no mechnism for deleting values    
-                buffObjTRN.pumpTime[i] = (int)tab2TableModelRate.getValueAt(i, 0);   
-                buffObjTRN.pumpRateDay[i] = (double)tab2TableModelRate.getValueAt(i, 1);                    
+                transfer.pumpTime[i] = (int)tab2TableModelRate.getValueAt(i, 0);   
+                transfer.pumpRateDay[i] = (double)tab2TableModelRate.getValueAt(i, 1);                    
             }
             for(int i = 0; i < Limit.MAX_STATES; i++){
-                buffObjTRN.stateTime[i] = (int)tab3TableModelState.getValueAt(i, 0);
-                buffObjTRN.state[i] = (String)tab3TableModelState.getValueAt(i, 1);
+                transfer.stateTime[i] = (int)tab3TableModelState.getValueAt(i, 0);
+                transfer.state[i] = (String)tab3TableModelState.getValueAt(i, 1);
             }
             
         });
@@ -300,9 +324,9 @@ public class TRNWindow extends JDialog {
         tab1layout.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, lcbOutSideFrom);
         
         //END OF TAB 1
-        tabPane.addTab("General", tab1);
-        tabPane.addTab("Maximum Transfer Rate",tab2);
-        tabPane.addTab("Object State",tab3);
+        tabPane.addTab(p_GENERAL, tab1);
+        tabPane.addTab(p_MAXIMUM_TRANSFER_RATE,tab2);
+        tabPane.addTab(p_OBJECT_STATE,tab3);
 
         this.add(tabPane);
         
@@ -316,7 +340,7 @@ public class TRNWindow extends JDialog {
      * @return objTRN containing all data pertaining to the modified transfer 
      */
     public TRN getObjTRN(){
-        return buffObjTRN;
+        return transfer;
     } 
     /**
      * Provide int to communicate whether the user intends to save changes or discard
