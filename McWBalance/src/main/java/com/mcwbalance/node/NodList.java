@@ -33,8 +33,12 @@ public class NodList {
             nodes[i].objname = "Node " + i;
             nodes[i].objSubType = "NODE"; // defaults to ugly square that needs to be defined
         }
-
     }
+    
+    public NodList(ProjSetting projSetting, Element nodeXML){
+        
+    }
+    
      /**
       * Adds a new Node to the end of the Node List
       * @param inX Midpoint of the Node draw location used in FlowChartCAD class

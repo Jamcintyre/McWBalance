@@ -5,11 +5,11 @@ import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.climate.TableClimateScenarios;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
+import org.w3c.dom.Element;
 
 /**
 * This Class is for storage and retrieval of all key project software related settings. 
@@ -22,7 +22,7 @@ public class ProjSetting {
     /**
      * Initial software version stamping, to be replaced eventually
      */
-    public static String verInfo ="0.2025.10.04";
+    public static String verInfo ="0.2026.01.01";
     
     /**
      * Short name for water balance for title of figure
@@ -151,7 +151,6 @@ public class ProjSetting {
         String userHome = System.getProperty("user.home");
         savepathfolder = userHome + java.io.File.separator + prop.getProperty("SAVEFOLDER","McBalance");
         
-               
         runoffCoefficients = new TableRunoffCoefficients();
         
         climateScenarios = new TableClimateScenarios(1);
@@ -161,6 +160,18 @@ public class ProjSetting {
         hasChangedSinceSave = true; // Debug, will update to false
         
     }
+    
+    /**
+     * Used for loading an existing project
+     * @param projXML Settings.xml
+     * @param path save file path
+     */
+    ProjSetting(Element projXML, String path){
+        this();
+        
+        //TODO - FILL IN
+    }
+    
     
 
     

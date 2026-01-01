@@ -4,7 +4,6 @@
  */
 package com.mcwbalance.project;
 
-import com.mcwbalance.MainWindow;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.transfer.TRNList;

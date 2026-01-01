@@ -10,7 +10,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -18,6 +21,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * This class acts as the main data model bin to contain the project information
@@ -45,9 +52,77 @@ public class Project {
      */
     public Project(){
         setting = new ProjSetting();
-        solveOrder = new SolveOrder(this);
         nODEList = new NodList(setting);
         tRNList = new TRNList();
+        solveOrder = new SolveOrder(this);
+    }
+    
+    public Project(ZipFile loadfile){
+          
+        //Load settings if found
+        ZipEntry zeSettings = loadfile.getEntry("Settings.xml");
+        if (zeSettings != null) {
+            try {
+                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document doc = db.parse(loadfile.getInputStream(zeSettings));
+                Node n = doc.getElementsByTagName("Settings").item(0);
+                if(n.getNodeType() == Node.ELEMENT_NODE){
+                    Element ele = (Element) n;
+                setting = new ProjSetting(ele, loadfile.getName());
+                } else{
+                    setting = new ProjSetting();
+                }
+            } catch (ParserConfigurationException | IOException | SAXException ex) {
+                System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                setting = new ProjSetting();
+            }
+        } else {
+            setting = new ProjSetting();
+        }
+        
+        //Load Nodes if found
+        ZipEntry zeNodes = loadfile.getEntry("Nodes.xml");
+        if (zeNodes != null) {
+            try {
+                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document doc = db.parse(loadfile.getInputStream(zeNodes));
+                Node n = doc.getElementsByTagName("Nodes").item(0);
+                if(n.getNodeType() == Node.ELEMENT_NODE){
+                    Element ele = (Element) n;
+                nODEList = new NodList(setting,ele);
+                } else{
+                    nODEList = new NodList(setting);
+                }
+            } catch (ParserConfigurationException | IOException | SAXException ex) {
+                System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                nODEList = new NodList(setting);
+            }
+        } else {
+            nODEList = new NodList(setting);
+        }
+        
+        //Load Transfers if found
+        ZipEntry zeTransfers = loadfile.getEntry("Transfers.xml");
+        if (zeTransfers != null) {
+            try {
+                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document doc = db.parse(loadfile.getInputStream(zeTransfers));
+                Node n = doc.getElementsByTagName("Transfers").item(0); // assumes only 1 player, and ignores any subsequent players
+                if(n.getNodeType() == Node.ELEMENT_NODE){
+                    Element ele = (Element) n;
+                tRNList = new TRNList(ele);
+                } else{
+                    tRNList = new TRNList();
+                }
+            } catch (ParserConfigurationException | IOException | SAXException ex) {
+                System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                tRNList = new TRNList();
+            }
+        } else {
+            tRNList = new TRNList();
+        }
+        
+        solveOrder = new SolveOrder(this);
     }
     
     

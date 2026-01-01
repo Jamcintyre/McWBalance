@@ -8,13 +8,18 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 public class TRNList {
     public int count; // counter to keep track fo list size
     public TRN[] tRNs= new TRN[Limit.MAX_TRNS]; 
     
-   public TRNList(){ // Constructor sets initial values
+    /**
+     * Used to initialize an empty list of transfers
+     */
+    public TRNList(){ // Constructor sets initial values
         count = 0; // sets number of transfers to 0 to start
         for (int i = 0; i < Limit.MAX_TRNS; i++){
             tRNs[i] = new TRN(); // Constructs the element so there is a place in memory for it, only needed for Object arrays
@@ -26,6 +31,27 @@ public class TRNList {
             tRNs[i].outObjNumber = -1; // -1 is used as Null, first object number is 0; 
         }
     } 
+   
+   /**
+    * Builds transfer list from an XML element, used for loading from a save
+    * @param transfers root element from tranfers.xml
+    */
+   public TRNList(Element transfers){
+       this();     
+       NodeList cnl = transfers.getElementsByTagName("Tranfer");
+       for (int i = 0; i < cnl.getLength(); i++){
+           if (cnl.item(i).getNodeType() == Node.ELEMENT_NODE){
+               tRNs[count] = new TRN((Element) cnl.item(i));
+               count ++;
+           }
+       }
+   }
+    /**
+     * Used for adding a new blank transfer into the transfer list
+     * limits object addition to max number of objects -1 as last object needs to be null for delete to work
+     * @param inX
+     * @param inY 
+     */
     public void addTRN(int inX, int inY){
         if (count - 1 == Limit.MAX_TRNS){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
             System.err.println("Max Number of Tranfers Reached");
@@ -35,7 +61,8 @@ public class TRNList {
     } 
     /**
      * Provides an array of strings containing the name of each transfer object.  If not list is given then all names are returned
-     * @return An array of string containing each transfer object led with a "none" null value at beginning of list;
+     * @param includeNone include null transfers
+     * @return 
      */
     public String[] getNameList(boolean includeNone){ // used for picking objects 
        String[] nameList;
@@ -68,6 +95,7 @@ public class TRNList {
     /**
      * Used for determining which Transfers inflow to an element
      * @param eLMnumber Index value of the ELM that has inflows
+     * @param includeNone include null transfers
      * @return a list of Inflows associated with the ELM, the first value is set to None to avoid null
      */
     public String[] getInflowNameList(int eLMnumber, boolean includeNone){ // used for picking objects 
@@ -105,6 +133,7 @@ public class TRNList {
     /**
      * Used for determining which Transfers inflow to an element
      * @param eLMnumber Index value of the ELM that has inflows
+     * @param includeNone Include null transfers
      * @return a list of Inflows associated with the ELM, the first value is set to -1 to avoid null
      */
     public int[] getInflowNameListIndex(int eLMnumber, boolean includeNone){ // used for picking objects 
@@ -168,9 +197,6 @@ public class TRNList {
                 }
             }         
         }
-        
-        
-        
         return nameList;
     }
     
@@ -221,9 +247,7 @@ public class TRNList {
         
         Element root = XMLDoc.createElement("Transfers");
         XMLDoc.appendChild(root);
-        String tagName;
         for (int i = 0; i < count; i++){
-
             root.appendChild(tRNs[i].getXMLElement(XMLDoc, i));
         }    
         return XMLDoc; 

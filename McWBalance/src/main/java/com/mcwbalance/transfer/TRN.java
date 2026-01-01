@@ -12,6 +12,8 @@ import com.mcwbalance.util.Direction.Side;
 import java.awt.Rectangle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class TRN {// class to catalog properties of a Pipe or other water transfer Mechanism
     
@@ -22,7 +24,9 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     public int x; // Coordinates if Information Box
     public int y;
     public Rectangle hitBox;
+    
     public boolean isSelected;
+    public boolean printable;
     
     //flow direction
     public int inObjNumber;
@@ -109,6 +113,7 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     
     public int stateTime[] = new int[Limit.MAX_STATES];
     public String state[] = new String[Limit.MAX_STATES];
+    public int stateCount;
     
     public ResultFlow result; 
     
@@ -132,20 +137,23 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
         
         x = inX;
         y = inY;
+        
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
         hitBox.setLocation(inX - hitBox.getSize().width/2, inY - hitBox.getSize().height/2); // centers the hitbox
         isSelected = false;
+        
         objname = "NEW TRANSFER " + number;
         subType = "Pump";
+        printable = true;
         
         inObjNumber = -1;
         inSideFrom = Side.TOP;
         inSideFromOset = 0;
-        inSideTo = Side.RIGHT;
+        inSideTo = Side.LEFT;
         inflowPriority = 5;
         
         outObjNumber = -1;
-        outSideFrom = Side.LEFT;
+        outSideFrom = Side.RIGHT;
         outSideTo = Side.TOP;
         outSideToOset = 0;
         outflowPriority = 5;
@@ -156,6 +164,7 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
         
         stateTime[0] = 0;
         state[0] = "ACTIVE";
+        stateCount = 1;
         
         plotVolperDay = 0.0;
         plotVolperHr = 0.00;
@@ -167,19 +176,107 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     /**
      * Constructs a transfer from an XML element, to be used when loading a save
      * file
-     * @param xML Element of an XML representing a transfer
+     * @param xML Element of an XML representing a "Transfer"
      */
-    TRN(Element xML){
+    TRN(Element tran){
         this(); // generates a blank tranfer in event that not all data is found in XML
-
-        // TO FILL IN
-
+        
+        objname = tran.getAttribute("ObjName");
+        subType = tran.getAttribute("SubType");
+        x = Integer.parseInt(tran.getAttribute("x"));
+        y = Integer.parseInt(tran.getAttribute("y"));
+        printable = Boolean.parseBoolean(tran.getAttribute("printable"));
+        
         //Resets the hitbox after xml is read in
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
         hitBox.setLocation(x - hitBox.getSize().width/2, y - hitBox.getSize().height/2); // centers the hitbox
         
+        //Pulls only the first inflow node...
+        Node inflowNode = tran.getElementsByTagName("Inflow").item(0);
+        if (inflowNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element inflow  = (Element) inflowNode;
+            inObjNumber = Integer.parseInt(inflow.getAttribute("inObjNumber"));
+            inSideFrom = Side.valueOf(inflow.getAttribute("inSideFrom"));
+            inSideFromOset = Integer.parseInt(inflow.getAttribute("inSideFromOset"));
+            inSideTo = Side.valueOf(inflow.getAttribute("inSideTo"));
+            inflowPriority = Integer.parseInt(inflow.getAttribute("inflowPriority"));
+        }
+        
+        //Pulls only the first inflow node...
+        Node outflowNode = tran.getElementsByTagName("Outflow").item(0);
+        if (outflowNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element outflow  = (Element) outflowNode;
+            outObjNumber = Integer.parseInt(outflow.getAttribute("outObjNumber"));
+            outSideFrom = Side.valueOf(outflow.getAttribute("outSideFrom"));
+            outSideTo = Side.valueOf(outflow.getAttribute("outSideTo"));
+            outSideToOset = Integer.parseInt(outflow.getAttribute("outSideFromOset"));
+            outflowPriority = Integer.parseInt(outflow.getAttribute("outflowPriority"));
+        }
+        
+        Node pumpratesNode = tran.getElementsByTagName("PumpRates").item(0);
+        if (pumpratesNode.getNodeType() == Node.ELEMENT_NODE) {
+            NodeList rates = pumpratesNode.getChildNodes();
+            pumpRateCount = 0;
+            for (int i = 0; i < rates.getLength(); i++) {
+                if (rates.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    Element ele = (Element) rates.item(i);
+                    addPumpRate(
+                            Integer.parseInt(ele.getAttribute("Time")),
+                            Double.parseDouble(ele.getAttribute("Rate"))
+                    );
+                }
+            }
+        }
+        
+        Node statesNode = tran.getElementsByTagName("States").item(0);
+        if (statesNode.getNodeType() == Node.ELEMENT_NODE) {
+                        NodeList states = statesNode.getChildNodes();
+            pumpRateCount = 0;
+            for (int i = 0; i < states.getLength(); i++) {
+                if (states.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    Element ele = (Element) states.item(i);
+                    addState(
+                            Integer.parseInt(ele.getAttribute("Time")),
+                            ele.getAttribute("State")
+                    );
+                }
+            }
+
+        }
+        // TO FILL IN
+
+        
+        
     }
     
+    /**
+     * adds a pump rate to the list of pump rates
+     * TODO - ADD SORTING
+     * @param time In Days
+     * @param rate in m3/day
+     */
+    private void addPumpRate(int time, double rate){
+        if (pumpRateCount < MAX_PUMP_RATES) {
+            pumpTime[pumpRateCount] = time;
+            pumpRateDay[pumpRateCount] = rate;
+            pumpRateCount++;
+        }
+    }
+    
+    /**
+     * adds a state to the list of states
+     * TODO - ADD SORTING
+     * @param time
+     * @param stateAdd 
+     */
+    private void addState(int time, String stateAdd) {
+        if (stateCount < Limit.MAX_STATES) {
+            stateTime[stateCount] = time;
+            state[stateCount] = stateAdd;
+            stateCount++;
+        }
+    }
+
 
     /**
      * Calculates hourly and daily flow rates, and assigns the provided values to plotVolperDay, PlotVolperHr, and PlotVolPerAnnum. This is intended for use in the
@@ -360,29 +457,52 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
      * @return 
      */
     public Element getXMLElement(Document xMLDoc, int index){
-                    
-            Element tran = xMLDoc.createElement("Tranfer");
-            tran.setAttribute("Index", String.valueOf(index));
-            tran.setAttribute("ObjName", objname);
-            tran.setAttribute("SubType", subType);
-            tran.setAttribute("x", String.valueOf(x));
-            tran.setAttribute("y", String.valueOf(y));
-            
-            Element inflow = xMLDoc.createElement("Inflow");
-            inflow.setAttribute("inObjNumber", String.valueOf(inObjNumber));
-            inflow.setAttribute("inSideFrom", inSideFrom.toString());
-            inflow.setAttribute("inSideFromOset", String.valueOf(inSideFromOset));
-            inflow.setAttribute("inSideTo", inSideTo.toString());
-            tran.appendChild(inflow);
-            
-            Element outflow = xMLDoc.createElement("Outflow");
-            outflow.setAttribute("outObjNumber", String.valueOf(outObjNumber));
-            outflow.setAttribute("outSideFrom", outSideFrom.toString());
-            outflow.setAttribute("outSideTo", outSideTo.toString());
-            outflow.setAttribute("outSideToOset", String.valueOf(outSideToOset));
-            tran.appendChild(outflow);
-            
-            return tran;
+
+        Element tran = xMLDoc.createElement("Transfer");
+        tran.setAttribute("Index", String.valueOf(index));
+        tran.setAttribute("ObjName", objname);
+        tran.setAttribute("SubType", subType);
+        tran.setAttribute("x", String.valueOf(x));
+        tran.setAttribute("y", String.valueOf(y));
+        tran.setAttribute("printable", String.valueOf(printable));
+
+        Element inflow = xMLDoc.createElement("Inflow");
+        inflow.setAttribute("inObjNumber", String.valueOf(inObjNumber));
+        inflow.setAttribute("inSideFrom", inSideFrom.toString());
+        inflow.setAttribute("inSideFromOset", String.valueOf(inSideFromOset));
+        inflow.setAttribute("inSideTo", inSideTo.toString());
+        inflow.setAttribute("inflowPriority", String.valueOf(inflowPriority));
+        tran.appendChild(inflow);
+
+        Element outflow = xMLDoc.createElement("Outflow");
+        outflow.setAttribute("outObjNumber", String.valueOf(outObjNumber));
+        outflow.setAttribute("outSideFrom", outSideFrom.toString());
+        outflow.setAttribute("outSideTo", outSideTo.toString());
+        outflow.setAttribute("outSideToOset", String.valueOf(outSideToOset));
+        inflow.setAttribute("outflowPriority", String.valueOf(outflowPriority));
+        tran.appendChild(outflow);
+        
+        Element pumpratesXML = xMLDoc.createElement("PumpRates");
+        for (int i = 0; i < pumpRateCount; i++) {
+            Element rateXML = xMLDoc.createElement("Rate");
+            rateXML.setAttribute("Time", String.valueOf(pumpTime[i]));
+            rateXML.setAttribute("Rate", String.valueOf(pumpRateDay[i]));
+            pumpratesXML.appendChild(rateXML);
+        }
+        tran.appendChild(pumpratesXML);
+        
+        Element statesXML = xMLDoc.createElement("States");
+        for (int i = 0; i < stateCount; i++) {
+            Element stateXML = xMLDoc.createElement("State");
+            stateXML.setAttribute("Time", String.valueOf(stateTime[i]));
+            stateXML.setAttribute("State", String.valueOf(state[i]));
+            statesXML.appendChild(stateXML);
+        }
+        tran.appendChild(statesXML);
+        
+        //TODO ADD RESULTS
+
+        return tran;
     }
 
     /**
