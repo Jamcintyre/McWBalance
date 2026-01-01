@@ -182,9 +182,9 @@ public class NodList {
     /**
      * calls on each Node to construct its result arrays.
      */
-    public void initializeResults(){
+    public void initResults(){
         for (int i = 0; i < count; i++){
-            nodes[i].initializeResults();
+            nodes[i].initResults();
         }
     }
     

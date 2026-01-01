@@ -223,53 +223,14 @@ public class TRNList {
         XMLDoc.appendChild(root);
         String tagName;
         for (int i = 0; i < count; i++){
-            // need to add leading zeros,  allow 999 elements
-            tagName = "TRN" + String.valueOf(i+1);
-            Element tran = XMLDoc.createElement(tagName);
-            tran.setAttribute("ObjName", tRNs[i].objname);
-            tran.setAttribute("SubType", tRNs[i].subType);
-            tran.setAttribute("x", String.valueOf(tRNs[i].x));
-            tran.setAttribute("y", String.valueOf(tRNs[i].y));
-            
-            Element inflow = XMLDoc.createElement("INFLOW");
-            inflow.setAttribute("inObjNumber", String.valueOf(tRNs[i].inObjNumber));
-            inflow.setAttribute("inSideFrom", tRNs[i].inSideFrom);
-            inflow.setAttribute("inSideFromOset", String.valueOf(tRNs[i].inSideFromOset));
-            inflow.setAttribute("inSideTo", tRNs[i].inSideTo);
-            tran.appendChild(inflow);
-            
-            Element outflow = XMLDoc.createElement("OUTFLOW");
-            outflow.setAttribute("outObjNumber", String.valueOf(tRNs[i].outObjNumber));
-            outflow.setAttribute("outSideFrom", tRNs[i].outSideFrom);
-            outflow.setAttribute("outSideTo", tRNs[i].outSideTo);
-            outflow.setAttribute("outSideToOset", String.valueOf(tRNs[i].outSideToOset));
 
-            tran.appendChild(outflow);
-            
-            
-            /*
-            need to add Pump rates, and object states 
-    
-    //Plotting Storage Values;
-    public double plotVolperDay; // seepage per day may be less then 1 m3 so base units must be double.
-    public double plotVolperHr;
-    public int plotVolperAnnum;
-    
-    //Pump Limits
-    public static final int MAX_PUMP_RATES = 20; // allows 20 different pumping rates over project duration
-    public int[] pumpTime = new int[MAX_PUMP_RATES]; // start time of pump install 
-    public double[] pumpRateDay = new double[MAX_PUMP_RATES]; // rate must be in m3 per day
-    public int pumpRateCount;
-            
-            */
-
-            root.appendChild(tran);
+            root.appendChild(tRNs[i].getXMLElement(XMLDoc, i));
         }    
         return XMLDoc; 
     }
-    public void initializeResults(ProjSetting projSetting){
+    public void initResults(ProjSetting projSetting){
         for (int i = 0; i < count; i ++){
-            tRNs[i].initializeResults(projSetting);
+            tRNs[i].initResults(projSetting);
         }
     }
     

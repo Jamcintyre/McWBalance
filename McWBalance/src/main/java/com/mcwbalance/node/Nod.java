@@ -237,7 +237,7 @@ public class Nod {
     /**
      * method to initialize result variables to current project duration and names
      */
-    public void initializeResults() {
+    public void initResults() {
         resultWaterLevel = new ResultLevel(projsetting.getDuration(), objname + " Water Level");
         resultSolidsLevel = new ResultLevel(projsetting.getDuration(), objname + " Solids Level");
         resultSolidsInflow = new ResultFlow(projsetting.getDuration(), objname + " Solids Inflow");

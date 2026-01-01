@@ -295,7 +295,7 @@ public class FlowChartCAD extends JComponent{
                 eLMy = eLMList.nodes[tRNList.tRNs[i].inObjNumber].y; // only used to make code easier to read,
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
-                fpline.setRoute(eLMrect, tRNList.tRNs[i].inSideFrom, tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo, 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
+                fpline.setRoute(eLMrect, tRNList.tRNs[i].inSideFrom.toString(), tRNList.tRNs[i].inSideFromOset, tRNrect, tRNList.tRNs[i].inSideTo.toString(), 0, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
                 g2.setColor(defaultDrawColor);
                 g2.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints); // draws line
                 g2.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 
@@ -308,7 +308,7 @@ public class FlowChartCAD extends JComponent{
                 eLMy = eLMList.nodes[tRNList.tRNs[i].outObjNumber].y; // only used to make code easier to read,
                 eLMrect.setBounds(eLMx - eLMdim.width/2, eLMy - eLMdim.height/2, eLMdim.width, eLMdim.height);
                 // This calculates the route for the inflow line.
-                fpline.setRoute(tRNrect, tRNList.tRNs[i].outSideFrom, 0, eLMrect, tRNList.tRNs[i].outSideTo, tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
+                fpline.setRoute(tRNrect, tRNList.tRNs[i].outSideFrom.toString(), 0, eLMrect, tRNList.tRNs[i].outSideTo.toString(), tRNList.tRNs[i].outSideToOset, minLineLength); // Note OSets will be used later to allow multiplbe lines to same box
                 g2.setColor(defaultDrawColor);// Placeholder of using colour until end arrow is drawn
                 g2.drawPolyline(fpline.xPoints, fpline.yPoints, fpline.nPoints);
                 g2.fillPolygon(fpline.arwxPoints, fpline.arwyPoints, fpline.ARROW_NPOINTS); // draws Arrow; 

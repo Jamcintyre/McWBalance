@@ -29,10 +29,13 @@ public class McWBalance {
     static BufferedImage mainIcon30;
     static final String FILE_EXTENSION = "mcbl";
     static final String LANGUAGE_RESOURCE = "Language";
-    static String localeOptions;
     static Locale currentLocale;
     
+    /**
+     * Bin for all short dialogs and words
+     */
     public static ResourceBundle langRB;
+    
     public static Properties style = new Properties();
     static Properties localeprops = new Properties();
     
@@ -40,8 +43,9 @@ public class McWBalance {
     public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File",FILE_EXTENSION);
 
     public static void main(String[] args) {
-        
+
         //setLocale("es");
+
         langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE);
 
         try{
@@ -89,21 +93,21 @@ public class McWBalance {
         
         String[] localCodes = newLocal.split("_");
         
+        Locale.of(newLocal);
+        
         if(localCodes.length == 1){
-           currentLocale = new Locale(localCodes[0]);
+           currentLocale = Locale.of(localCodes[0]);
            
            System.out.println("language Changed to " + localCodes[0]);
         }
         else{
-           currentLocale = new Locale(localCodes[0], localCodes[1]);
+           currentLocale = Locale.of(localCodes[0], localCodes[1]);
            System.out.println("language Changed to " + localCodes[0] + " " + localCodes[1]);
         }
         
         langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
         
     }
-    
-    
-    
+
     
 }

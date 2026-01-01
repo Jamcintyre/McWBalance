@@ -232,8 +232,8 @@ public class Project {
         int pondAreaSubtraction = 0;
         
         //Constructs result arrays
-        tRNList.initializeResults(setting);
-        nODEList.initializeResults();
+        tRNList.initResults(setting);
+        nODEList.initResults();
         
         for (int c = 0; c < ProjSetting.climateScenarios.getRowCount(); c++) {
 
