@@ -242,15 +242,15 @@ public class TRNList {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         builder = factory.newDocumentBuilder();
-        Document XMLDoc = builder.newDocument();
+        Document xMLDoc = builder.newDocument();
         //Element mainroot = XMLDoc.getDocumentElement();
         
-        Element root = XMLDoc.createElement("Transfers");
-        XMLDoc.appendChild(root);
+        Element root = xMLDoc.createElement("Transfers");
+        xMLDoc.appendChild(root);
         for (int i = 0; i < count; i++){
-            root.appendChild(tRNs[i].getXMLElement(XMLDoc, i));
+            root.appendChild(tRNs[i].getXMLElement(xMLDoc, i));
         }    
-        return XMLDoc; 
+        return xMLDoc; 
     }
     public void initResults(ProjSetting projSetting){
         for (int i = 0; i < count; i ++){

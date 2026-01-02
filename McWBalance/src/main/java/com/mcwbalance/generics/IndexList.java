@@ -4,6 +4,9 @@
  */
 package com.mcwbalance.generics;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  * Used to store and modify a list of Object Indicies in fixed length arrays with counters
  * @author amcintyre
@@ -105,7 +108,8 @@ public class IndexList {
     /**
      * Searches the list of index values and returns the corresponding list index. Note that "None" is not contained in the list index and as
      * such the returned list index value may be offset by 1 if chosing from a list that contains "None"
-     * @param objIndex
+     * @param objIndex this is the project index, i.e. if it is the 3rd tranfer of the project it may only be 
+     * the 1st or 2nd index on this list. this method translates from project to list index
      * @return An index int value pointing to the first ocurrance of the requested object index. if object not found then -1 is returned
      */
     public int getListIndex(int objIndex){
@@ -120,6 +124,14 @@ public class IndexList {
         return -1; 
     }
     
+    /**
+     * looks up a transfer name based on the list index,
+     * @param index List Index
+     * @return 
+     */
+    public String getName(int index){
+        return nameList[index];
+    }
     
        /**
      * Provides a shortened version of the IndexList with the null values removed;
@@ -161,6 +173,22 @@ public class IndexList {
        return shortNameList; 
     }
     
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * @param xMLDoc Document required to generate element, 
+     * @param tagname Name of element
+     * @return 
+     */
+    public Element getXMLElement(Document xMLDoc, String tagname){
+        Element ele = xMLDoc.createElement(tagname);
+        for (int i = 0; i < count; i++) {
+            Element cele = xMLDoc.createElement("Value");
+            cele.setAttribute("Index", String.valueOf(getObjIndex(i)));
+            cele.setAttribute("Name", getName(i));
+            ele.appendChild(cele);
+        }
+        return ele;
+    }
 
     /**
      * Populates the entire list, typically used for initialization

@@ -6,6 +6,8 @@ package com.mcwbalance.generics;
 
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.settings.Preferences;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -106,6 +108,8 @@ public class DataTimeIntSeries {
         System.err.println("DataTimeIntSeries - WARNING VALUE NOT FOUND FOR SEARCHED DAY " + inDay +" VALUE OF " + value[0] + "RETURNED INSTEAD");
         return value[0];
     }
+    
+    
     public StringBuilder getTabbedString(String header){
         StringBuilder tabbedString = new StringBuilder();
         tabbedString.append(header);
@@ -120,6 +124,39 @@ public class DataTimeIntSeries {
         tabbedString.append(System.getProperty("line.separator"));
         return tabbedString; 
     }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * @param xMLDoc Document required to generate element, 
+     * @param tagname Name of element
+     * @return 
+     */
+    private Element getXMLElement(Document xMLDoc, String tagname){
+        Element ele = xMLDoc.createElement(tagname);
+        for (int i = 0; i < length; i++) {
+            Element cele = xMLDoc.createElement("row");
+            cele.setAttribute("Index", String.valueOf(day[i]));
+            cele.setAttribute("Name", String.valueOf(value[i]));
+            ele.appendChild(cele);
+        }
+        return ele;
+    }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * @see getXMLElement
+     * @param element Element to append too
+     * @param xMLDoc 
+     * @param tagname 
+     */
+    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
+        if(length >0){
+            element.appendChild(getXMLElement(xMLDoc, tagname));
+        }
+    }
+
+    
+    
     public void setFromStringLine(String line, int index){
         if (index < MAX_LENGTH && index >= 0 && line != Preferences.LIST_TERMINATOR){
             if (index +1 < length){

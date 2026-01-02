@@ -8,6 +8,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Contains a complete array of all Nodes present in the model as well as placeholder values. 
@@ -36,7 +38,14 @@ public class NodList {
     }
     
     public NodList(ProjSetting projSetting, Element nodeXML){
-        
+       this(projSetting);     
+       NodeList cnl = nodeXML.getElementsByTagName("Node");
+       for (int i = 0; i < cnl.getLength(); i++){
+           if (cnl.item(i).getNodeType() == Node.ELEMENT_NODE){
+               nodes[count] = new Nod(projSetting, (Element) cnl.item(i));
+               count ++;
+           }
+       }
     }
     
      /**
@@ -181,8 +190,7 @@ public class NodList {
         }    
         return XMLDoc;
     }
-    
-    
+      
     /**
      * calls on each Node to construct its result arrays.
      */

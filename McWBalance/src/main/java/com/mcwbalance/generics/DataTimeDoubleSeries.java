@@ -6,6 +6,8 @@ package com.mcwbalance.generics;
 
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.settings.Preferences;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -121,6 +123,26 @@ public class DataTimeDoubleSeries {
         tabbedString.append(System.getProperty("line.separator"));
         return tabbedString; 
     }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * @param xMLDoc Document required to generate element, 
+     * @param tagname Name of element
+     * @return 
+     */
+    public Element getXMLElement(Document xMLDoc, String tagname){
+        Element ele = xMLDoc.createElement(tagname);
+        for (int i = 0; i < length; i++) {
+            Element cele = xMLDoc.createElement("row");
+            cele.setAttribute("Index", String.valueOf(day[i]));
+            cele.setAttribute("Name", String.valueOf(value[i]));
+            ele.appendChild(cele);
+        }
+        return ele;
+    }
+    
+    
+    
     public void setFromStringLine(String line, int index){
         if (index < MAX_LENGTH && index >= 0 && line != Preferences.LIST_TERMINATOR){
             if (index +1 < length){

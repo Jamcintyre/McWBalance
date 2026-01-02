@@ -12,6 +12,8 @@ import com.mcwbalance.result.ResultLevel;
 import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Contains all information required to represent 1 Node such as a Basin,
@@ -116,6 +118,7 @@ public class Nod {
 
     public int stateTime[] = new int[Limit.MAX_STATES];
     public String state[] = new String[Limit.MAX_STATES];
+    int stateCount;
     
     public ResultLevel resultWaterLevel;
     public ResultLevel resultSolidsLevel;
@@ -131,11 +134,27 @@ public class Nod {
     public ResultFlow resultSeepage;
     
     
-    
-
+    /**
+     * constructs a blank node
+    */
     Nod(ProjSetting projSetting) {
         this(0, 0, 0, projSetting);
     }
+    
+    /**
+     * Constructs node from xml, used for loading in
+     * @param projSetting
+     * @param nodeXML 
+     */
+    Nod(ProjSetting projSetting, Element nodeXML){
+        //Generates a null node to fill in if XML is missing information
+        this(projSetting);
+        
+        //TODO NOT COMPLETED
+        
+        
+    }
+    
 
     Nod(int inX, int inY, int number, ProjSetting projSetting) {
         this.projsetting = projSetting;
@@ -192,6 +211,7 @@ public class Nod {
             stateTime[i] = Limit.MAX_DURATION;
         }
         state[0] = "ACTIVE";
+        stateCount = 0;
     }
     /**
     * method used to determine the state of the object for any given day
@@ -212,6 +232,10 @@ public class Nod {
         return state[0];
     }
     
+    /**
+     * @deprecated should use XML Element
+     * @return 
+     */
     public StringBuilder getSaveString(){
         String nextLine = System.getProperty("line.separator");// used instead of /n for cross platform compatibility
         StringBuilder saveString = new StringBuilder();
@@ -229,11 +253,157 @@ public class Nod {
         
         //TO BE COMPLETED
         
-        
-        
-        
         return saveString;
     }
+    
+    /**
+     * Used to build an XML element representing all of the information stored
+     * within this class, note that it is not intended to store hit box or other
+     * info that can be re-calculated
+     * @param xMLDoc xML document that this element will be appended to
+     * @param index element index number
+     * @return 
+     */
+    public Element getXMLElement(Document xMLDoc, int index){
+        Element nXML = xMLDoc.createElement("Node");
+        nXML.setAttribute(objname, objname);
+        
+        nXML.setAttribute("Index", String.valueOf(index));
+        nXML.setAttribute("Name", objname);
+        nXML.setAttribute("SubType", objSubType);
+        nXML.setAttribute("x", String.valueOf(x));
+        nXML.setAttribute("y", String.valueOf(y));
+        nXML.setAttribute("scaleX", String.valueOf(scaleX));
+        nXML.setAttribute("scaleY", String.valueOf(scaleY));
+        
+        if(hasCatchment){
+            Element catchmentsXML = xMLDoc.createElement("Catchments");
+            for (int i = 0; i < nCatchments; i++){
+                Element catchXML = xMLDoc.createElement("Catchment");
+                catchXML.setAttribute("LandCover", Catchment[i].getLandCover());
+                for (int j = 0; j < Catchment[i].getLength(); j++){
+                    Element areaXML = xMLDoc.createElement("Area");
+                    areaXML.setAttribute("Time", String.valueOf(Catchment[i].getTimeAtIndex(j)));
+                    areaXML.setAttribute("Area", String.valueOf(Catchment[i].getAreaAtIndex(j)));
+                    catchXML.appendChild(areaXML);
+                }
+                catchmentsXML.appendChild(catchXML);
+            }
+            nXML.appendChild(catchmentsXML);
+        }
+        nXML.setAttribute("hasSolids", String.valueOf(hasSolids));
+        nXML.setAttribute("oSetXVoids", String.valueOf(oSetXVoids));
+        nXML.setAttribute("oSetYVoids", String.valueOf(oSetYVoids));
+        nXML.setAttribute("hasStorage", String.valueOf(hasStorage));
+        nXML.setAttribute("showStorage", String.valueOf(showStorage));
+        
+        // DAC is only saved if the basin is flagged as having storage
+        if(hasStorage){
+            Element capXML = xMLDoc.createElement("Capacity");
+            for (int i = 0; i < dAC.getRowCount(); i++){
+                Element areaXML = xMLDoc.createElement("Area");
+                areaXML.setAttribute("Elevation", String.valueOf(dAC.getValueAt(i, 0)));
+                areaXML.setAttribute("Area", String.valueOf(dAC.getValueAt(i, 1)));       
+                capXML.appendChild(areaXML);
+            }
+            nXML.appendChild(capXML);
+        }
+
+        
+        if (inflows.count > 0){
+            nXML.appendChild(inflows.getXMLElement(xMLDoc, "Inflows"));
+        }
+        
+        if (outflows.count > 0){
+            nXML.appendChild(outflows.getXMLElement(xMLDoc, "Outflows"));
+        }
+
+        targetOperatingVol.appendXMLElement(nXML, xMLDoc, "targetOperatingVol");
+\
+        if (minDepth.length > 0){
+            nXML.appendChild(minDepth.getXMLElement(xMLDoc, "minDepth"));
+        }
+        
+        if (maxOpLevel.length > 0) {
+            nXML.appendChild(maxOpLevel.getXMLElement(xMLDoc, "maxOpLevel"));
+        }
+
+        if (overflowLevel.length > 0) {
+            nXML.appendChild(overflowLevel.getXMLElement(xMLDoc, "overflowLevel"));
+        }
+
+        if (crestLevel.length > 0) {
+            nXML.appendChild(crestLevel.getXMLElement(xMLDoc, "crestLevel"));
+        }
+        
+        if (depositionRates.getRowCount() > 0) {
+            nXML.appendChild(depositionRates.getXMLElement(xMLDoc, "depositionRates"));
+        }
+        
+        if (inflowFixedTRN.count > 0) {
+            nXML.appendChild(inflowFixedTRN.getXMLElement(xMLDoc, "inflowFixedTRN"));
+        }
+
+        if (outflowFixedTRN.count > 0) {
+            nXML.appendChild(outflowFixedTRN.getXMLElement(xMLDoc, "outflowFixedTRN"));
+        }
+
+        if (inflowOnDemandTRN.count > 0) {
+            nXML.appendChild(inflowOnDemandTRN.getXMLElement(xMLDoc, "inflowOnDemandTRN"));
+        }
+
+        if (outflowOnDemandTRN.count > 0) {
+            nXML.appendChild(outflowOnDemandTRN.getXMLElement(xMLDoc, "outflowOnDemandTRN"));
+        }
+
+        if (tailsTRNOptions.count > 0) {
+            nXML.appendChild(tailsTRNOptions.getXMLElement(xMLDoc, "tailsTRNOptions"));
+        }
+        
+        nXML.setAttribute("tailsTRN", String.valueOf(tailsTRN));
+        
+        if (tailsTRNOptions.count > 0) {
+            nXML.appendChild(tailsTRNOptions.getXMLElement(xMLDoc, "tailsTRNOptions"));
+        }
+        
+        nXML.setAttribute("overflowTRN", String.valueOf(overflowTRN));
+        
+        
+        STOPPED HERE Note, would like to replace with append
+
+        
+        Element statesXML = xMLDoc.createElement("States");
+        for (int i = 0; i < stateCount; i++) {
+            Element stateXML = xMLDoc.createElement("State");
+            stateXML.setAttribute("Time", String.valueOf(stateTime[i]));
+            stateXML.setAttribute("State", String.valueOf(state[i]));
+            statesXML.appendChild(stateXML);
+        }
+        nXML.appendChild(statesXML);
+        
+        
+    /**    
+    public ResultLevel resultWaterLevel;
+    public ResultLevel resultSolidsLevel;
+    
+    public ResultStorageVolume resultTotalVolume;
+    public ResultStorageVolume resultPondVolume;
+    
+    public ResultFlow resultSolidsInflow;
+    
+    public ResultFlow resultRunoff[];
+    public ResultFlow resultDirectPrecip;
+    public ResultFlow resultEvaporation;
+    public ResultFlow resultSeepage;
+    */
+        
+        
+        
+        
+        
+        return nXML;
+    }
+    
     /**
      * method to initialize result variables to current project duration and names
      */
@@ -256,6 +426,10 @@ public class Nod {
         resultSeepage = new ResultFlow(projsetting.getDuration(), objname + " Seepage");
     }
     
+    /**
+     * @deprecated should use XML element instead
+     * @param inData 
+     */
     public void setFromString(String inData){
         String nextLine = System.getProperty("line.separator");
         String lines[] = inData.split(nextLine);
@@ -284,6 +458,7 @@ public class Nod {
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
      * object Subtype is changed
+     * @param inSubType
      * @param inState state from StatesAllowed, if no match is found then
      * imageLib returns a default sprite
      */

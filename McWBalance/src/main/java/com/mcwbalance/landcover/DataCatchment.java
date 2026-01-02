@@ -17,6 +17,9 @@ public class DataCatchment {
         LandCover = "none";        
     }
     
+    
+    
+    
     public int getArea(int timestep){
         if(timestep < time[0]){
             return 0;
@@ -32,5 +35,39 @@ public class DataCatchment {
         return -1; // not found
     }
     
+    /**
+     * Used for getting a specific indexed value
+     * @param index
+     * @return 
+     */
+    public int getAreaAtIndex(int index){
+        return area[index];
+    }
+    
+    /**
+     * Number of catchment data points
+     * @return 
+     */
+    public int getLength(){
+        return nPoints;
+    }
+    
+    /**
+     * Name of land cover, will be important to keep track to allow separate reporting
+     * to facilitate water quality modeling
+     * @return 
+     */
+    public String getLandCover(){
+        return LandCover;
+    }
+    
+    /**
+     * Used for getting a specific indexed value
+     * @param index
+     * @return 
+     */
+    public int getTimeAtIndex(int index){
+        return time[index];
+    }
     
 }

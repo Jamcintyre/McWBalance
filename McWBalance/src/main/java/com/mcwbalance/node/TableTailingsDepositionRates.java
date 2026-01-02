@@ -16,6 +16,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -509,6 +511,30 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
         saveString.append(Preferences.LIST_TERMINATOR);
         return saveString.toString();
     }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * @param xMLDoc Document required to generate element, 
+     * @param tagname Name of element
+     * @return 
+     */
+    public Element getXMLElement(Document xMLDoc, String tagname){
+        Element ele = xMLDoc.createElement(tagname);
+        for (int i = 0; i < length; i++) {
+            Element cele = xMLDoc.createElement("row");
+            cele.setAttribute("Day", String.valueOf(data[i][0]));
+            cele.setAttribute("Rate", String.valueOf(data[i][1]));
+            cele.setAttribute("SolContent", String.valueOf(data[i][2]));
+            cele.setAttribute("SG", String.valueOf(data[i][3]));
+            cele.setAttribute("FSetDen", String.valueOf(data[i][4]));
+            cele.setAttribute("WatwSol", String.valueOf(data[i][5]));
+            cele.setAttribute("VoidLoss", String.valueOf(data[i][6]));
+            cele.setAttribute("VolSetSol", String.valueOf(data[i][7]));
+            ele.appendChild(cele);
+        }
+        return ele;
+    }
+
     
     public void setFromString(String input){
          // Not Implemented yet 
