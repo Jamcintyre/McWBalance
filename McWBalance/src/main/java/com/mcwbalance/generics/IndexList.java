@@ -56,6 +56,23 @@ public class IndexList {
             System.out.println("Maximum List size of " + indexList.length + " TRNs Exceeded");
         }
     }
+    
+     /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * Only appends if length > 0
+     * @see getXMLElement
+     * @param element Element to append too
+     * @param xMLDoc 
+     * @param tagname 
+     */
+    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
+        if(count >0){
+            element.appendChild(getXMLElement(xMLDoc, tagname));
+        }
+    }
+    
+    
+    
     /**
      * debugging tool used to print contents of list
      */
@@ -179,7 +196,7 @@ public class IndexList {
      * @param tagname Name of element
      * @return 
      */
-    public Element getXMLElement(Document xMLDoc, String tagname){
+    private Element getXMLElement(Document xMLDoc, String tagname){
         Element ele = xMLDoc.createElement(tagname);
         for (int i = 0; i < count; i++) {
             Element cele = xMLDoc.createElement("Value");
@@ -189,6 +206,9 @@ public class IndexList {
         }
         return ele;
     }
+    
+
+    
 
     /**
      * Populates the entire list, typically used for initialization

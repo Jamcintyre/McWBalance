@@ -88,6 +88,21 @@ public class DataTimeIntSeries {
         sortAssending();
         removeDoupAndNulls();
     }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * Only appends if length > 0
+     * @see getXMLElement
+     * @param element Element to append too
+     * @param xMLDoc 
+     * @param tagname 
+     */
+    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
+        if(length >0){
+            element.appendChild(getXMLElement(xMLDoc, tagname));
+        }
+    }
+    
     /**
      * Replaces array data with new inputs then calls removeDoupAndNulls and sortAssending Methods
      * @param inDay
@@ -109,7 +124,11 @@ public class DataTimeIntSeries {
         return value[0];
     }
     
-    
+    /**
+     * 
+     * @param header
+     * @return 
+     */
     public StringBuilder getTabbedString(String header){
         StringBuilder tabbedString = new StringBuilder();
         tabbedString.append(header);
@@ -142,21 +161,14 @@ public class DataTimeIntSeries {
         return ele;
     }
     
-    /**
-     * Used for getting a save file formatted XML element to append into a larger doc
-     * @see getXMLElement
-     * @param element Element to append too
-     * @param xMLDoc 
-     * @param tagname 
-     */
-    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
-        if(length >0){
-            element.appendChild(getXMLElement(xMLDoc, tagname));
-        }
-    }
+
 
     
-    
+    /**
+     * 
+     * @param line
+     * @param index 
+     */
     public void setFromStringLine(String line, int index){
         if (index < MAX_LENGTH && index >= 0 && line != Preferences.LIST_TERMINATOR){
             if (index +1 < length){
@@ -180,6 +192,12 @@ public class DataTimeIntSeries {
             }  
         }
     }
+    
+    /**
+     * 
+     * @param inDay
+     * @param inValue 
+     */
     public void setAllData(int inDay[], int inValue[]){
         int newDay[];
         int newValue[];
@@ -230,8 +248,9 @@ public class DataTimeIntSeries {
         sortAssending();
         removeDoupAndNulls();
     }
+    
     /**
-     * Removes any douplicated day values since 1 day should not have 2 seperate operating targets
+     * Removes any douplicate day values since 1 day should not have 2 separate operating targets
      * Also removes null values from list (i.e. -1) to minimize clutter
      */
     public void removeDoupAndNulls(){ // this is having the problem
@@ -263,7 +282,7 @@ public class DataTimeIntSeries {
         }
     }
     /**
-     * Sorts both day and Value arrays in assending order of day; 
+     * Sorts both day and Value arrays in ascending order of day; 
      */
     public void sortAssending(){
         int swapDay;

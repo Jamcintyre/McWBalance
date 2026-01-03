@@ -265,9 +265,7 @@ public class Nod {
      * @return 
      */
     public Element getXMLElement(Document xMLDoc, int index){
-        Element nXML = xMLDoc.createElement("Node");
-        nXML.setAttribute(objname, objname);
-        
+        Element nXML = xMLDoc.createElement("Node");        
         nXML.setAttribute("Index", String.valueOf(index));
         nXML.setAttribute("Name", objname);
         nXML.setAttribute("SubType", objSubType);
@@ -309,68 +307,22 @@ public class Nod {
             nXML.appendChild(capXML);
         }
 
-        
-        if (inflows.count > 0){
-            nXML.appendChild(inflows.getXMLElement(xMLDoc, "Inflows"));
-        }
-        
-        if (outflows.count > 0){
-            nXML.appendChild(outflows.getXMLElement(xMLDoc, "Outflows"));
-        }
-
+        inflows.appendXMLElement(nXML, xMLDoc, "Inflows");
+        outflows.appendXMLElement(nXML, xMLDoc, "Outflows");
         targetOperatingVol.appendXMLElement(nXML, xMLDoc, "targetOperatingVol");
-\
-        if (minDepth.length > 0){
-            nXML.appendChild(minDepth.getXMLElement(xMLDoc, "minDepth"));
-        }
-        
-        if (maxOpLevel.length > 0) {
-            nXML.appendChild(maxOpLevel.getXMLElement(xMLDoc, "maxOpLevel"));
-        }
-
-        if (overflowLevel.length > 0) {
-            nXML.appendChild(overflowLevel.getXMLElement(xMLDoc, "overflowLevel"));
-        }
-
-        if (crestLevel.length > 0) {
-            nXML.appendChild(crestLevel.getXMLElement(xMLDoc, "crestLevel"));
-        }
-        
-        if (depositionRates.getRowCount() > 0) {
-            nXML.appendChild(depositionRates.getXMLElement(xMLDoc, "depositionRates"));
-        }
-        
-        if (inflowFixedTRN.count > 0) {
-            nXML.appendChild(inflowFixedTRN.getXMLElement(xMLDoc, "inflowFixedTRN"));
-        }
-
-        if (outflowFixedTRN.count > 0) {
-            nXML.appendChild(outflowFixedTRN.getXMLElement(xMLDoc, "outflowFixedTRN"));
-        }
-
-        if (inflowOnDemandTRN.count > 0) {
-            nXML.appendChild(inflowOnDemandTRN.getXMLElement(xMLDoc, "inflowOnDemandTRN"));
-        }
-
-        if (outflowOnDemandTRN.count > 0) {
-            nXML.appendChild(outflowOnDemandTRN.getXMLElement(xMLDoc, "outflowOnDemandTRN"));
-        }
-
-        if (tailsTRNOptions.count > 0) {
-            nXML.appendChild(tailsTRNOptions.getXMLElement(xMLDoc, "tailsTRNOptions"));
-        }
-        
+        minDepth.appendXMLElement(nXML, xMLDoc, "minDepth");
+        maxOpLevel.appendXMLElement(nXML, xMLDoc, "maxOpLevel");
+        overflowLevel.appendXMLElement(nXML, xMLDoc, "overflowLevel");
+        crestLevel.appendXMLElement(nXML, xMLDoc, "crestLevel");
+        depositionRates.appendXMLElement(nXML, xMLDoc, "depositionRates");
+        inflowFixedTRN.appendXMLElement(nXML, xMLDoc, "inflowFixedTRN");
+        outflowFixedTRN.appendXMLElement(nXML, xMLDoc, "outflowFixedTRN");
+        inflowOnDemandTRN.appendXMLElement(nXML, xMLDoc, "inflowOnDemandTRN");
+        outflowOnDemandTRN.appendXMLElement(nXML, xMLDoc, "outflowOnDemandTRN");
+        tailsTRNOptions.appendXMLElement(nXML, xMLDoc, "tailsTRNOptions");
         nXML.setAttribute("tailsTRN", String.valueOf(tailsTRN));
-        
-        if (tailsTRNOptions.count > 0) {
-            nXML.appendChild(tailsTRNOptions.getXMLElement(xMLDoc, "tailsTRNOptions"));
-        }
-        
+        tailsTRNOptions.appendXMLElement(nXML, xMLDoc, "tailsTRNOptions");
         nXML.setAttribute("overflowTRN", String.valueOf(overflowTRN));
-        
-        
-        STOPPED HERE Note, would like to replace with append
-
         
         Element statesXML = xMLDoc.createElement("States");
         for (int i = 0; i < stateCount; i++) {

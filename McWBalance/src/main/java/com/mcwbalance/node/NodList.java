@@ -152,8 +152,9 @@ public class NodList {
         return copyString;
     }
     
-        /**
-     * Not finished, will have to add info to the doc
+     /**
+     * Builds a proprietary XML data set for use in save files
+     * This method may not work for generating xml spreadsheet files
      * @return
      * @throws ParserConfigurationException 
      */
@@ -162,33 +163,14 @@ public class NodList {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         builder = factory.newDocumentBuilder();
-        Document XMLDoc = builder.newDocument();
-        //Element mainroot = XMLDoc.getDocumentElement();
+        Document xMLDoc = builder.newDocument();
         
-        Element root = XMLDoc.createElement("Nodes");
-        XMLDoc.appendChild(root);
-        for (int i = 0; i < count; i++){
-            // need to add leading zeros,  allow 999 elements
-            String tagName = "Node" + String.valueOf(i+1);
-            Element node = XMLDoc.createElement(tagName);
-            node.setAttribute("ObjName", nodes[i].objname);
-            node.setAttribute("SubType", nodes[i].objSubType);
-            node.setAttribute("x", String.valueOf(nodes[i].x));
-            node.setAttribute("y", String.valueOf(nodes[i].y));
-            
-            
-            /**
-            Element inflow = XMLDoc.createElement("INFLOW");
-            inflow.setAttribute("inObjNumber", String.valueOf(nodes[i].inObjNumber));
-            inflow.setAttribute("inSideFrom", tRNs[i].inSideFrom);
-            inflow.setAttribute("inSideFromOset", String.valueOf(tRNs[i].inSideFromOset));
-            inflow.setAttribute("inSideTo", tRNs[i].inSideTo);
-            tran.appendChild(inflow);
-            **/
-            
-            root.appendChild(node);
-        }    
-        return XMLDoc;
+        Element root = xMLDoc.createElement("Nodes");
+        xMLDoc.appendChild(root);
+        for (int i = 0; i < count; i++) {
+            root.appendChild(nodes[i].getXMLElement(xMLDoc, i));
+        }
+        return xMLDoc;
     }
       
     /**

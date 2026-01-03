@@ -233,7 +233,8 @@ public class TRNList {
     }
     
     /**
-     * Not finished, will have to add info to the doc
+     * Builds a proprietary XML data set for use in save files
+     * This method may not work for generating xml spreadsheet files
      * @return
      * @throws ParserConfigurationException 
      */

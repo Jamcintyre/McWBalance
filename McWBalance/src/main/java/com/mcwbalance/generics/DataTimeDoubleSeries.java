@@ -89,6 +89,22 @@ public class DataTimeDoubleSeries {
         removeDoupAndNulls();
 
     }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * Only appends if length > 0
+     * @see getXMLElement
+     * @param element Element to append too
+     * @param xMLDoc 
+     * @param tagname 
+     */
+    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
+        if(length >0){
+            element.appendChild(getXMLElement(xMLDoc, tagname));
+        }
+    }
+    
+    
     /**
      * Replaces array data with new inputs then calls removeDoupAndNulls and sortAssending Methods
      * @param inDay
