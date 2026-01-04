@@ -18,6 +18,10 @@ import org.w3c.dom.Element;
 /**
  * Contains all information required to represent 1 Node such as a Basin,
  * Tailings Facility, Pit, Process Plant.
+ * 
+ * Class was originally called ELM,  changed to Node, but had a case issue node vs Node
+ * this class should not be called Node as that class is already used by the XML
+ * Parser and could cause confusion
  *
  * @see NODEList
  * @author amcintyre
@@ -233,30 +237,6 @@ public class Nod {
     }
     
     /**
-     * @deprecated should use XML Element
-     * @return 
-     */
-    public StringBuilder getSaveString(){
-        String nextLine = System.getProperty("line.separator");// used instead of /n for cross platform compatibility
-        StringBuilder saveString = new StringBuilder();
-        saveString.append("Node Name" + "\t");
-        saveString.append(objname);
-        saveString.append(nextLine); 
-        saveString.append("SubType" + "\t");
-        saveString.append(objSubType);
-        saveString.append(nextLine);
-        saveString.append("XYCoords" + "\t");
-        saveString.append(x);
-        saveString.append("\t");
-        saveString.append(y);
-        saveString.append(nextLine);
-        
-        //TO BE COMPLETED
-        
-        return saveString;
-    }
-    
-    /**
      * Used to build an XML element representing all of the information stored
      * within this class, note that it is not intended to store hit box or other
      * info that can be re-calculated
@@ -266,14 +246,27 @@ public class Nod {
      */
     public Element getXMLElement(Document xMLDoc, int index){
         Element nXML = xMLDoc.createElement("Node");        
+        
+
         nXML.setAttribute("Index", String.valueOf(index));
         nXML.setAttribute("Name", objname);
         nXML.setAttribute("SubType", objSubType);
+        
         nXML.setAttribute("x", String.valueOf(x));
         nXML.setAttribute("y", String.valueOf(y));
+        
         nXML.setAttribute("scaleX", String.valueOf(scaleX));
         nXML.setAttribute("scaleY", String.valueOf(scaleY));
         
+        nXML.setAttribute("hasSolids", String.valueOf(hasSolids));
+        nXML.setAttribute("hasStorage", String.valueOf(hasStorage));
+
+        nXML.setAttribute("oSetXVoids", String.valueOf(oSetXVoids));
+        nXML.setAttribute("oSetYVoids", String.valueOf(oSetYVoids));
+        nXML.setAttribute("overflowTRN", String.valueOf(overflowTRN));
+        nXML.setAttribute("showStorage", String.valueOf(showStorage));
+        nXML.setAttribute("tailsTRN", String.valueOf(tailsTRN));
+
         if(hasCatchment){
             Element catchmentsXML = xMLDoc.createElement("Catchments");
             for (int i = 0; i < nCatchments; i++){
@@ -289,12 +282,7 @@ public class Nod {
             }
             nXML.appendChild(catchmentsXML);
         }
-        nXML.setAttribute("hasSolids", String.valueOf(hasSolids));
-        nXML.setAttribute("oSetXVoids", String.valueOf(oSetXVoids));
-        nXML.setAttribute("oSetYVoids", String.valueOf(oSetYVoids));
-        nXML.setAttribute("hasStorage", String.valueOf(hasStorage));
-        nXML.setAttribute("showStorage", String.valueOf(showStorage));
-        
+
         // DAC is only saved if the basin is flagged as having storage
         if(hasStorage){
             Element capXML = xMLDoc.createElement("Capacity");
@@ -320,9 +308,8 @@ public class Nod {
         inflowOnDemandTRN.appendXMLElement(nXML, xMLDoc, "inflowOnDemandTRN");
         outflowOnDemandTRN.appendXMLElement(nXML, xMLDoc, "outflowOnDemandTRN");
         tailsTRNOptions.appendXMLElement(nXML, xMLDoc, "tailsTRNOptions");
-        nXML.setAttribute("tailsTRN", String.valueOf(tailsTRN));
         tailsTRNOptions.appendXMLElement(nXML, xMLDoc, "tailsTRNOptions");
-        nXML.setAttribute("overflowTRN", String.valueOf(overflowTRN));
+
         
         Element statesXML = xMLDoc.createElement("States");
         for (int i = 0; i < stateCount; i++) {

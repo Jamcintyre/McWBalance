@@ -33,11 +33,10 @@ public class TRNList {
     } 
    
    /**
-    * Builds transfer list from an XML element, used for loading from a save
+    * Intended to be used on a freshly constructed null TRNList 
     * @param transfers root element from tranfers.xml
     */
-   public TRNList(Element transfers){
-       this();     
+   public void addXMLElements(Element transfers){    
        NodeList cnl = transfers.getElementsByTagName("Tranfer");
        for (int i = 0; i < cnl.getLength(); i++){
            if (cnl.item(i).getNodeType() == Node.ELEMENT_NODE){

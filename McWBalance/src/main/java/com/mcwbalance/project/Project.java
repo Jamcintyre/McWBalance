@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -57,72 +58,73 @@ public class Project {
         solveOrder = new SolveOrder(this);
     }
     
-    public Project(ZipFile loadfile){
-          
-        //Load settings if found
-        ZipEntry zeSettings = loadfile.getEntry("Settings.xml");
-        if (zeSettings != null) {
-            try {
-                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                Document doc = db.parse(loadfile.getInputStream(zeSettings));
-                Node n = doc.getElementsByTagName("Settings").item(0);
-                if(n.getNodeType() == Node.ELEMENT_NODE){
-                    Element ele = (Element) n;
-                setting = new ProjSetting(ele, loadfile.getName());
-                } else{
-                    setting = new ProjSetting();
-                }
-            } catch (ParserConfigurationException | IOException | SAXException ex) {
-                System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-                setting = new ProjSetting();
-            }
-        } else {
+    
+    /**
+     * TODO Should use checks to see if the file version is ok;
+     * @param loadfile 
+     */
+    public void loadXML(ZipFile loadfile){
+        
+        
+        //TODO PLACEHOLDER IF Version check passed
+        
+        if (true) {
             setting = new ProjSetting();
-        }
-        
-        //Load Nodes if found
-        ZipEntry zeNodes = loadfile.getEntry("Nodes.xml");
-        if (zeNodes != null) {
-            try {
-                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                Document doc = db.parse(loadfile.getInputStream(zeNodes));
-                Node n = doc.getElementsByTagName("Nodes").item(0);
-                if(n.getNodeType() == Node.ELEMENT_NODE){
-                    Element ele = (Element) n;
-                nODEList = new NodList(setting,ele);
-                } else{
-                    nODEList = new NodList(setting);
+
+            //Load settings if found
+            ZipEntry zeSettings = loadfile.getEntry("Settings.xml");
+            if (zeSettings != null) {
+                try {
+                    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document doc = db.parse(loadfile.getInputStream(zeSettings));
+                    Node n = doc.getElementsByTagName("Settings").item(0);
+                    if (n.getNodeType() == Node.ELEMENT_NODE) {
+                        Element ele = (Element) n;
+                        setting.loadXMLElement(ele);
+                    }
+                } catch (ParserConfigurationException | IOException | SAXException ex) {
+                    System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
-            } catch (ParserConfigurationException | IOException | SAXException ex) {
-                System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-                nODEList = new NodList(setting);
             }
-        } else {
+            setting.setSavePathandName(Path.of(loadfile.getName()));
+            
+
             nODEList = new NodList(setting);
-        }
-        
-        //Load Transfers if found
-        ZipEntry zeTransfers = loadfile.getEntry("Transfers.xml");
-        if (zeTransfers != null) {
-            try {
-                DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                Document doc = db.parse(loadfile.getInputStream(zeTransfers));
-                Node n = doc.getElementsByTagName("Transfers").item(0); // assumes only 1 player, and ignores any subsequent players
-                if(n.getNodeType() == Node.ELEMENT_NODE){
-                    Element ele = (Element) n;
-                tRNList = new TRNList(ele);
-                } else{
-                    tRNList = new TRNList();
+            //Load Nodes if found
+            ZipEntry zeNodes = loadfile.getEntry("Nodes.xml");
+            if (zeNodes != null) {
+                try {
+                    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document doc = db.parse(loadfile.getInputStream(zeNodes));
+                    Node n = doc.getElementsByTagName("Nodes").item(0);
+                    if (n.getNodeType() == Node.ELEMENT_NODE) {
+                        Element ele = (Element) n;
+                        nODEList.addXMLElements(ele);
+                    }
+                } catch (ParserConfigurationException | IOException | SAXException ex) {
+                    System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 }
-            } catch (ParserConfigurationException | IOException | SAXException ex) {
-                System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-                tRNList = new TRNList();
             }
-        } else {
+
             tRNList = new TRNList();
+            //Load Transfers if found
+            ZipEntry zeTransfers = loadfile.getEntry("Transfers.xml");
+            if (zeTransfers != null) {
+                try {
+                    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                    Document doc = db.parse(loadfile.getInputStream(zeTransfers));
+                    Node n = doc.getElementsByTagName("Transfers").item(0); // assumes only 1 player, and ignores any subsequent players
+                    if (n.getNodeType() == Node.ELEMENT_NODE) {
+                        Element ele = (Element) n;
+                        tRNList.addXMLElements(ele);
+                    }
+                } catch (ParserConfigurationException | IOException | SAXException ex) {
+                    System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+            }
+
+            solveOrder = new SolveOrder(this);
         }
-        
-        solveOrder = new SolveOrder(this);
     }
     
     
@@ -194,15 +196,6 @@ public class Project {
             sfilezos.write(bytedata, 0, bytedata.length);
             sfilezos.closeEntry();
 
-            // Write Transfer Information to ascii
-            for (int i = 0; i < zEntTRN.length; i++) {
-                sfilezos.putNextEntry(zEntTRN[i]);
-                bytedata = tRNList.tRNs[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                sfilezos.write(bytedata, 0, bytedata.length);
-                sfilezos.closeEntry();
-            }
-            
-            
             // write transfer information to xml
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             StreamResult  result = new  StreamResult(bos);
@@ -225,14 +218,18 @@ public class Project {
             sfilezos.putNextEntry(zEntNodeXML);
             sfilezos.write(bos.toByteArray());
             sfilezos.closeEntry();
+            
+                        // Reset to write Nodes to xml
+            bos = new ByteArrayOutputStream();
+            result = new  StreamResult(bos);
+            source = new DOMSource(setting.getXMLDoc());
+            xmltrans.transform(source, result);
+            
+            ZipEntry zEntSettingsXML = new ZipEntry("Settings.xml");
+            sfilezos.putNextEntry(zEntSettingsXML);
+            sfilezos.write(bos.toByteArray());
+            sfilezos.closeEntry();
 
-            // Write ElementInformation
-            for (int i = 0; i < zEntELM.length; i++) {
-                sfilezos.putNextEntry(zEntELM[i]);
-                bytedata = nODEList.nodes[i].getSaveString().toString().getBytes(); // converts string data to byte data // byte data variable re-used
-                sfilezos.write(bytedata, 0, bytedata.length);
-                sfilezos.closeEntry();
-            }
 
             //writeToZipFile()
             sfilezos.close();

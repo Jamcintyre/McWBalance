@@ -37,8 +37,13 @@ public class NodList {
         }
     }
     
-    public NodList(ProjSetting projSetting, Element nodeXML){
-       this(projSetting);     
+    /**
+    * Intended to be used on a freshly constructed null TRNList 
+    * Note it assumes project settings has already been set
+    * @param transfers root element from tranfers.xml
+    */
+    public void addXMLElements(Element nodeXML){
+           
        NodeList cnl = nodeXML.getElementsByTagName("Node");
        for (int i = 0; i < cnl.getLength(); i++){
            if (cnl.item(i).getNodeType() == Node.ELEMENT_NODE){

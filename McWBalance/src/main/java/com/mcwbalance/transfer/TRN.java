@@ -6,7 +6,6 @@ import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.settings.Limit;
-import com.mcwbalance.settings.Preferences;
 import com.mcwbalance.util.Direction;
 import com.mcwbalance.util.Direction.Side;
 import java.awt.Rectangle;
@@ -374,76 +373,6 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
         return out;
     }
     
-    /**
-     * Builds a tab delimited string of all key data from the TRN,  includes in
-     * and outflow links
-     * @return 
-     * @deprecated use getXMLElement instead
-     */
-    public StringBuilder getSaveString(){
-        String nextLine = System.getProperty("line.separator");// used instead of /n for cross platform compatibility
-        StringBuilder saveString = new StringBuilder();
-        saveString.append("Transfer Name" + "\t");
-        saveString.append(objname);
-        saveString.append(nextLine); 
-        saveString.append("SubType" + "\t");
-        saveString.append(subType);
-        saveString.append(nextLine);
-        saveString.append("XYCoords" + "\t");
-        saveString.append(x);
-        saveString.append("\t");
-        saveString.append(y);
-        saveString.append(nextLine);
-        saveString.append("Inflow From" + "\t");
-        saveString.append(inObjNumber);
-        saveString.append(nextLine);
-        saveString.append("Inflow Line" + "\t");
-        saveString.append(inSideFrom);
-        saveString.append("\t");
-        saveString.append(inSideFromOset);
-        saveString.append("\t");
-        saveString.append(inSideTo);
-        saveString.append("\t");
-        saveString.append(nextLine);
-        saveString.append("Outflow To" + "\t");
-        saveString.append(outObjNumber);
-        saveString.append(nextLine);
-        saveString.append("Outflow Line" + "\t");
-        saveString.append(outSideFrom);
-        saveString.append("\t");
-        saveString.append(outSideTo);
-        saveString.append("\t");
-        saveString.append(outSideToOset);
-        saveString.append("\t");
-        saveString.append(nextLine);
-        saveString.append("Pump Rate");
-        saveString.append(nextLine);
-        saveString.append("Time(day)" +"\t"+"Rate(vol/day)");
-        saveString.append(nextLine);
-        for (int i = 0; i < pumpRateCount; i++){
-            saveString.append(pumpTime[i]);
-            saveString.append("\t");
-            saveString.append(pumpRateDay[i]);
-            saveString.append(nextLine);
-        }
-        saveString.append(Preferences.LIST_TERMINATOR);
-        saveString.append(nextLine);
-        saveString.append("Object State");
-        saveString.append(nextLine);
-        saveString.append("Time(day)" +"\t"+"State");
-        saveString.append(nextLine);
-        for (int i = 0; i < stateTime.length; i++){
-            saveString.append(stateTime[i]);
-            saveString.append("\t");
-            saveString.append(state[i]);
-            saveString.append(nextLine);
-        }
-        saveString.append(Preferences.LIST_TERMINATOR);
-        saveString.append(nextLine);
-        return saveString;
-    }
-    
-    
     public String[] getSidesAllowed(){
         return sides.getSidesAllowed();
     }
@@ -511,17 +440,6 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
      */
     public void initResults(ProjSetting projSetting) {
         result = new ResultFlow(projSetting.getDuration(), objname);
-    }
-    
-    
-    /**
-     * Populates the element from a tab delimited list of data 
-     *
-     * @param inData Receives a string that is formatted identically to the getString method
-     * @deprecated Nolonger does anything replace with constructor from XML
-     */
-    public void setFromString(String inData){
- 
     }
     
     /**

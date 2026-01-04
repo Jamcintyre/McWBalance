@@ -418,8 +418,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 }
             }
             case "Open" -> {
-
-                ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow(this, flowchart, aP.getProjectSetting());
+                //TODO would like to add ability to open multiple project instances
+                ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow(this, aP);
                 flowchart.repaint();
             }
             case "Save" -> {
