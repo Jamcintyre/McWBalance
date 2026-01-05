@@ -1,3 +1,32 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package com.mcwbalance.node;
 
@@ -113,50 +142,6 @@ public class NodList {
         nodes[inNumber] = inNode;
     }
     
-    /**
-     * @deprecated Superceeded by ObjELM individual save strings
-     * This Method defines and populates the format of the Portion of the Save file containing the ELM list.
-     * @return A full String containing all key information from the ELMList formatted 
-     * as TAB delimited and ready to be output directly to a .txt file or copied into the clipboard. 
-     * @see getCopyString
-     */
-    public StringBuilder getSaveString(){
-        int eLMIndicies[] = new int[count];
-        for (int i = 0; i < count; i++){
-            eLMIndicies[i] = i;
-        }
-        return getCopyString(eLMIndicies);
-       }
-    
-    /**
-     * @deprecated Superceeded by ObjELM individual save strings
-     * This Method defines and populates the format save or copy data pulled from the ELM list. Method allow individual
-     * selection of ELMs to be copied to allow future implementation of ctrl+C and ctrl+V between this program and Excel or even
-     * 2 instances of this program. 
-     * @param eLMIndices list of ELM indices to copy into a string. to copy complete list use getSaveString
-     * @return A String containing all key information from the ELMs selected from the ELMList formatted 
-     * as TAB delimited and ready to be output directly to a .txt file or copied into the clipboard. 
-     */
-    public StringBuilder getCopyString(int[] eLMIndices){
-        StringBuilder copyString = new StringBuilder();
-        copyString.append("List of Nodes");
-        copyString.append(System.getProperty("line.separator")); // used instead of /n for cross platform compatibility
-        copyString.append("No of Nodes" + "\t");
-        copyString.append(count);
-        copyString.append(System.getProperty("line.separator"));
-        
-        for(int i = 0; i < count; i++){
-            copyString.append(nodes[i].objname);
-            copyString.append(System.getProperty("line.separator"));
-            copyString.append(nodes[i].objSubType);
-            copyString.append(System.getProperty("line.separator"));
-            copyString.append((String)("coord xy," + nodes[i].x + "\t" + nodes[i].y));
-            copyString.append(System.getProperty("line.separator"));    
-            
-        }
-        return copyString;
-    }
-    
      /**
      * Builds a proprietary XML data set for use in save files
      * This method may not work for generating xml spreadsheet files
@@ -177,16 +162,6 @@ public class NodList {
         }
         return xMLDoc;
     }
-      
-    /**
-     * calls on each Node to construct its result arrays.
-     */
-    public void initResults(){
-        for (int i = 0; i < count; i++){
-            nodes[i].initResults();
-        }
-    }
-    
     
     /**
      * Method not yet complete. This method will take a string representation of the Node list. 

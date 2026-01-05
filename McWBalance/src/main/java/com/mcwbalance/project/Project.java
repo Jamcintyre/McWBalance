@@ -65,7 +65,6 @@ public class Project {
      */
     public void loadXML(ZipFile loadfile){
         
-        
         //TODO PLACEHOLDER IF Version check passed
         
         if (true) {
@@ -110,6 +109,8 @@ public class Project {
             //Load Transfers if found
             ZipEntry zeTransfers = loadfile.getEntry("Transfers.xml");
             if (zeTransfers != null) {
+                
+                System.out.println("DEBUG - Project.Java - loadXML() Found Transfers.xml ");
                 try {
                     DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                     Document doc = db.parse(loadfile.getInputStream(zeTransfers));
@@ -117,6 +118,7 @@ public class Project {
                     if (n.getNodeType() == Node.ELEMENT_NODE) {
                         Element ele = (Element) n;
                         tRNList.addXMLElements(ele);
+                        System.out.println("DEBUG - Project.Java - loadXML() Found Transfers in XML");
                     }
                 } catch (ParserConfigurationException | IOException | SAXException ex) {
                     System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -258,7 +260,7 @@ public class Project {
         //check warnings, 
         warnings = verify();
         //IF ALL IS GOOD
-        calc();
+        //calc();
         
         //Else Throw error
     }
@@ -287,7 +289,7 @@ public class Project {
     
     /**
      * PLACEHOLDER
-     */
+     *
     private void calc(){
        
        int obj; 
@@ -304,8 +306,8 @@ public class Project {
         int pondAreaSubtraction = 0;
         
         //Constructs result arrays
-        tRNList.initResults(setting);
-        nODEList.initResults();
+        //tRNList.initResults(setting);
+        //nODEList.initResults();
         
         for (int c = 0; c < ProjSetting.climateScenarios.getRowCount(); c++) {
 
@@ -349,7 +351,7 @@ public class Project {
                             runoff[eLM.eLMs[obj].indexRunoffTracker][nLandCovers + 1].daily[day] = totaler; 
                             
                         }
-                     */
+                     *
                     // if Contains Solids need to add a tonnage of solids
 
                 }
@@ -378,10 +380,9 @@ public class Project {
                     }
                 }
             }
-        }
-    
-        
+        }  
     }
+    */
     
     
 }

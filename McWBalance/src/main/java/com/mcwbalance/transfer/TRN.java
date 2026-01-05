@@ -1,3 +1,32 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 package com.mcwbalance.transfer;
 
@@ -175,6 +204,8 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     /**
      * Constructs a transfer from an XML element, to be used when loading a save
      * file
+     * In the event that the provided XML file is incomplete or i made a typo 
+     * a default value will be used and no errors will be thrown..
      * @param xML Element of an XML representing a "Transfer"
      */
     TRN(Element tran){
@@ -182,9 +213,9 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
         
         objname = tran.getAttribute("ObjName");
         subType = tran.getAttribute("SubType");
-        x = Integer.parseInt(tran.getAttribute("x"));
-        y = Integer.parseInt(tran.getAttribute("y"));
-        printable = Boolean.parseBoolean(tran.getAttribute("printable"));
+        x = Integer.parseInt(wdef(tran.getAttribute("x"),"5"));
+        y = Integer.parseInt(wdef(tran.getAttribute("y"),"5"));
+        printable = Boolean.parseBoolean(wdef(tran.getAttribute("printable"),"true"));
         
         //Resets the hitbox after xml is read in
         hitBox = new Rectangle(x,y,FlowChartCAD.TRN_BOX_WIDTH,FlowChartCAD.TRN_BOX_HEIGHT);
@@ -194,22 +225,22 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
         Node inflowNode = tran.getElementsByTagName("Inflow").item(0);
         if (inflowNode.getNodeType() == Node.ELEMENT_NODE) {
             Element inflow  = (Element) inflowNode;
-            inObjNumber = Integer.parseInt(inflow.getAttribute("inObjNumber"));
-            inSideFrom = Side.valueOf(inflow.getAttribute("inSideFrom"));
-            inSideFromOset = Integer.parseInt(inflow.getAttribute("inSideFromOset"));
-            inSideTo = Side.valueOf(inflow.getAttribute("inSideTo"));
-            inflowPriority = Integer.parseInt(inflow.getAttribute("inflowPriority"));
+            inObjNumber = Integer.parseInt(wdef(inflow.getAttribute("inObjNumber"),"-1"));
+            inSideFrom = Side.valueOf(wdef(inflow.getAttribute("inSideFrom"),Side.TOP.name()));
+            inSideFromOset = Integer.parseInt(wdef(inflow.getAttribute("inSideFromOset"),"5"));
+            inSideTo = Side.valueOf(wdef(inflow.getAttribute("inSideTo"),Side.TOP.name()));
+            inflowPriority = Integer.parseInt(wdef(inflow.getAttribute("inflowPriority"),"5"));
         }
         
         //Pulls only the first inflow node...
         Node outflowNode = tran.getElementsByTagName("Outflow").item(0);
         if (outflowNode.getNodeType() == Node.ELEMENT_NODE) {
             Element outflow  = (Element) outflowNode;
-            outObjNumber = Integer.parseInt(outflow.getAttribute("outObjNumber"));
-            outSideFrom = Side.valueOf(outflow.getAttribute("outSideFrom"));
-            outSideTo = Side.valueOf(outflow.getAttribute("outSideTo"));
-            outSideToOset = Integer.parseInt(outflow.getAttribute("outSideFromOset"));
-            outflowPriority = Integer.parseInt(outflow.getAttribute("outflowPriority"));
+            outObjNumber = Integer.parseInt(wdef(outflow.getAttribute("outObjNumber"),"-1"));
+            outSideFrom = Side.valueOf(wdef(outflow.getAttribute("outSideFrom"),Side.TOP.name()));
+            outSideTo = Side.valueOf(wdef(outflow.getAttribute("outSideTo"),Side.TOP.name()));
+            outSideToOset = Integer.parseInt(wdef(outflow.getAttribute("outSideToOset"),"0"));
+            outflowPriority = Integer.parseInt(wdef(outflow.getAttribute("outflowPriority"),"5"));
         }
         
         Node pumpratesNode = tran.getElementsByTagName("PumpRates").item(0);
@@ -220,8 +251,8 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
                 if (rates.item(i).getNodeType() == Node.ELEMENT_NODE) {
                     Element ele = (Element) rates.item(i);
                     addPumpRate(
-                            Integer.parseInt(ele.getAttribute("Time")),
-                            Double.parseDouble(ele.getAttribute("Rate"))
+                            Integer.parseInt(wdef(ele.getAttribute("Time"),"0")),
+                            Double.parseDouble(wdef(ele.getAttribute("Rate"),"0"))
                     );
                 }
             }
@@ -468,6 +499,22 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
             outObjNumber--;
         }
         ProjSetting.hasChangedSinceSave = true;
+    }
+    
+    /**
+     * Simple Util for ensuring defualt values are read in;
+     * A console err message will be generated to assist somewhat with debugging
+     *
+     * @param string string to read
+     * @param def string to use if string is ""
+     * @return
+     */
+    private String wdef(String string, String def){
+        if (string != ""){
+            return string;
+        }
+        System.err.println("Possible Error - TRN.Java - wdef() - Default " + def + " value was applied due to blank string");
+        return def;
     }
 
    

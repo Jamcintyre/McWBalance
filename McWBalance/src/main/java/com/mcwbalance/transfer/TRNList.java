@@ -37,7 +37,7 @@ public class TRNList {
     * @param transfers root element from tranfers.xml
     */
    public void addXMLElements(Element transfers){    
-       NodeList cnl = transfers.getElementsByTagName("Tranfer");
+       NodeList cnl = transfers.getElementsByTagName("Transfer");
        for (int i = 0; i < cnl.getLength(); i++){
            if (cnl.item(i).getNodeType() == Node.ELEMENT_NODE){
                tRNs[count] = new TRN((Element) cnl.item(i));

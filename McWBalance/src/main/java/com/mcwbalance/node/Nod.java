@@ -1,3 +1,33 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package com.mcwbalance.node;
 
 import com.mcwbalance.dacapacity.DAC;
@@ -6,9 +36,6 @@ import com.mcwbalance.generics.DataTimeDoubleSeries;
 import com.mcwbalance.generics.DataTimeIntSeries;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
-import com.mcwbalance.result.ResultFlow;
-import com.mcwbalance.result.ResultStorageVolume;
-import com.mcwbalance.result.ResultLevel;
 import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -124,18 +151,7 @@ public class Nod {
     public String state[] = new String[Limit.MAX_STATES];
     int stateCount;
     
-    public ResultLevel resultWaterLevel;
-    public ResultLevel resultSolidsLevel;
-    
-    public ResultStorageVolume resultTotalVolume;
-    public ResultStorageVolume resultPondVolume;
-    
-    public ResultFlow resultSolidsInflow;
-    
-    public ResultFlow resultRunoff[];
-    public ResultFlow resultDirectPrecip;
-    public ResultFlow resultEvaporation;
-    public ResultFlow resultSeepage;
+
     
     
     /**
@@ -153,6 +169,29 @@ public class Nod {
     Nod(ProjSetting projSetting, Element nodeXML){
         //Generates a null node to fill in if XML is missing information
         this(projSetting);
+        //Added wdef method to fill in default values when xml file is incompleted
+        objname = nodeXML.getAttribute("Name");
+        objSubType = nodeXML.getAttribute("SubType");
+        x = Integer.parseInt(wdef(nodeXML.getAttribute("x"),"0"));
+        y = Integer.parseInt(wdef(nodeXML.getAttribute("y"),"0"));
+        
+        scaleX = Double.parseDouble(wdef(nodeXML.getAttribute("scaleX"),"1"));
+        scaleY = Double.parseDouble(wdef(nodeXML.getAttribute("scaleY"),"1"));
+        objSprite = projsetting.getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
+        updateHitbox();
+        
+        //Get from Catchments element
+        //hasCatchment = Boolean.valueOf(nodeXML.getAttribute("hasCatchment"));
+        //nCatchments = Integer.parseInt(nodeXML.getAttribute("nCatchments"));
+        
+        hasStorageEvapandPrecip = Boolean.valueOf(wdef(nodeXML.getAttribute("hasStorageEvapandPrecip"),"0"));
+        hasSolids = Boolean.valueOf(wdef(nodeXML.getAttribute("hasSolids"),"false"));
+        oSetXVoids = Integer.parseInt(wdef(nodeXML.getAttribute("oSetXVoids"),"0"));
+        oSetYVoids = Integer.parseInt(wdef(nodeXML.getAttribute("oSetYVoids"),"0")); 
+        hasStorage = Boolean.valueOf(wdef(nodeXML.getAttribute("hasStorage"),"false"));
+        showStorage = Boolean.valueOf(wdef(nodeXML.getAttribute("showStorage"),"false"));
+        oSetXStorage = Integer.parseInt(wdef(nodeXML.getAttribute("oSetXStorage"),"0"));
+        oSetYStorage = Integer.parseInt(wdef(nodeXML.getAttribute("oSetYStorage"),"0"));
         
         //TODO NOT COMPLETED
         
@@ -170,12 +209,9 @@ public class Nod {
         objSubType = "DEFAULT";
         scaleX = 1.0;
         scaleY = 1.0;
-        objSubType = "DEFAULT";
         objSprite = projsetting.getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
-        hitBox.x = x - objSprite.getWidth() / 2;
-        hitBox.y = y - objSprite.getHeight() / 2;
-        hitBox.width = objSprite.getWidth();
-        hitBox.height = objSprite.getHeight();
+        updateHitbox();
+        
         hasCatchment = false;
         nCatchments = 0;
         indexRunoffTracker = -1; // used when building the run settings to track output
@@ -263,6 +299,9 @@ public class Nod {
 
         nXML.setAttribute("oSetXVoids", String.valueOf(oSetXVoids));
         nXML.setAttribute("oSetYVoids", String.valueOf(oSetYVoids));
+        nXML.setAttribute("oSetXStorage", String.valueOf(oSetXStorage));
+        nXML.setAttribute("oSetYStorage", String.valueOf(oSetYStorage));
+        
         nXML.setAttribute("overflowTRN", String.valueOf(overflowTRN));
         nXML.setAttribute("showStorage", String.valueOf(showStorage));
         nXML.setAttribute("tailsTRN", String.valueOf(tailsTRN));
@@ -318,82 +357,25 @@ public class Nod {
             stateXML.setAttribute("State", String.valueOf(state[i]));
             statesXML.appendChild(stateXML);
         }
-        nXML.appendChild(statesXML);
-        
-        
-    /**    
-    public ResultLevel resultWaterLevel;
-    public ResultLevel resultSolidsLevel;
-    
-    public ResultStorageVolume resultTotalVolume;
-    public ResultStorageVolume resultPondVolume;
-    
-    public ResultFlow resultSolidsInflow;
-    
-    public ResultFlow resultRunoff[];
-    public ResultFlow resultDirectPrecip;
-    public ResultFlow resultEvaporation;
-    public ResultFlow resultSeepage;
-    */
-        
-        
-        
-        
-        
+        nXML.appendChild(statesXML);        
         return nXML;
     }
     
     /**
-     * method to initialize result variables to current project duration and names
+     * Simple Util for ensuring default values are read in;
+     * @param string string to read
+     * @param def string to use if string is ""
+     * @return 
      */
-    public void initResults() {
-        resultWaterLevel = new ResultLevel(projsetting.getDuration(), objname + " Water Level");
-        resultSolidsLevel = new ResultLevel(projsetting.getDuration(), objname + " Solids Level");
-        resultSolidsInflow = new ResultFlow(projsetting.getDuration(), objname + " Solids Inflow");
-        
-        resultTotalVolume = new ResultStorageVolume(projsetting.getDuration(), objname + " Total Stored Volume");
-        
-        resultPondVolume = new ResultStorageVolume(projsetting.getDuration(), objname + " Pond Volume");
-        
-        resultRunoff = new ResultFlow[ProjSetting.runoffCoefficients.getLength()];
-        for (int i = 0; i < resultRunoff.length; i++) {
-            resultRunoff[i] = new ResultFlow(projsetting.getDuration(), objname + ProjSetting.runoffCoefficients.getLandRunoffName(i));
+    private String wdef(String string, String def){
+        if (string != ""){
+            return string;
         }
-        resultDirectPrecip = new ResultFlow(projsetting.getDuration(), objname + " Direct Precip");
-        
-        resultEvaporation = new ResultFlow(projsetting.getDuration(), objname + " Evaporation");
-        resultSeepage = new ResultFlow(projsetting.getDuration(), objname + " Seepage");
+        System.err.println("Possible Error - Nod.Java - wdef() - Default " + def + " value was applied due to blank string");
+        return def;
     }
-    
-    /**
-     * @deprecated should use XML element instead
-     * @param inData 
-     */
-    public void setFromString(String inData){
-        String nextLine = System.getProperty("line.separator");
-        String lines[] = inData.split(nextLine);
-        /*
-        if(lines.length < MIN_FILE_LENGTH){ to be set after getSaveString completed
-            return;
-        }
-        */
-        int lc = 0;
-        objname = lines[lc].split("\t")[1];
-        lc++;
-        objSubType = lines[lc].split("\t")[1];
-        lc++;
-        x = Integer.parseInt(lines[lc].split("\t")[1]);
-        y = Integer.parseInt(lines[lc].split("\t")[2]);
-        lc++;
+
         
-        //NOT COMPLETE
-        
-        
-        
-        setSubType(objSubType, "ACTIVE");
-    }
-    
-    
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
      * object Subtype is changed
@@ -404,10 +386,7 @@ public class Nod {
     public void setSubType(String inSubType, String inState) {
         objSubType = inSubType;
         objSprite = projsetting.getImageLib().getImage(objSubType, inState, scaleX, scaleY);
-        hitBox.x = x - objSprite.getWidth() / 2;
-        hitBox.y = y - objSprite.getHeight() / 2;
-        hitBox.width = objSprite.getWidth();
-        hitBox.height = objSprite.getHeight();
+        updateHitbox();
         ProjSetting.hasChangedSinceSave = true;
     }
 
@@ -444,4 +423,12 @@ public class Nod {
         }
         ProjSetting.hasChangedSinceSave = true;
     }
+    
+    private void updateHitbox(){
+        hitBox.x = x - objSprite.getWidth() / 2;
+        hitBox.y = y - objSprite.getHeight() / 2;
+        hitBox.width = objSprite.getWidth();
+        hitBox.height = objSprite.getHeight();
+    }
+    
 }

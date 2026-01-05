@@ -98,12 +98,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     ImageIcon iconNewTRN;
     
     /**
-     * container for project settings
-     * @deprecated
-     */
-    ProjSetting projSetting; 
-    
-    /**
      * current active project
      */
     public Project aP;
@@ -150,8 +144,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
      * Constructs a new main window
      */
     public MainWindow() {
-        
-        projSetting = new ProjSetting();
         
         aP = new Project();
         
