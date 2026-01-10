@@ -29,6 +29,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,6 +37,7 @@ import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -48,6 +50,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
     
@@ -399,7 +402,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         public void windowClosed(WindowEvent e) {
                             switch (dialog.getSelection()) {
                                 case ConfirmSaveDialog.SELECTION_SAVE ->
-                                    saveProject();
+                                    aP.saveToFile();
                                 case ConfirmSaveDialog.SELECTION_NOSAVE ->
                                     resetProject();
                             };
@@ -415,8 +418,44 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 flowchart.repaint();
             }
             case "Save" -> {
-                saveProject();
+                String msg = aP.saveToFile();
+                if (msg == Project.SAVE_SUCCEEDED){
+                    new WarningDialog(this, "Save Succeeded");
+                } else{
+                    new WarningDialog(this, "Save Failed " + msg);
+                }
+                
             }
+            case "SaveAs" -> {
+                JFileChooser fc = new JFileChooser();
+                fc.setDialogType(JFileChooser.SAVE_DIALOG);
+                fc.setSelectedFile(aP.getProjectSetting().getSaveFile());
+                FileNameExtensionFilter mcblFilter = new FileNameExtensionFilter("McBalance File (*."+ McWBalance.FILE_EXTENSION +")", McWBalance.FILE_EXTENSION);
+                fc.addChoosableFileFilter(mcblFilter);    
+                
+                int selection = fc.showSaveDialog(this);
+                if (selection == JFileChooser.APPROVE_OPTION){
+                    File sfp = fc.getSelectedFile();
+                    
+                    String filepath = sfp.getAbsolutePath();
+                    //ensures that extension gets added
+                    if(!filepath.endsWith("."+McWBalance.FILE_EXTENSION)){
+                        filepath = filepath + "." + McWBalance.FILE_EXTENSION;
+                    }
+                    String msg = aP.saveToFile(new File(filepath));
+                    if (msg == Project.SAVE_SUCCEEDED) {
+                        new WarningDialog(this, "Save Succeeded");
+                    } else {
+                        new WarningDialog(this, "Save Failed " + msg);
+                    }
+                } else{
+                    new WarningDialog(this, "Failed, file selection not approved: " + fc.getSelectedFile().getAbsolutePath());
+                }
+                
+                
+                //saveProject();
+            }
+            
             case "PSettings" -> {
                 ProjSettingWindow projSettingWindow = new ProjSettingWindow(this,aP.getProjectSetting());
             }
@@ -640,18 +679,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         flowchart.setNodeList(new NodList(aP.getProjectSetting()));
         flowchart.repaint();
     }
-        
-    public void saveProject() {
-        try (OutputStream success = aP.saveToFile()){;
-            new WarningDialog(this, "Save Succeeded");
- 
-        } catch (FileNotFoundException fe) {
-            new WarningDialog(this, fe.getMessage());
-        } catch (IOException fe) {
-            new WarningDialog(this, fe.getMessage());
-        }
+    
+    
 
-    }
 
             
             

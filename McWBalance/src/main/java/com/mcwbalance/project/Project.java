@@ -4,7 +4,9 @@ import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.util.CalcBasics;
+import com.mcwbalance.util.WarningDialog;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import javax.swing.JFrame;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,6 +41,9 @@ public class Project {
      * This is the active list of Nodes, i.e. ponds, piles, buildings
      */
     public NodList nODEList;
+    
+    
+    public static String SAVE_SUCCEEDED = "Saved";
     
     ProjSetting setting;
     
@@ -157,13 +163,43 @@ public class Project {
         return tRNList;
     }
     
+    
+    /**
+     * calls save if file name can be written
+     * note does not check for overwrite confirmation 
+     * @param requestedfile File to attempt saving too
+     * @return 
+     */
+    public String saveToFile(File rfile){
+        //Tries to Ovewright
+        if (rfile.canWrite()) {
+            setting.setSavePathandName(Path.of(rfile.getAbsolutePath()));
+            return saveToFile();
+        }
+        
+        // tris to create new file
+        try {
+            if (rfile.createNewFile()) {
+                setting.setSavePathandName(Path.of(rfile.getAbsolutePath()));
+                return saveToFile();
+            }
+        } catch (IOException ex) {
+            System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+
+        return "Error cannot write " + rfile.getAbsolutePath();
+
+    }
+
+    
     /**
      * Work In Progress
+     * calls save without changing path or filename
      * 
-     * @return save file output stream only to allow trow of exception
-     * @throws java.io.IOException
+     * @return Message SAVE_SUCCEEDED, otherwise error message;
+
      */
-    public OutputStream saveToFile() throws IOException{
+    public String saveToFile(){
                 
         StringBuilder sverInfoFile = new StringBuilder();
         sverInfoFile.append(ProjSetting.verInfo);
@@ -237,11 +273,12 @@ public class Project {
             sfilezos.close();
             sfileos.close();
             ProjSetting.hasChangedSinceSave = false; // Debug - does not confirm successful save
-            return sfileos;
-        } catch (FileNotFoundException | TransformerException | ParserConfigurationException ex) {
-            throw new IOException(ex.getMessage());
-        } catch (IOException ex) {
-            throw ex;
+            
+            
+            return SAVE_SUCCEEDED;
+        } catch (TransformerException | ParserConfigurationException | IOException ex) {
+            return ex.getLocalizedMessage();
+            
         } 
         
     }

@@ -4,13 +4,14 @@
  */
 package com.mcwbalance.project;
 
-import com.mcwbalance.MainWindow;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.WarningDialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -84,7 +85,15 @@ public class ProjSettingWindow extends JDialog{
         tab1FileNameFieldConstr.anchor = GridBagConstraints.WEST;
         tab1.add(tab1FileNameField,tab1FileNameFieldConstr);
         tab1FileNameField.addActionListener(e-> {
-            System.err.println("Action Listener to be implemented"); // Placholder, will want to check if new path is valid / accessable before committing change;
+            
+            try{
+                Paths.get(tab1FileNameField.getText());
+                projSetting.setClientName(tab1FileNameField.getText());
+            } catch (InvalidPathException | NullPointerException ex){
+                System.err.println("Invalid file name"); // Placholder, will want to check if new path is valid / accessable before committing change;
+            }
+            
+            
         });
         
         JLabel tab1ClientNameLabel = new JLabel("Client Name: ");
@@ -198,4 +207,6 @@ public class ProjSettingWindow extends JDialog{
         this.pack();
         this.setVisible(true);
     }
+
+
 }
