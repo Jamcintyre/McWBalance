@@ -55,6 +55,8 @@ public class McWBalance {
     static BufferedImage mainIcon30;
     static final String FILE_EXTENSION = "mcbl";
     static final String LANGUAGE_RESOURCE = "Language";
+    
+    static final String PROGRAM_NAME = "McBalance";
     static Locale currentLocale;
     
     /**

@@ -4,7 +4,6 @@
  */
 package com.mcwbalance.climate;
 
-import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 
 /**

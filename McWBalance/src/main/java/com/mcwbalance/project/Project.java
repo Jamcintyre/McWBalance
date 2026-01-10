@@ -1,21 +1,18 @@
 package com.mcwbalance.project;
 
+import com.mcwbalance.climate.ClimateList;
+import com.mcwbalance.climate.DataClimate;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.util.CalcBasics;
-import com.mcwbalance.util.WarningDialog;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-import javax.swing.JFrame;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,6 +40,8 @@ public class Project {
     public NodList nODEList;
     
     
+    public ClimateList cLMList;
+    
     public static String SAVE_SUCCEEDED = "Saved";
     
     ProjSetting setting;
@@ -61,6 +60,7 @@ public class Project {
         setting = new ProjSetting();
         nODEList = new NodList(setting);
         tRNList = new TRNList();
+        cLMList = new ClimateList(1); 
         solveOrder = new SolveOrder(this);
     }
     
@@ -298,6 +298,8 @@ public class Project {
         warnings = verify();
         //IF ALL IS GOOD
         //calc();
+        
+        //for setting.
         
         //Else Throw error
     }

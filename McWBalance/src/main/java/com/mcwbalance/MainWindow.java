@@ -9,9 +9,7 @@ import com.mcwbalance.solve.SolveOrderWindow;
 import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.util.ConfirmSaveDialog;
 import com.mcwbalance.transfer.TRNWindow;
-import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.node.NodWindow;
-import com.mcwbalance.node.NodList;
 import com.mcwbalance.util.WarningDialog;
 import com.mcwbalance.landcover.RunoffCoefficientWindow;
 import com.mcwbalance.climate.DataClimateSettingWindow;
@@ -30,9 +28,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -149,7 +144,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     public MainWindow() {
         
         aP = new Project();
-        
+        this.setTitle(McWBalance.PROGRAM_NAME + " " + aP.getProjectSetting().getSaveFile().toString());
         /**
          * active flowchart
          */
@@ -414,8 +409,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             }
             case "Open" -> {
                 //TODO would like to add ability to open multiple project instances
-                ProjOpenExistingWindow projOpenExistingWindow = new ProjOpenExistingWindow(this, aP);
+                new ProjOpenExistingWindow(this, aP);
                 flowchart.repaint();
+                this.setTitle(aP.getProjectSetting().getSaveFile().toString());
             }
             case "Save" -> {
                 String msg = aP.saveToFile();
@@ -424,6 +420,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 } else{
                     new WarningDialog(this, "Save Failed " + msg);
                 }
+                this.setTitle(McWBalance.PROGRAM_NAME + " " + aP.getProjectSetting().getSaveFile().toString());
                 
             }
             case "SaveAs" -> {
@@ -443,7 +440,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         filepath = filepath + "." + McWBalance.FILE_EXTENSION;
                     }
                     String msg = aP.saveToFile(new File(filepath));
-                    if (msg == Project.SAVE_SUCCEEDED) {
+                    if (msg.equals(Project.SAVE_SUCCEEDED)) {
                         new WarningDialog(this, "Save Succeeded");
                     } else {
                         new WarningDialog(this, "Save Failed " + msg);
@@ -451,13 +448,14 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 } else{
                     new WarningDialog(this, "Failed, file selection not approved: " + fc.getSelectedFile().getAbsolutePath());
                 }
+                this.setTitle(McWBalance.PROGRAM_NAME + " " + aP.getProjectSetting().getSaveFile().toString());
                 
                 
                 //saveProject();
             }
             
             case "PSettings" -> {
-                ProjSettingWindow projSettingWindow = new ProjSettingWindow(this,aP.getProjectSetting());
+                new ProjSettingWindow(this,aP.getProjectSetting());
             }
             case "AddObjELM" -> {
                 requestedAction = "AddObjELM";
@@ -469,19 +467,16 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 requestedAction = "DeleteObj";
             }
             case "ClimateSetting" -> {
-                JFrame climateSettingWindow = new DataClimateSettingWindow(this,aP.getProjectSetting());
+                new DataClimateSettingWindow(this,aP.getProjectSetting());
             }
             case "SolveOrderWindow" -> {
-                JFrame solveOrderWindow = new SolveOrderWindow(this, aP);
+                new SolveOrderWindow(this, aP);
             }
             case "RunoffCoefficientsWindow" ->{
-                JFrame runoffCoefficientWindow = new RunoffCoefficientWindow(this);
+                new RunoffCoefficientWindow(this);
             }
-            
-            
             case "solve" ->{
-                //TO DO
-
+                aP.solve();
             }
             
         }
@@ -550,11 +545,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         flowchart.clearSelection();
                     }
                 }
-
-
-
-
-
             }
             flowChartPanel.repaint();
         }
@@ -672,19 +662,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     }
     
     public void resetProject(){
-        
-        
+
         aP = new Project();
-        flowchart.setTRNList(new TRNList());
-        flowchart.setNodeList(new NodList(aP.getProjectSetting()));
         flowchart.repaint();
     }
     
-    
-
-
-            
-            
-            
-            
 }
