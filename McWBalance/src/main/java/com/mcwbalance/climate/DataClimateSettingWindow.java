@@ -7,6 +7,7 @@ package com.mcwbalance.climate;
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.climate.DataClimate;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.result.ResultViewer;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,18 +27,18 @@ public class DataClimateSettingWindow extends JFrame{
     private final int TABLE_SECOND_COL_WIDTH = 150;
     private final int TABLE_OTHER_COL_WIDTH = 80;
     private final int TABLE_ROW_HEIGHT = 20;
-    private final Dimension TABLE_PREF_DIMENSION = new Dimension(TABLE_FIRST_COL_WIDTH+TABLE_SECOND_COL_WIDTH+(TableClimateScenarios.NUMBER_OF_COLUMNS-1)*TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*5);
+    private final Dimension TABLE_PREF_DIMENSION = new Dimension(TABLE_FIRST_COL_WIDTH+TABLE_SECOND_COL_WIDTH+(ClimateTable.NUMBER_OF_COLUMNS-1)*TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*5);
     
-    public DataClimateSettingWindow(JFrame owner, ProjSetting projSetting){
+    public DataClimateSettingWindow(JFrame owner, Project aP){
         
         super(McWBalance.langRB.getString("CLIMATE_SCENARIOS"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
-        JTable table = new JTable(ProjSetting.climateScenarios);
+        JTable table = new JTable(aP.climateTable);
         
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
         table.getColumnModel().getColumn(1).setPreferredWidth(TABLE_SECOND_COL_WIDTH);
-        for (int i = 2; i < TableClimateScenarios.NUMBER_OF_COLUMNS; i ++){
+        for (int i = 2; i < ClimateTable.NUMBER_OF_COLUMNS; i ++){
             table.getColumnModel().getColumn(i).setPreferredWidth(TABLE_OTHER_COL_WIDTH);
         }
         table.setRowHeight(TABLE_ROW_HEIGHT);
@@ -46,21 +47,21 @@ public class DataClimateSettingWindow extends JFrame{
         
         JButton addClimate = new JButton(McWBalance.langRB.getString("ADD_CLIMATE_SCENARIO"));
         addClimate.addActionListener(l ->{
-            DataClimateImportWindow importWindow = new DataClimateImportWindow(this, projSetting);   
+            DataClimateImportWindow importWindow = new DataClimateImportWindow(this, aP);   
             if(importWindow.getStatus() == DataClimateImportWindow.FILE_OBTAINED){
-                ProjSetting.climateScenarios.addClimateScenario(importWindow.getString());
+                aP.climateTable.addClimateScenario(importWindow.getString());
             }
         });
         JButton removeClimate = new JButton(McWBalance.langRB.getString("DELETE_CLIMATE_SCENARIO"));
         removeClimate.addActionListener(l ->{
-            ProjSetting.climateScenarios.removeRow(table.getSelectedRow());
+            aP.climateTable.removeRow(table.getSelectedRow());
         });
         JButton viewData = new JButton(McWBalance.langRB.getString("VIEW_DATA"));
         viewData.addActionListener(l ->{
             int scenario = table.getSelectedRow();
             if (scenario >= 0
-                    && scenario < ProjSetting.climateScenarios.climateScenarios.length
-                    && !ProjSetting.climateScenarios.climateScenarios[scenario].equals(DataClimate.NULL_DESCRIP)) {
+                    && scenario < aP.climateTable.climates.length
+                    && !aP.climateTable.climates[scenario].equals(DataClimate.NULL_DESCRIP)) {
 
                 double[][] results = new double[4][];
                 String[] resultnames = new String[4];
@@ -72,10 +73,10 @@ public class DataClimateSettingWindow extends JFrame{
                 resultnames[3] = McWBalance.langRB.getString("DAILY_EVAPORATION_UNITS");
                 //resultnames[4] = McWBalance.langRB.getString("CUMULATED_SNOWPACK_UNITS");
                 
-                results[0] = ProjSetting.climateScenarios.climateScenarios[scenario].precip;
-                results[1] = ProjSetting.climateScenarios.climateScenarios[scenario].rain;
-                results[2] = ProjSetting.climateScenarios.climateScenarios[scenario].melt;
-                results[3] = ProjSetting.climateScenarios.climateScenarios[scenario].evap;
+                results[0] = aP.climateTable.climates[scenario].precip;
+                results[1] = aP.climateTable.climates[scenario].rain;
+                results[2] = aP.climateTable.climates[scenario].melt;
+                results[3] = aP.climateTable.climates[scenario].evap;
                 //results[4] = ProjSetting.climateScenarios.climateScenarios[scenario].snowpack;
                 
                 String[] rgb = McWBalance.style.getProperty("PREF_COLOR_PRECIP","255,255,255").split(",");
@@ -89,7 +90,7 @@ public class DataClimateSettingWindow extends JFrame{
                 //rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_SNOWPACK","255,255,255").split(",");
                 //rescolors[4] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
                 
-                ResultViewer rv = new ResultViewer(ProjSetting.climateScenarios.climateScenarios[scenario].description,
+                ResultViewer rv = new ResultViewer(aP.climateTable.climates[scenario].description,
                          results,
                          resultnames,
                          rescolors,

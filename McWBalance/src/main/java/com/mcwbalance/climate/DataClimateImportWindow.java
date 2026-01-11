@@ -6,6 +6,7 @@ package com.mcwbalance.climate;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.project.ProjSetting;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.WarningDialog;
 import java.io.BufferedReader;
@@ -31,11 +32,11 @@ public class DataClimateImportWindow extends JDialog{
     private StringBuilder stringBuilder = new StringBuilder();
     private String ls = System.getProperty("line.separator");
     
-    DataClimateImportWindow(JFrame owner, ProjSetting projSetting) {
+    DataClimateImportWindow(JFrame owner, Project aP) {
         super(owner, McWBalance.langRB.getString("SELECT_CLIMATE_DATASET"), true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(owner);
-        JFileChooser fileChooser = new JFileChooser(projSetting.getPathFolder());
+        JFileChooser fileChooser = new JFileChooser(aP.getProjectSetting().getPathFolder());
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(CLIMATE_FILE_FILTER);
         fileChooser.addActionListener(l -> {
@@ -75,7 +76,7 @@ public class DataClimateImportWindow extends JDialog{
      * Used for returning loaded string
      * @return A String representation of the loaded file
      */
-    public String getString(){
+    public String getString(){        
         return stringBuilder.toString();
     }
 }

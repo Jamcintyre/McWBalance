@@ -1,7 +1,6 @@
 package com.mcwbalance.project;
 
-import com.mcwbalance.climate.ClimateList;
-import com.mcwbalance.climate.DataClimate;
+import com.mcwbalance.climate.ClimateTable;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
@@ -39,8 +38,10 @@ public class Project {
      */
     public NodList nODEList;
     
-    
-    public ClimateList cLMList;
+    /**
+     * Available sets of climate data precip evap etc. to use in calcs
+     */
+    public ClimateTable climateTable;
     
     public static String SAVE_SUCCEEDED = "Saved";
     
@@ -60,7 +61,7 @@ public class Project {
         setting = new ProjSetting();
         nODEList = new NodList(setting);
         tRNList = new TRNList();
-        cLMList = new ClimateList(1); 
+        climateTable = new ClimateTable(1); 
         solveOrder = new SolveOrder(this);
     }
     
@@ -257,7 +258,7 @@ public class Project {
             sfilezos.write(bos.toByteArray());
             sfilezos.closeEntry();
             
-                        // Reset to write Nodes to xml
+            // Reset to write Nodes to xml
             bos = new ByteArrayOutputStream();
             result = new  StreamResult(bos);
             source = new DOMSource(setting.getXMLDoc());
@@ -267,6 +268,15 @@ public class Project {
             sfilezos.putNextEntry(zEntSettingsXML);
             sfilezos.write(bos.toByteArray());
             sfilezos.closeEntry();
+            
+            
+            for (int i = 0; i < climateTable.getRowCount(); i++){
+                ZipEntry cclm = new ZipEntry("CLM"+i+".cclm");
+                sfilezos.putNextEntry(cclm);
+                byte[] cclmdata = climateTable.getClimates()[i].getString().getBytes();
+                sfilezos.write(cclmdata, 0, cclmdata.length);
+                sfilezos.closeEntry();               
+            }
 
 
             //writeToZipFile()

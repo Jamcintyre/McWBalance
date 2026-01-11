@@ -467,7 +467,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 requestedAction = "DeleteObj";
             }
             case "ClimateSetting" -> {
-                new DataClimateSettingWindow(this,aP.getProjectSetting());
+                new DataClimateSettingWindow(this,aP);
             }
             case "SolveOrderWindow" -> {
                 new SolveOrderWindow(this, aP);

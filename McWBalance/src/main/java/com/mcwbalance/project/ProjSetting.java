@@ -2,7 +2,7 @@ package com.mcwbalance.project;
 
 import com.mcwbalance.flowchart.ImageLib;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
-import com.mcwbalance.climate.TableClimateScenarios;
+import com.mcwbalance.climate.ClimateTable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -65,11 +65,6 @@ public class ProjSetting {
      * Runoff Coefficients for use in calculation
      */
     public static TableRunoffCoefficients runoffCoefficients;
-    
-    /**
-     * Available sets of climate data precip evap etc. to use in calcs
-     */
-    public static TableClimateScenarios climateScenarios;
     
     /**
      * Container for various icons to use on the flowsheet
@@ -157,8 +152,6 @@ public class ProjSetting {
         savepathfolder = userHome + java.io.File.separator + prop.getProperty("SAVEFOLDER","McBalance");
         
         runoffCoefficients = new TableRunoffCoefficients();
-        
-        climateScenarios = new TableClimateScenarios(1);
         
         imageLib = new ImageLib(); 
         
