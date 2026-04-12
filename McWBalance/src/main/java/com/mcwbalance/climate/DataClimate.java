@@ -16,7 +16,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     public double[] precip;
     public double[] rain;
     public double[] temp;
-    public double[] evap;
+    public double[] evap;        
     public double[] snowpack;
     public double[] melt;
     public double[] iceThickness;
@@ -27,6 +27,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     public static final String NULL_DESCRIP = "NULL";
     public static final String VALID_DESCRIP = "VALID";
     public static final int DATA_COLUMNS = 10;
+    public static final int MAX_SIZE = 36500;
     
     double aaprecip;
     double minaprecip;
@@ -142,6 +143,13 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     }
     
     private void setSize(int setsize){
+        if (setsize < 1){
+            size = 1;
+        } else if (setsize > MAX_SIZE){
+            size = MAX_SIZE;
+        } else{
+            size = setsize;
+        }
         size = setsize;
         precip = new double[size];
         rain = new double[size];

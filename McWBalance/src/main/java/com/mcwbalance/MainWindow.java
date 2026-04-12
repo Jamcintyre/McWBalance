@@ -18,6 +18,8 @@ import com.mcwbalance.settings.Limit;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -28,6 +30,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -46,6 +49,15 @@ import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
     
@@ -148,7 +160,54 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         /**
          * active flowchart
          */
+        int winx = 1500;
+        int winy = 200;
+        
+        
         flowchart = new FlowChartCAD(aP);
+        
+        /**
+         * loads in config
+         */
+        Config cf = new Config();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try{
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc;
+            NamedNodeMap nnm;
+            doc = db.parse(getClass().getResourceAsStream(cf.getConfigXML()));
+            NodeList nl = doc.getElementsByTagName("mainwindow");
+            Node n = nl.item(0);
+            Element ele = (Element) n;
+            
+            /* Sets Screeen Bounds Graphics environment should allow multi monitor*/
+            int cwinx = Integer.parseInt(ele.getAttribute("winx"));
+            int cwiny = Integer.parseInt(ele.getAttribute("winy"));
+            Rectangle screenbounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+            if (cwinx < 100){
+                winx = 100;
+            }else if (cwinx > (screenbounds.width-screenbounds.x)){
+                winx = screenbounds.width-screenbounds.x;
+            }else{
+                winx = cwinx;
+            }
+            if (cwiny < 100){
+                winy = 100;
+            }else if (cwiny > (screenbounds.height-screenbounds.y)){
+                winy = screenbounds.height-screenbounds.y;
+            }else{
+                winy = cwiny;
+            }
+            
+        } catch (SAXException | IOException | ParserConfigurationException ex) {
+            System.getLogger(MainWindow.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+        
+        
+        
+        
+        
         
         //Can replace with enum list.. 
         URL imageUrl = getClass().getResource("/icons/Open.png");
@@ -210,7 +269,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         zoomSpinnerModel = new SpinnerNumberModel(FlowChartCAD.zoomscale,ZOOM_MIN,ZOOM_MAX,ZOOM_STEP);
         
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(1150, 850);
+        this.setSize(winx, winy);
 
         // Overall Menu Bar
         JMenuBar menubar = new JMenuBar();
