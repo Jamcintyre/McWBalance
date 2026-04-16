@@ -1,6 +1,7 @@
 package com.mcwbalance.project;
 
 import com.mcwbalance.climate.ClimateTable;
+import com.mcwbalance.flowchart.TitleBlock;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
@@ -49,6 +50,9 @@ public class Project {
     
     SolveOrder solveOrder;
     
+    
+    TitleBlock titleBlock;
+    
     /**
      * This is the active list of Transfers, i.e. pump and pipelines, discharges
      */
@@ -63,6 +67,18 @@ public class Project {
         tRNList = new TRNList();
         climateTable = new ClimateTable(1); 
         solveOrder = new SolveOrder(this);
+        
+        // TODO CHECK IF Title Block path is .svg or a zip file
+        
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try{
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document svg;
+            svg = db.parse(getClass().getResourceAsStream(setting.getTitleBlockPath()));
+            titleBlock = new TitleBlock(svg); 
+        }   catch (SAXException | IOException | ParserConfigurationException ex) {
+            System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
     
     
@@ -156,6 +172,16 @@ public class Project {
     public SolveOrder getSolveOrder(){
         return solveOrder;
     }
+    
+    /**
+     * 
+     * @return Current Title Block
+     */
+    public TitleBlock getTitleblock(){
+        return titleBlock;
+    }
+    
+    
     /**
      * list of Transfers, i.e. pump and pipelines, discharges
      * @return Active array of current existing transfers
@@ -168,7 +194,6 @@ public class Project {
     /**
      * calls save if file name can be written
      * note does not check for overwrite confirmation 
-     * @param requestedfile File to attempt saving too
      * @return 
      */
     public String saveToFile(File rfile){

@@ -174,7 +174,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         try{
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc;
-            NamedNodeMap nnm;
             doc = db.parse(getClass().getResourceAsStream(cf.getConfigXML()));
             NodeList nl = doc.getElementsByTagName("mainwindow");
             Node n = nl.item(0);

@@ -53,14 +53,7 @@ public class FlowChartCAD extends JComponent{
     public static final int CAD_AREA_HEIGHT = TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT * NUMBER_OF_SHEETS_VERTICAL + 1 + NUMBER_OF_SHEETS_VERTICAL;
     
     public static boolean titleBlockVisible = true; 
-    
-    /**
-     * 
-     */
-    static TitleBlock tb = new TitleBlock();
-    
 
-    
     /**
      * Active project which contains the main data model, nodes, transfers, results
      */
@@ -91,7 +84,7 @@ public class FlowChartCAD extends JComponent{
     Color defaultBGColor;
     Color SELECTED;
     
-    private boolean isPageOutlineVisible = false; 
+    private boolean isPageOutlineVisible =  true; 
     
     private int minLineLength; // used to set stublines from objects
     
@@ -137,7 +130,6 @@ public class FlowChartCAD extends JComponent{
     
         fpline = new FlowChartLines(); // sets up a bin to hold a polyline
         
-        tb = new TitleBlock();
         titleBlockVisible = true; 
         
         tRNdim = new Dimension(TRN_BOX_WIDTH,TRN_BOX_HEIGHT); // placeholder sizing
@@ -196,6 +188,10 @@ public class FlowChartCAD extends JComponent{
                                 TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH+2, 
                                TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT+2);
                     }
+                    
+                    prj.getTitleblock().drawTitleBlock(g2, osetX, osetY);
+                    
+                    /*
                     g2.setColor(defaultDrawColor);
                     g2.setStroke(new BasicStroke(TitleBlockTabloidFigure.THICK_LINE_WIDTH));
                     g2.drawRect(
@@ -227,7 +223,7 @@ public class FlowChartCAD extends JComponent{
                             TitleBlockTabloidFigure.LOGO_RIGHT_BOUND_X + osetX,
                             TitleBlockTabloidFigure.TITLEBOUND_Y_TOP + TitleBlockTabloidFigure.TITLEBOUND_HEIGHT + osetY);
                             
-                    
+                    */
                     osetX = osetX + TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH +1;
                 }
                 osetY = osetY + TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT +1;

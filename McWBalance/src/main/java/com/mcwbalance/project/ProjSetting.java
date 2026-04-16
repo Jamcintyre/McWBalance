@@ -80,6 +80,11 @@ public class ProjSetting {
      * Full path of where the save file for the current model is to be saved
      */
     String savepathfolder;
+    
+    /**
+     * Path of the default Title Block
+     */
+    String titleBlockPath;
         
     /**
      * Number of decimals to be used in calculations
@@ -150,6 +155,7 @@ public class ProjSetting {
         
         String userHome = System.getProperty("user.home");
         savepathfolder = userHome + java.io.File.separator + prop.getProperty("SAVEFOLDER","McBalance");
+        titleBlockPath = prop.getProperty("TITLEBLOCKPATH", "/TitleBlock_Default.svg");
         
         runoffCoefficients = new TableRunoffCoefficients();
         
@@ -205,6 +211,10 @@ public class ProjSetting {
 
     public File getSaveFile(){
         return new File(savepathfolder + java.io.File.separator + fileName);
+    }
+    
+    public String getTitleBlockPath(){
+        return titleBlockPath;
     }
     
      /**
