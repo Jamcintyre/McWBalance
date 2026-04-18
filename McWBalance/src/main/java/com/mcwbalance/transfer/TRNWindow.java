@@ -178,7 +178,7 @@ public class TRNWindow extends JDialog {
         JTextField tfobjName = new JTextField(trn.objname);
         tfobjName.setColumns(fmtTFColumnsDEF);
         JLabel lcbobjType = new JLabel (p_TRANSFER_TYPE);
-        JComboBox cbobjType = new JComboBox(TRN.objSubTypesAllowed); // Pulls options list from ObjELM static
+        JComboBox cbobjType = new JComboBox(TRN.Type.values()); // Pulls options list from ObjELM static
         cbobjType.setSelectedItem(trn.subType);
         
         // Transfer from Location

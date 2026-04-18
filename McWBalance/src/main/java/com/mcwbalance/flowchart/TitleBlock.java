@@ -5,7 +5,7 @@
 package com.mcwbalance.flowchart;
 
 
-import com.mcwbalance.util.SVGColor;
+import com.mcwbalance.util.SVGColorMap;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -52,7 +52,7 @@ public class TitleBlock {
                 int x1 = Integer.parseInt(ele.getAttribute("x2"));
                 int y0 = Integer.parseInt(ele.getAttribute("y1"));
                 int y1 = Integer.parseInt(ele.getAttribute("y2"));
-                Color cl = SVGColor.fromStroke(ele.getAttribute("stroke"));
+                Color cl = SVGColorMap.fromStroke(ele.getAttribute("stroke"));
                 Stroke sk = new BasicStroke (Integer.parseInt(ele.getAttribute("stroke-width")));
                 
                 lines[i] = new CadLine(x0,y0,x1,y1,cl,sk);

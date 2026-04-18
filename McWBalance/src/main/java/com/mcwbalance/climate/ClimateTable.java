@@ -67,23 +67,7 @@ public class ClimateTable extends AbstractTableModel{
             yr1precip[i] = 0;
         }
     }
-    
-    /**
-     * not useful
-     * @deprecated 
-     * @param climates 
-     */
-    public ClimateTable(DataClimate[] climates){
-        this.climates = climates; 
-        int size = climates.length;
-        aaprecip = new double[size];
-        minprecip = new double[size];
-        maxprecip = new double[size];
-        yr1precip = new double[size];
-    }
-        
-        
-        
+
     
     @Override 
     public Object getValueAt(int row, int col){

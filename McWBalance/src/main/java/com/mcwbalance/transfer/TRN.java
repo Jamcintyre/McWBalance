@@ -94,19 +94,7 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     private static final int MAX_READLOOP_ITERATIONS = 100; // sets a limit in event inData has too many lines
     private static final int MIN_FILE_LENGTH = 13; // this is the minimum number of lines for a save string to be completed
 
-    
-    /**
-     * Used to select calculation method for the transfer
-     * @deprecated 
-     */
-    public static String[] objSubTypesAllowed = { // Note list also exitss in IconLibrary
-        "FIXED RATE PUMPING", // transfer rate based on pump rates // these will be first to solve
-        "ON DEMAND SUPPLY", // transfer rate based on pump rate and only on if reciever is in defict during previous day;
-        "ON DEMAND DISCHARGE", // transfer rate based on pump rate and only on if supplier is in surplus previous day; 
-        "OVERFLOW"
-    };
-    
-    
+        
     /**
      * Used to select calculation method for the transfer
      */

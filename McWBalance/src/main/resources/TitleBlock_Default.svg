@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<svg height ="3300" width = "5100" xmlns="http://www.w3.org/2000/svg">
-    <line x1 ="102" y1 ="95" x2 = "4876" y2 = "95" stroke = "rgba(33,0,255,50)" stroke-width = "4" />
-    <line x1 ="4876" y1 ="95" x2 = "4876" y2 = "3212" stroke = "red" stroke-width = "4" />
-    <line x1 ="102" y1 ="3212" x2 = "4876" y2 = "3212" stroke = "red" stroke-width = "4" />
-    <line x1 ="102" y1 ="95" x2 = "102" y2 = "3212" stroke = "#00FF00" stroke-width = "4" />
+<svg height ="1650" width = "2550" xmlns="http://www.w3.org/2000/svg">
+    <line x1 ="50" y1 ="45" x2 = "2440" y2 = "45" stroke = "red" stroke-width = "4" />
+    <line x1 ="2440" y1 ="45" x2 = "2440" y2 = "1600" stroke = "red" stroke-width = "4" />
+    <line x1 ="50" y1 ="1600" x2 = "2440" y2 = "1600" stroke = "red" stroke-width = "4" />
+    <line x1 ="50" y1 ="50" x2 = "50" y2 = "1600" stroke = "#FF0000" stroke-width = "4" />
 
 </svg>
         

@@ -183,18 +183,80 @@ public enum SVGColorMap {
     yellow(255, 255, 0),
     yellowgreen(154, 205, 50);
 
-    int r;
-    int g;
-    int b;
-        
+    short r;
+    short g;
+    short b;
+    
+    /**
+     * Values stored as individual ints for simplicity can circle back and combine
+     * into bit shifted int later if appropriate. 
+     * @param r
+     * @param g
+     * @param b 
+     */
     SVGColorMap(int r, int g, int b){
-        this.r = r;
-        this.g = g;
-        this.b = b;
+        this.r = (short) r;
+        this.g = (short) g;
+        this.b = (short) b;
     }
     
-    public Color getColor(){
-        return new Color(r,g,b);
+    /**
+     * used for pulling color value from the enum as values are stored as primitives
+     * @return 
+     */
+    public Color getColor() {
+        return new Color(r, g, b);
     }
     
+    
+    /**
+     * Translates svg color string to a java.awt.Color
+     * recognizes named colors, rgb(r,g,b) in int, rgba(r,g,b,a) in int, and #rrggbb in hex
+     * No exception throwing is intentional as colors are not mission critical
+     * and preference is for the program to plot even with a misspelled color name
+     * Color defaults to black
+     * @param stroke svg stroke value 
+     * @return color matching stroke value or black if an error is encountered
+     */
+    public static Color fromStroke(String stroke) {
+
+        if (stroke.startsWith("#")) {
+            try {
+                return Color.decode(stroke);
+            } catch (IllegalArgumentException ex) {
+                return Color.black;
+            }
+        } else if (stroke.startsWith("rgb")) {
+            String split[] = stroke.split(",");
+            if (split.length < 3 || split.length > 4) {
+                return Color.black;
+            } else {
+                try {
+                    if (split.length == 3) {
+                        int rd = Integer.parseInt(split[0].substring(4));
+                        int gr = Integer.parseInt(split[1]);
+                        int bl = Integer.parseInt(split[2].substring(0, split[2].length() - 1));
+                        return new Color(rd, gr, bl);
+                    } else {
+                        int rd = Integer.parseInt(split[0].substring(5));
+                        int gr = Integer.parseInt(split[1]);
+                        int bl = Integer.parseInt(split[2]);
+                        int a = Integer.parseInt(split[3].substring(0, split[3].length() - 1));
+                        return new Color(rd, gr, bl, a);
+                    }
+
+                } catch (NumberFormatException ex) {
+                    return Color.black;
+                }
+            }
+        } else {
+            try {
+                return valueOf(stroke).getColor();
+            } catch (IllegalArgumentException ex) {
+                return Color.black;
+            }
+        }
+
+    }
+
 }

@@ -54,7 +54,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -574,7 +573,8 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowchart.checkSelectionTRN(mTRNHit)) {
                             if (!editorIsActive) { 
                                 
-                                TRNWindow objTRNWindow = new TRNWindow(this, flowchart.getObjTRN(mTRNHit), flowchart.getNodeList().getNameList());
+                                TRNWindow objTRNWindow = new TRNWindow(this, aP.getTransferList().tRNs[mTRNHit], 
+                                        aP.getNodeList().getNameList());
                                 objTRNWindow.addWindowListener(new WindowAdapter(){
                                     @Override
                                     public void windowClosed(WindowEvent e){
@@ -592,7 +592,11 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                         if (flowchart.checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
                                 NodWindow objELMWindow = new NodWindow();
-                                objELMWindow.ObjELMWindowFunct(flowchart.getObjELM(mELMHit), mELMHit, flowchart.getTRNList(), aP.getProjectSetting());
+                                objELMWindow.ObjELMWindowFunct(
+                                        aP.getNodeList().nodes[mELMHit], 
+                                        mELMHit, 
+                                        aP.getTransferList(), 
+                                        aP.getProjectSetting());
                             }
                             break;
                         } else {
