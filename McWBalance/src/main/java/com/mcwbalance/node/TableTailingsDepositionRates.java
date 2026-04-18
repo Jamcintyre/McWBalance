@@ -20,13 +20,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- *
+ * Table class used for storing and calculating deposition rates
  * @author Alex
  */
 public class TableTailingsDepositionRates extends AbstractTableModel{
     private static final String[] columnNames = {"Model Day", "Rate (tonnes/day)","Solids Content (by mass)","Specific Gravity","Final Settled Density (tonne/cu.m)","Water with Solids (cu.m./day)", "Voidloss (cu.m./day)","Volume of Settled Solids (cu.m./day)"};
     private static final int NUMBER_OF_COLUMNS = 8;
-    private Object[][] data = new Object[Limit.MAX_DEPO_RATES][NUMBER_OF_COLUMNS];
+    private final Object[][] data = new Object[Limit.MAX_DEPO_RATES][NUMBER_OF_COLUMNS];
     private static final int DAY_MAX = Limit.MAX_DURATION;
     private static final int DAY_MIN = 0;
     private static final int DAY_NULL = DAY_MAX + 1;
@@ -44,6 +44,10 @@ public class TableTailingsDepositionRates extends AbstractTableModel{
     
     ProjSetting projSetting; 
     
+    /**
+     * generates a table used for storing deposition rate data
+     * @param projSetting 
+     */
     public TableTailingsDepositionRates(ProjSetting projSetting){
         
         this.projSetting = projSetting;

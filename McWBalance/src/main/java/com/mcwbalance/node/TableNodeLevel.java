@@ -5,7 +5,6 @@
 package com.mcwbalance.node;
 
 import com.mcwbalance.generics.DataTimeDoubleSeries;
-import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -16,7 +15,7 @@ import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
+ * Table for storing day vs elevation data
  * @author amcintyre
  */
 public class TableNodeLevel extends AbstractTableModel {
@@ -29,6 +28,9 @@ public class TableNodeLevel extends AbstractTableModel {
      private final static int DAY_NULL = DataTimeDoubleSeries.DAY_NULL;
     private final static double VAL_NULL = DataTimeDoubleSeries.VAL_NULL; 
     
+    /**
+     * Blank table constructor
+     */
     TableNodeLevel(){
         data[0][0] = 0;
         data[0][1] = 0;

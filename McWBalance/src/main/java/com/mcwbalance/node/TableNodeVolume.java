@@ -5,7 +5,6 @@
 package com.mcwbalance.node;
 
 import com.mcwbalance.generics.DataTimeIntSeries;
-import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -16,7 +15,7 @@ import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
+ * generic day vs volume table for Node info
  * @author amcintyre
  */
 public class TableNodeVolume extends AbstractTableModel  {
@@ -28,7 +27,9 @@ public class TableNodeVolume extends AbstractTableModel  {
     private final static int DAY_NULL = DataTimeIntSeries.DAY_NULL;
     private final static int VAL_NULL = DataTimeIntSeries.VAL_NULL; 
     
-    
+    /**
+     * default constructor
+     */
     TableNodeVolume(){
         data[0][0] = 0;
         data[0][1] = 0;
