@@ -69,23 +69,16 @@ public class Nod {
     public Boolean hasCatchment;
     public int nCatchments;
     public DataCatchment[] Catchment = new DataCatchment[Limit.MAX_LAND_COVERS + 1]; // needs a totalizer value.
-    /**
-     * @deprecated 
-     */
-    public int indexRunoffTracker;
+
+    int indexRunoffTracker;
     public Boolean hasSolids;
-    /**
-     * @deprecated 
-     */
-    public int indexSolidsTracker;
+
+
     public int oSetXVoids;
     public int oSetYVoids;
     public Boolean hasStorage;
     public Boolean showStorage;
-    /**
-     * @deprecated 
-     */
-    public int indexStorageTracker; // used to also index Direct Precips and Evaps; may be depreciated? 
+
     public int oSetXStorage;
     public int oSetYStorage;
     

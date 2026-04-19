@@ -29,6 +29,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -305,6 +307,13 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         menufileProjSettings.setIcon(iconSettings);
         menufile.add(menufileProjSettings);
         
+        JMenuItem menufilePrint = new JMenuItem(McWBalance.langRB.getString("PRINT"), KeyEvent.VK_S);
+        menufilePrint.setActionCommand("Print"); // Event trigger to change project path
+        menufilePrint.addActionListener(this);
+        menufilePrint.setIcon(iconSettings);
+        menufile.add(menufilePrint);
+        
+        
         menubar.add(menufile);
         //End of File Menu
 
@@ -514,6 +523,24 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             case "PSettings" -> {
                 new ProjSettingWindow(this,aP.getProjectSetting());
             }
+            
+            case "Print" -> {
+
+                PrinterJob job = PrinterJob.getPrinterJob();
+                job.setPrintable(flowchart);
+
+                if (job.printDialog()) {
+                    try {
+                        job.print();
+                    } catch (PrinterException pex) {
+                        // The job did not successfully
+                        // complete
+                    }
+                }
+
+            }
+            
+            
             case "AddObjELM" -> {
                 requestedAction = "AddObjELM";
             }

@@ -5,7 +5,6 @@
 package com.mcwbalance.climate;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.climate.DataClimate;
 import com.mcwbalance.project.Project;
 import com.mcwbalance.result.ResultViewer;

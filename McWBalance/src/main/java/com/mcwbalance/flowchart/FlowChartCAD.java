@@ -21,17 +21,20 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import javax.swing.JComponent;
 
 /**
  * Known Bugs font size changes, between transfer lables, must not be setting
- * the font imediately prior to drawing, or there is a scale occuring Object
+ * the font immediately prior to drawing, or there is a scale occuring Object
  * Deletion sometimes deletes extra elements
  *
  *
- * @author amcintyre
+ * @author Alex McIntyre
  */
-public class FlowChartCAD extends JComponent {
+public class FlowChartCAD extends JComponent implements Printable{
 
     /**
      * Defines number of columns of Title Blocks to layout in Cad Space
@@ -66,7 +69,15 @@ public class FlowChartCAD extends JComponent {
     private int eLMy;
     private Rectangle eLMrect; // used in flow line drawing
 
+    /**
+     * TODO - move this to the Template file
+     * used for setting size of transfer box
+     */
     public final static int TRN_BOX_WIDTH = 60;
+    /**
+     * TODO - move this to the Template file
+     * used for setting size of transfer box
+     */
     public final static int TRN_BOX_HEIGHT = 60;
 
     private Dimension tRNdim; // placeholder sizing
@@ -153,17 +164,170 @@ public class FlowChartCAD extends JComponent {
 
         zoomscale = Preferences.zoomScale;
         drawdate = -1;
-
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        render(g);
+        }
+    
+    @Override
+    public int print(Graphics g, PageFormat pf, int i) throws PrinterException {
+        
+        System.out.println(pf.toString());
+        System.out.println("page to print" + i);
+        
+        if (i == 0) {
+            return NO_SUCH_PAGE;
+        }
+
+        System.out.println("Imageable Height = " + pf.getImageableHeight());
+        System.out.println("Imageable Width = " + pf.getImageableWidth());
+        System.out.println("Imageable x = " + pf.getImageableX());
+        System.out.println("Imageable y = " + pf.getImageableY());
+
+        //grphcs.drawOval(75, 75, 50, 50);
+        
+        render(g);
+
+        return PAGE_EXISTS;
+
+    }
+
+    /**
+     * Calls a constructor to generate a new blank node at a given coordinate
+     * @param inX in pxls
+     * @param inY in pxls
+     */
+    public void addObjELM(int inX, int inY) {
+        prj.getNodeList().addNode(inX, inY);
+        ProjSetting.hasChangedSinceSave = true;
+    }
+
+    /**
+     * Calls a constructor to generate a new blank transfer at given coordinates
+     * @param inX in pxls
+     * @param inY in pxls
+     */
+    public void addObjTRN(int inX, int inY) {
+        prj.getTransferList().addTRN(inX, inY);
+        ProjSetting.hasChangedSinceSave = true;
+    }
+
+    /**
+     * Sets a node to selected, used for managing double clicks and selection
+     * highlight
+     * @param index index of node selected
+     */
+    public void addSelectionELM(int index) {
+        if (index >= 0 && index <= Limit.MAX_NODES) {
+            prj.getNodeList().nodes[index].isSelected = true;
+        }
+        ProjSetting.hasChangedSinceSave = true;
+    }
+
+    /**
+     * Sets a transfer to selected, used for managing double clicks and selection
+     * highlight
+     * @param index index of transfer selected
+     */
+    public void addSelectionTRN(int index) {
+        if (index >= 0 && index <= Limit.MAX_TRNS) {
+            prj.getTransferList().tRNs[index].isSelected = true;
+        }
+        ProjSetting.hasChangedSinceSave = true;
+    }
+
+    /**
+     * Used to check if a node is already selected, used for double clicks
+     * @param index index of node
+     * @return true if Node is actively selected 
+     */
+    public boolean checkSelectionELM(int index) {
+        return prj.getNodeList().nodes[index].isSelected;
+    }
+
+    /**
+     * Used to check if a transfer is already selected, used for double clicks
+     * @param index index of transfer
+     * @return true of transfer is actively selected
+     */
+    public boolean checkSelectionTRN(int index) {
+        return prj.getTransferList().tRNs[index].isSelected;
+    }
+
+    /**
+     * Used to remove active selection on nodes and transfers
+     */
+    public void clearSelection() {
+        for (int i = 0; i < Limit.MAX_NODES; i++) {
+            prj.getNodeList().nodes[i].isSelected = false;
+        }
+        for (int i = 0; i < Limit.MAX_TRNS; i++) {
+            prj.getTransferList().tRNs[i].isSelected = false;
+        }
+    }
+
+    /**
+     * TODO
+     * Not written, intend to copy selected ELMS and TRNS to clipboard in ascii
+     * (unicode) format tab delimited
+     */
+    public void copySelectiontoClipboard() {
+
+    }
+
+    /**
+     * TODO
+     * only single delete tested to date should remove all selected ELMS and
+     * TRNS. will be called from main window using delete key
+     */
+    public void deleteSelection() {
+        for (int i = 0; i < prj.getNodeList().count; i++) {
+            if (checkSelectionELM(i)) {
+                removeELM(i);
+            }
+        }
+        for (int i = 0; i < prj.getTransferList().count; i++) {
+            if (checkSelectionTRN(i)) {
+                removeTRN(i);
+            }
+        }
+        ProjSetting.hasChangedSinceSave = true;
+    }
+    
+    /**
+     * removes a node from the active node list
+     * @param index index of node to remove
+     */
+    public void removeELM(int index) {
+        prj.getNodeList().removeNode(index);
+        prj.getTransferList().removeELM(index);
+        ProjSetting.hasChangedSinceSave = true;
+    }
+    
+    /**
+     * removes a transfer from the active node list
+     * @param index  index of transfer to remove
+     */
+    public void removeTRN(int index) {
+        prj.getNodeList().removeTRN(index);
+        prj.getTransferList().removeTRN(index);
+        ProjSetting.hasChangedSinceSave = true;
+    }
+    
+    /**
+     * This is where the bulk of the work happens
+     * Intended to provide common rendering between display and print
+     * 
+     */
+    private void render(Graphics g) {
 
         NodList eLMList = prj.getNodeList();
         TRNList tRNList = prj.getTransferList();
 
-        Graphics2D g2 = (Graphics2D) g; // its a bit unclear what this will all do, but Graphics 2D is needed to allow for line thicknesses
+        Graphics2D g2 = (Graphics2D) g;
 
         // note items drawn before setting the transform will ignore the transform... 
         AffineTransform at = new AffineTransform();
@@ -312,100 +476,34 @@ public class FlowChartCAD extends JComponent {
         }
     }
 
-    public void addObjELM(int inX, int inY) {
-        prj.getNodeList().addNode(inX, inY);
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void addObjTRN(int inX, int inY) {
-        prj.getTransferList().addTRN(inX, inY);
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void addSelectionELM(int inNumber) {
-        if (inNumber >= 0 && inNumber <= Limit.MAX_NODES) {
-            prj.getNodeList().nodes[inNumber].isSelected = true;
-        }
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void addSelectionTRN(int inNumber) {
-        if (inNumber >= 0 && inNumber <= Limit.MAX_TRNS) {
-            prj.getTransferList().tRNs[inNumber].isSelected = true;
-        }
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public boolean checkSelectionELM(int inNumber) {
-        return prj.getNodeList().nodes[inNumber].isSelected;
-    }
-
-    public boolean checkSelectionTRN(int inNumber) {
-        return prj.getTransferList().tRNs[inNumber].isSelected;
-    }
-
-    public void clearSelection() {
-        for (int i = 0; i < Limit.MAX_NODES; i++) {
-            prj.getNodeList().nodes[i].isSelected = false;
-        }
-        for (int i = 0; i < Limit.MAX_TRNS; i++) {
-            prj.getTransferList().tRNs[i].isSelected = false;
-        }
-    }
-
+    
     /**
-     * Not written, intend to copy selected ELMS and TRNS to clipboard in ascii
-     * (unicode) format tab delimited
+     * Adjusts the location of a node on the flowchart
+     * @param inX X coordinate in pxls
+     * @param inY Y coordinate in pxls
+     * @param index index of node to move
      */
-    public void copySelectiontoClipboard() {
-
+    public void moveObjELM(int inX, int inY, int index) {
+        prj.getNodeList().nodes[index].x = inX;
+        prj.getNodeList().nodes[index].y = inY;
+        prj.getNodeList().nodes[index].hitBox.setLocation(
+                inX - prj.getNodeList().nodes[index].hitBox.getSize().width / 2,
+                inY - prj.getNodeList().nodes[index].hitBox.getSize().height / 2);
+        ProjSetting.hasChangedSinceSave = true;
     }
-
+    
     /**
-     * only single delete tested to date should remove all selected ELMS and
-     * TRNS. will be called from main window using delete key
+     * Adjusts the location of a transfer box
+     * @param inX X coordinate in pxls
+     * @param inY Y coordinate in pxls
+     * @param index index of transfer to move
      */
-    public void deleteSelection() {
-        for (int i = 0; i < prj.getNodeList().count; i++) {
-            if (checkSelectionELM(i)) {
-                removeELM(i);
-            }
-        }
-        for (int i = 0; i < prj.getTransferList().count; i++) {
-            if (checkSelectionTRN(i)) {
-                removeTRN(i);
-            }
-        }
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void removeELM(int inNumber) {
-        prj.getNodeList().removeNode(inNumber);
-        prj.getTransferList().removeELM(inNumber);
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void removeTRN(int tRNNumber) {
-        prj.getNodeList().removeTRN(tRNNumber);
-        prj.getTransferList().removeTRN(tRNNumber);
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void moveObjELM(int inX, int inY, int inNumber) {
-        prj.getNodeList().nodes[inNumber].x = inX;
-        prj.getNodeList().nodes[inNumber].y = inY;
-        prj.getNodeList().nodes[inNumber].hitBox.setLocation(
-                inX - prj.getNodeList().nodes[inNumber].hitBox.getSize().width / 2,
-                inY - prj.getNodeList().nodes[inNumber].hitBox.getSize().height / 2);
-        ProjSetting.hasChangedSinceSave = true;
-    }
-
-    public void moveObjTRN(int inX, int inY, int inNumber) {
-        prj.getTransferList().tRNs[inNumber].x = inX;
-        prj.getTransferList().tRNs[inNumber].y = inY;
-        prj.getTransferList().tRNs[inNumber].hitBox.setLocation(
-                inX - prj.getTransferList().tRNs[inNumber].hitBox.getSize().width / 2,
-                inY - prj.getTransferList().tRNs[inNumber].hitBox.getSize().height / 2);
+    public void moveObjTRN(int inX, int inY, int index) {
+        prj.getTransferList().tRNs[index].x = inX;
+        prj.getTransferList().tRNs[index].y = inY;
+        prj.getTransferList().tRNs[index].hitBox.setLocation(
+                inX - prj.getTransferList().tRNs[index].hitBox.getSize().width / 2,
+                inY - prj.getTransferList().tRNs[index].hitBox.getSize().height / 2);
         ProjSetting.hasChangedSinceSave = true;
     }
 
@@ -418,18 +516,35 @@ public class FlowChartCAD extends JComponent {
         ProjSetting.hasChangedSinceSave = true;
     }
 
-    public void setObjELM(int inNumber, Nod inObjELM) {
+    /**
+     * overwrites the target node in the active node list with the provided node
+     * @param index index of node to overwrite
+     * @param inObjELM source node
+     */
+    public void setObjELM(int index, Nod inObjELM) {
         // note that dimensions of the box need to be applied here since ObjELMList does not have access to the Icon Library 
         inObjELM.hitBox.setLocation(inObjELM.x - inObjELM.hitBox.getSize().width / 2, inObjELM.y - inObjELM.hitBox.getSize().height / 2);
-        prj.getNodeList().set(inNumber, inObjELM); // passes command to active object list; 
+        prj.getNodeList().set(index, inObjELM); // passes command to active object list; 
         ProjSetting.hasChangedSinceSave = true;
     }
 
-    public void setObjTRN(int inNumber, TRN inObjTRN) {
-        prj.getTransferList().setObjTRN(inNumber, inObjTRN);
+    /**
+     * overwrites the target transfer in the active transfer list with the provided transfer
+     * @param index index on of transfer to overwrite
+     * @param inObjTRN source transfer
+     */
+    public void setObjTRN(int index, TRN inObjTRN) {
+        prj.getTransferList().setObjTRN(index, inObjTRN);
         ProjSetting.hasChangedSinceSave = true;
     }
 
+    /**
+     * Used for finding if a set of coordinates make contact with a node, and 
+     * if so returns the node that was hit
+     * @param inX in pxls
+     * @param inY in pxls
+     * @return index of node that is hit, or -1 for no hit
+     */
     public int checkELMHit(int inX, int inY) { // will need updating to allow for TRNs... 
         for (int i = 0; i < prj.getNodeList().count; i++) {
             if (prj.getNodeList().nodes[i].hitBox.x <= inX && prj.getNodeList().nodes[i].hitBox.x + prj.getNodeList().nodes[i].hitBox.width >= inX) {
@@ -439,9 +554,15 @@ public class FlowChartCAD extends JComponent {
             }
         }
         return -1;
-
     }
-
+    
+    /**
+     * Used for finding if a set of coordinates make contact with a transfer, and 
+     * if so returns the transfer that was hit
+     * @param inX in pxls
+     * @param inY in pxls
+     * @return index of transfer that is hit, or -1 for no hit
+     */
     public int checkTRNHit(int inX, int inY) {
         for (int i = 0; i < prj.getTransferList().count; i++) {
             if (prj.getTransferList().tRNs[i].hitBox.x <= inX && prj.getTransferList().tRNs[i].hitBox.x + prj.getTransferList().tRNs[i].hitBox.width >= inX) {

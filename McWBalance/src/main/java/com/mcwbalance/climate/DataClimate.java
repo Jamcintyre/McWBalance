@@ -89,10 +89,10 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
         else {
             setSize(allLines.length - 2);
         }
-        for (int i = 2; i < size + 2; i++) {
+        for (int i = 2; i < (size + 2); i++) {
             sLine = allLines[i].split(dl);
             if (sLine.length < DATA_COLUMNS){
-                System.err.print("input datafile does not contain enough columns");
+                System.err.print("input datafile does not contain enough columns, must contain " + DATA_COLUMNS);
                 break;
             }
             precip[i-2] = Double.parseDouble(sLine[4]);
