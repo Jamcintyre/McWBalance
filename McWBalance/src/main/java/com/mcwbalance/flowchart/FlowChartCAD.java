@@ -178,7 +178,7 @@ public class FlowChartCAD extends JComponent implements Printable{
         System.out.println(pf.toString());
         System.out.println("page to print" + i);
         
-        if (i == 0) {
+        if (i > 0) {
             return NO_SUCH_PAGE;
         }
 
@@ -192,7 +192,6 @@ public class FlowChartCAD extends JComponent implements Printable{
         render(g);
 
         return PAGE_EXISTS;
-
     }
 
     /**

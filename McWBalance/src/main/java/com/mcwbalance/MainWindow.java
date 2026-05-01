@@ -29,6 +29,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
@@ -527,7 +529,16 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             case "Print" -> {
 
                 PrinterJob job = PrinterJob.getPrinterJob();
-                job.setPrintable(flowchart);
+                PageFormat pf = new PageFormat();
+                pf.setOrientation(PageFormat.LANDSCAPE);
+                Paper tabloid = new Paper();
+                tabloid.setImageableArea(0, 0, 500, 500);
+                pf.setPaper(tabloid);
+                
+                
+                job.setPrintable(flowchart,pf);
+                
+                
 
                 if (job.printDialog()) {
                     try {

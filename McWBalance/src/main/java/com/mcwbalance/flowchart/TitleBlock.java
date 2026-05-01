@@ -6,6 +6,7 @@ package com.mcwbalance.flowchart;
 
 
 import com.mcwbalance.util.SVGColorMap;
+import com.mcwbalance.util.SVGRender;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -27,36 +28,26 @@ public class TitleBlock {
     int pageHeight;
     int pageWidth;
     
-    CadLine lines[];
-    
-    Properties prop = new Properties();
+    SVGRender svgr;
     
 
     /**
      *  TODO - need to add handelling for missing data
+     * TODO - handle implement user defined fields. i.e. where does the project
+     * name go, client, figure number
+     * TODO - Add handeling for multiple svgs in one file i.e. logo
      * @param svg Takes an SVG formatted XML
      */
     public TitleBlock(Document svg){
-            
-            NodeList nl = svg.getElementsByTagName("svg");
-            
-            Element blk = (Element) nl.item(0);
-            pageHeight = Integer.parseInt(blk.getAttribute("height"));
-            pageWidth = Integer.parseInt(blk.getAttribute("width"));
-            NodeList cnl = blk.getElementsByTagName("line");
-            lines = new CadLine[cnl.getLength()];
-            
-            for (int i = 0; i < cnl.getLength(); i++){
-                Element ele = (Element) cnl.item(i);
-                int x0 = Integer.parseInt(ele.getAttribute("x1"));
-                int x1 = Integer.parseInt(ele.getAttribute("x2"));
-                int y0 = Integer.parseInt(ele.getAttribute("y1"));
-                int y1 = Integer.parseInt(ele.getAttribute("y2"));
-                Color cl = SVGColorMap.fromStroke(ele.getAttribute("stroke"));
-                Stroke sk = new BasicStroke (Integer.parseInt(ele.getAttribute("stroke-width")));
-                
-                lines[i] = new CadLine(x0,y0,x1,y1,cl,sk);
-            }
+        
+        svgr = new SVGRender(svg);
+
+        NodeList nl = svg.getElementsByTagName("svg");
+
+        Element blk = (Element) nl.item(0);
+        pageHeight = Integer.parseInt(blk.getAttribute("height"));
+        pageWidth = Integer.parseInt(blk.getAttribute("width"));
+
     }
  
     /**
@@ -83,11 +74,9 @@ public class TitleBlock {
      * @param osety y offset value
      */
     public void drawTitleBlock(Graphics2D g2, int osetx, int osety){
-        for (CadLine line : lines) {
-            g2.setColor(line.getColour());
-            g2.setStroke(line.getStroke());
-            g2.drawLine(line.getx0(), line.gety0(), line.getx1(), line.gety1());
-        }
+        
+        svgr.Draw(g2);
+
     }
     
 }
