@@ -40,6 +40,10 @@ import javax.swing.table.TableColumn;
 /**
  * This window class allows user input into an individual ELM object. The class is intended to allow manual input of 
  * all information needed to populate an ELM with exception of location.
+ * 
+ * TODO - remove the buffernode and allow popups to directly update data. end goal is to allow 
+ * on the fly adjusments ot the balance for trial and error of pumping rates etc.. no need to
+ * save and fire a change
  * @author amcintyre
  */
 public class NodWindow extends JFrame { // implements ActionListener not needed if lamba is used
@@ -55,14 +59,49 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
     //static Node returnedObjELM = new Node();
     
     
+    
+    private JFrame subframe;
+    private JTabbedPane tabPane;
+    private JPanel tab2;
+    private SpringLayout layoutTab2;
+
+    private JLabel tab2lableFixedInputs;
+    private JLabel tab2lableInputs;
+    private JLabel tab2lableDemandInputs;
+    private JLabel tab2lableFixedOutputs;
+    private JLabel tab2lableOutputs;
+    private JLabel tab2lableDemandOutputs;
+    private JLabel tab2lableOverflow;
+    
+    private DataNameListModel tab2LModelFixedInputs;
+    private JList tab2listFixedInputs;
+    private DataNameListModel tab2LModelInputs;
+    private JList tab2listInputs;
+    private DataNameListModel tab2LModelDemandInputs;
+    private JList tab2listDemandInputs;
+    private DataNameListModel tab2LModelFixedOutputs;
+    private JList tab2listFixedOutputs;
+    private DataNameListModel tab2LModelOutputs;
+    private JList tab2listOutputs;
+    private DataNameListModel tab2LModelDemandOutputs;
+    private JList tab2listDemandOutputs;
+    //experementing, may not be able ot use the same type of data model for comboBoxes... 
+    private DataComboBoxModel tab2ComboModelOverflow;
+
+
+    private JPanel tabOpVol;
+    private JPanel tabOpLevel;
+    
+    
     /**
      * This function calls on the JDialog window needed for user input of all information needed to populate an ELM
      * @param inNode ELM object that will be edited by the user
      * @param nodeNumber Index number of the ELM object so that object can be re-inserted into ELMList
      * @param ctRNList Current TRN list must be provided to allow user to select from available TRNs for solve order planning
+     * @param projSetting used for managing general project details such as save location
      * @return 
      */
-    public Nod ObjELMWindowFunct(Nod inNode, int nodeNumber, TRNList ctRNList, ProjSetting projSetting){ // requires object number to edit
+    public Nod ObjELMWindowFunct(Nod node, int nodeNumber, TRNList ctRNList, ProjSetting projSetting){ // requires object number to edit
         
         buffNode = new Nod(projSetting);
         
@@ -70,7 +109,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         
         //objELMNumber = inNumber; // sets value for save and loads, needs to be called external to this function in action listener
         MainWindow.editorIsActive = true; 
-        buffNode = inNode; // sets buffered object to in object
+        buffNode = node; // sets buffered object to in object
         //returnedObjELM = inNode; // sets default return to whatever was provided
       
         int hPadLabels = 10; // padding relative to left side of window
@@ -80,7 +119,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         int vPadSpacing = 10; // sets spacing between rows
         int vPadNextGroup = 20; // sets spacing between grooups of info
         
-        JFrame subframe = new JFrame("Node Properties"); // Changed back to frame, as was having problems with not being able to call a second frame
+        subframe = new JFrame("Node Properties"); // Changed back to frame, as was having problems with not being able to call a second frame
         subframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         subframe.addWindowListener(new WindowAdapter(){
             @Override
@@ -94,20 +133,20 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         subframe.setSize(350, 200);
         subframe.setLocationRelativeTo(null);
         
-        JTabbedPane tabPane = new JTabbedPane();
+        tabPane = new JTabbedPane();
 
         // TAB 2 for handelling Analysis Solve Order
-        JPanel tab2 = new JPanel();
-        SpringLayout layoutTab2 = new SpringLayout(); // sets up a layout manager for the tab
+        tab2 = new JPanel();
+        layoutTab2 = new SpringLayout(); // sets up a layout manager for the tab
         tab2.setLayout(layoutTab2);
         
-        JLabel tab2lableFixedInputs = new JLabel("Fixed Inputs");
-        JLabel tab2lableInputs = new JLabel("Inputs");
-        JLabel tab2lableDemandInputs = new JLabel("On Demand Inputs");
-        JLabel tab2lableFixedOutputs = new JLabel("Fixed Outputs");
-        JLabel tab2lableOutputs = new JLabel("Outputs");
-        JLabel tab2lableDemandOutputs = new JLabel("On Demand Outputs");
-        JLabel tab2lableOverflow = new JLabel("Overflow");
+        tab2lableFixedInputs = new JLabel("Fixed Inputs");
+        tab2lableInputs = new JLabel("Inputs");
+        tab2lableDemandInputs = new JLabel("On Demand Inputs");
+        tab2lableFixedOutputs = new JLabel("Fixed Outputs");
+        tab2lableOutputs = new JLabel("Outputs");
+        tab2lableDemandOutputs = new JLabel("On Demand Outputs");
+        tab2lableOverflow = new JLabel("Overflow");
         
         // Sets initial Data; intent s to taeke the full list and trim down every time. 
         buffNode.inflows.overwriteList(ctRNList.getInflowNameListIndex(nodeNumber,false), ctRNList.getInflowNameList(nodeNumber,false));
@@ -129,32 +168,32 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         buffNode.outflowFixedTRN.setNames(ctRNList.getNameList(buffNode.outflowFixedTRN.getShortIndexList()));
         buffNode.outflowOnDemandTRN.setNames(ctRNList.getNameList(buffNode.outflowOnDemandTRN.getShortIndexList()));
    
-        DataNameListModel tab2LModelFixedInputs = new DataNameListModel();
+        tab2LModelFixedInputs = new DataNameListModel();
         tab2LModelFixedInputs.setAllData(buffNode.inflowFixedTRN.getShortNameList());
-        JList tab2listFixedInputs = new JList(tab2LModelFixedInputs);
+        tab2listFixedInputs = new JList(tab2LModelFixedInputs);
         
-        DataNameListModel tab2LModelInputs = new DataNameListModel();
+        tab2LModelInputs = new DataNameListModel();
         tab2LModelInputs.setAllData(buffNode.inflows.getShortNameList());
-        JList tab2listInputs = new JList(tab2LModelInputs);
+        tab2listInputs = new JList(tab2LModelInputs);
         
-        DataNameListModel tab2LModelDemandInputs = new DataNameListModel();
+        tab2LModelDemandInputs = new DataNameListModel();
         tab2LModelDemandInputs.setAllData(buffNode.inflowOnDemandTRN.getShortNameList());
-        JList tab2listDemandInputs = new JList(tab2LModelDemandInputs);
+        tab2listDemandInputs = new JList(tab2LModelDemandInputs);
         
-        DataNameListModel tab2LModelFixedOutputs = new DataNameListModel();
+        tab2LModelFixedOutputs = new DataNameListModel();
         tab2LModelFixedOutputs.setAllData(buffNode.outflowFixedTRN.getShortNameList());
-        JList tab2listFixedOutputs = new JList(tab2LModelFixedOutputs);
+        tab2listFixedOutputs = new JList(tab2LModelFixedOutputs);
         
-        DataNameListModel tab2LModelOutputs = new DataNameListModel();
+        tab2LModelOutputs = new DataNameListModel();
         tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
-        JList tab2listOutputs = new JList(tab2LModelOutputs);
+        tab2listOutputs = new JList(tab2LModelOutputs);
         
-        DataNameListModel tab2LModelDemandOutputs = new DataNameListModel();
+        tab2LModelDemandOutputs = new DataNameListModel();
         tab2LModelDemandOutputs.setAllData(buffNode.outflowOnDemandTRN.getShortNameList());
-        JList tab2listDemandOutputs = new JList(tab2LModelDemandOutputs);
+        tab2listDemandOutputs = new JList(tab2LModelDemandOutputs);
         
         //experementing, may not be able ot use the same type of data model for comboBoxes... 
-        DataComboBoxModel tab2ComboModelOverflow = new DataComboBoxModel();
+        tab2ComboModelOverflow = new DataComboBoxModel();
         tab2ComboModelOverflow.setAllData(buffNode.overflowOptions.getShortNameListWithNone());
         
         
@@ -420,119 +459,9 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         layoutTab2.putConstraint(SpringLayout.WEST, tab2comboOverflow, hPadSpacing, SpringLayout.EAST, tab2lableOverflow);
         layoutTab2.putConstraint(SpringLayout.VERTICAL_CENTER, tab2comboOverflow, 0, SpringLayout.VERTICAL_CENTER, tab2lableOverflow);
         
-        // TAB 3 for handelling Depth Area Capacity
-        JPanel tab3 = new JPanel();
 
         
-
-       // TAB 4 for handelling Operating Levels
-        JPanel tab4 = new JPanel();
-        GridBagLayout layoutTab4 = new GridBagLayout(); // sets up a layout manager for the tab
-        
-        Insets tab4insets = new Insets(0,10,0,10); // Padding around Tables
-        int tab4PrefColCol0Width = 100; // width of Day column
-        int tab4PrefColCol1Width = 150; // width of Day column
-        Dimension tab4TableDims = new Dimension(250,400); // Prefered dimension of tables
-        // layout constraints 
-        GridBagConstraints tab4constrTargetVolLabel = new GridBagConstraints();
-        tab4constrTargetVolLabel.gridx = 0;
-        tab4constrTargetVolLabel.gridy = 0;  
-        GridBagConstraints tab4constrTargetVol = new GridBagConstraints();
-        tab4constrTargetVol.gridx = 0;
-        tab4constrTargetVol.gridy = 1;
-        tab4constrTargetVol.insets = tab4insets;
-        GridBagConstraints tab4constrMinDepthLabel = new GridBagConstraints();
-        tab4constrMinDepthLabel.gridx = 1;
-        tab4constrMinDepthLabel.gridy = 0;
-        GridBagConstraints tab4constrMinDepth = new GridBagConstraints();
-        tab4constrMinDepth.gridx = 1;
-        tab4constrMinDepth.gridy = 1;
-        tab4constrMinDepth.insets = tab4insets;
-        GridBagConstraints tab4constrMaxOpLevelLabel = new GridBagConstraints();
-        tab4constrMaxOpLevelLabel.gridx = 2;
-        tab4constrMaxOpLevelLabel.gridy = 0;
-        GridBagConstraints tab4constrMaxOpLevel = new GridBagConstraints();
-        tab4constrMaxOpLevel.gridx = 2;
-        tab4constrMaxOpLevel.gridy = 1;
-        tab4constrMaxOpLevel.insets = tab4insets;
-        GridBagConstraints tab4constrOverflowLevelLabel = new GridBagConstraints();
-        tab4constrOverflowLevelLabel.gridx = 3;
-        tab4constrOverflowLevelLabel.gridy = 0;
-        GridBagConstraints tab4constrOverflowLevel = new GridBagConstraints();
-        tab4constrOverflowLevel.gridx = 3;
-        tab4constrOverflowLevel.gridy = 1;
-        tab4constrOverflowLevel.insets = tab4insets;
-        GridBagConstraints tab4constrCrestLevelLabel = new GridBagConstraints();
-        tab4constrCrestLevelLabel.gridx = 4;
-        tab4constrCrestLevelLabel.gridy = 0;
-        GridBagConstraints tab4constrCrestLevel = new GridBagConstraints();
-        tab4constrCrestLevel.gridx = 4;
-        tab4constrCrestLevel.gridy = 1;
-        tab4constrCrestLevel.insets = tab4insets;
-        tab4.setLayout(layoutTab4);
-        // TABLE CONSTRUCTION 
-        //tab4LabelTargetVol
-        JLabel tab4LabelTargetVol = new JLabel("Target Operating Volume");
-        TableNodeVolume tab4TableModelTargetVol = new TableNodeVolume();
-        tab4TableModelTargetVol.setAllData(buffNode.targetOperatingVol.getDays(),buffNode.targetOperatingVol.getValues());
-        JTable tab4TableTargetVol = new JTable(tab4TableModelTargetVol);
-        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
-        tab4TableTargetVol.getColumnModel().getColumn(0).setPreferredWidth(tab4PrefColCol0Width);
-        tab4TableTargetVol.getColumnModel().getColumn(1).setPreferredWidth(tab4PrefColCol1Width);
-        JScrollPane tab4ScrollPaneTargetVol = new JScrollPane(tab4TableTargetVol);
-        tab4ScrollPaneTargetVol.setPreferredSize(tab4TableDims);
-        tab4.add (tab4LabelTargetVol, tab4constrTargetVolLabel);
-        tab4.add(tab4ScrollPaneTargetVol, tab4constrTargetVol);
-        //tab4TableMinDepth
-        JLabel tab4LabelMinDepth = new JLabel("Minimum Water Depth");
-        TableNodeLevel tab4TableModelMinDepth = new TableNodeLevel();
-        tab4TableModelMinDepth.setAllData(buffNode.minDepth.getDays(),buffNode.minDepth.getValues());
-        JTable tab4TableMinDepth = new JTable(tab4TableModelMinDepth);
-        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
-        tab4TableMinDepth.getColumnModel().getColumn(0).setPreferredWidth(tab4PrefColCol0Width);
-        tab4TableMinDepth.getColumnModel().getColumn(1).setPreferredWidth(tab4PrefColCol1Width);
-        JScrollPane tab4ScrollPaneMinDepth = new JScrollPane(tab4TableMinDepth);
-        tab4ScrollPaneMinDepth.setPreferredSize(tab4TableDims);
-        tab4.add(tab4LabelMinDepth,tab4constrMinDepthLabel);
-        tab4.add(tab4ScrollPaneMinDepth,tab4constrMinDepth);
-        //tab4LabelMaxOpLevel
-        JLabel tab4LabelMaxOpLevel = new JLabel("Maximum Operating Level");
-        TableNodeLevel tab4TableModelMaxOpLevel = new TableNodeLevel();
-        tab4TableModelMaxOpLevel.setAllData(buffNode.maxOpLevel.getDays(),buffNode.maxOpLevel.getValues());
-        JTable tab4TableMaxOpLevel = new JTable(tab4TableModelMaxOpLevel);
-        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
-        tab4TableMaxOpLevel.getColumnModel().getColumn(0).setPreferredWidth(tab4PrefColCol0Width);
-        tab4TableMaxOpLevel.getColumnModel().getColumn(1).setPreferredWidth(tab4PrefColCol1Width);
-        JScrollPane tab4ScrollPaneMaxOpLevel = new JScrollPane(tab4TableMaxOpLevel);
-        tab4ScrollPaneMaxOpLevel.setPreferredSize(tab4TableDims);
-        tab4.add(tab4LabelMaxOpLevel,tab4constrMaxOpLevelLabel);
-        tab4.add(tab4ScrollPaneMaxOpLevel,tab4constrMaxOpLevel);
-        //tab4TableModelOverflowLevel
-        JLabel tab4LabelOverflowLevel = new JLabel("Overflow Level");
-        TableNodeLevel tab4TableModelOverflowLevel = new TableNodeLevel();
-        tab4TableModelOverflowLevel.setAllData(buffNode.overflowLevel.getDays(),buffNode.overflowLevel.getValues());
-        JTable tab4TableOverflowLevel = new JTable(tab4TableModelOverflowLevel);
-        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
-        tab4TableOverflowLevel.getColumnModel().getColumn(0).setPreferredWidth(tab4PrefColCol0Width);
-        tab4TableOverflowLevel.getColumnModel().getColumn(1).setPreferredWidth(tab4PrefColCol1Width);
-        JScrollPane tab4ScrollPaneOverflowLevel = new JScrollPane(tab4TableOverflowLevel);
-        tab4ScrollPaneOverflowLevel.setPreferredSize(tab4TableDims);
-        tab4.add(tab4LabelOverflowLevel,tab4constrOverflowLevelLabel);
-        tab4.add(tab4ScrollPaneOverflowLevel,tab4constrOverflowLevel);
-        //tab4TableModelCrestLevel
-        JLabel tab4LabelCrestLevel = new JLabel("Crest Level");
-        TableNodeLevel tab4TableModelCrestLevel = new TableNodeLevel();
-        tab4TableModelCrestLevel.setAllData(buffNode.crestLevel.getDays(),buffNode.crestLevel.getValues());
-        JTable tab4TableCrestLevel = new JTable(tab4TableModelCrestLevel);
-        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
-        tab4TableCrestLevel.getColumnModel().getColumn(0).setPreferredWidth(tab4PrefColCol0Width);
-        tab4TableCrestLevel.getColumnModel().getColumn(1).setPreferredWidth(tab4PrefColCol1Width);
-        JScrollPane tab4ScrollPaneCrestLevel = new JScrollPane(tab4TableCrestLevel);
-        tab4ScrollPaneCrestLevel.setPreferredSize(tab4TableDims);
-        tab4.add(tab4LabelCrestLevel,tab4constrCrestLevelLabel);
-        tab4.add(tab4ScrollPaneCrestLevel,tab4constrCrestLevel);
-
-        // End of Tab 4
+       
         
         // TAB 5 for handelling Tailings Deposition
         JPanel tab5 = new JPanel();
@@ -617,6 +546,13 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         tab6.add(tab6ScrollState);
         
         // End of Tab 6
+        
+        
+        // Table models needed before save action butten is called        
+        
+
+        
+        
 
         // TAB 1 USED FOR BASIC ELEMENT INFORMATION 
         JPanel tab1 = new JPanel();
@@ -711,16 +647,16 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
             buffNode.objname = tfobjName.getText();
             buffNode.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE");
 
+/*
+            buffNode.targetOperatingVol.setAllData(tmTargetVol.getDayColumn(), tmTargetVol.getVolColumn()); // problem seems to lie here
+            
+            buffNode.minDepth.setAllData(tmMinDepth.getDayColumn(), tmMinDepth.getLevelColumn()); 
 
-            buffNode.targetOperatingVol.setAllData(tab4TableModelTargetVol.getDayColumn(), tab4TableModelTargetVol.getVolColumn()); // problem seems to lie here
+            buffNode.minDepth.setAllData(tmMaxOpLevel.getDayColumn(), tmMaxOpLevel.getLevelColumn()); 
             
-            buffNode.minDepth.setAllData(tab4TableModelMinDepth.getDayColumn(), tab4TableModelMinDepth.getLevelColumn()); 
-
-            buffNode.minDepth.setAllData(tab4TableModelMaxOpLevel.getDayColumn(), tab4TableModelMaxOpLevel.getLevelColumn()); 
-            
-            buffNode.overflowLevel.setAllData(tab4TableModelOverflowLevel.getDayColumn(), tab4TableModelOverflowLevel.getLevelColumn());
-            buffNode.crestLevel.setAllData(tab4TableModelCrestLevel.getDayColumn(), tab4TableModelCrestLevel.getLevelColumn());
-            
+            buffNode.overflowLevel.setAllData(tmOverflowLevel.getDayColumn(), tmOverflowLevel.getLevelColumn());
+            buffNode.crestLevel.setAllData(tmCrestLevel.getDayColumn(), tmCrestLevel.getLevelColumn());
+  */          
             
 
             for (int i = 0; i < tab6TableModelState.getRowCount(); i++){
@@ -816,8 +752,6 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         layoutTab1.putConstraint(SpringLayout.WEST, tab1ButtonDACWindow, hPadLabels, SpringLayout.EAST, tab1CheckBoxhasStorage);
         layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1ButtonDACWindow, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasStorage); 
         
-        
-        
         layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxshowStorage, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxshowStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorage); 
         
@@ -837,10 +771,22 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         layoutTab1.putConstraint(SpringLayout.WEST, bSave, hPadLabels, SpringLayout.WEST, this);
         layoutTab1.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorageEvapandPrecip);
         
+        
         tabPane.addTab("General",tab1);
         tabPane.addTab("FlowSettings",tab2);
-        tabPane.addTab("Capacity",tab3);
-        tabPane.addTab("Op. Levels", tab4);
+        
+        JTable tTargetVol = new JTable(node.targetOperatingVol);
+        JTable tMinDepth = new JTable(node.minDepth);
+        JTable tMaxOpLevel = new JTable(node.maxOpLevel);
+        JTable tOverflowLevel = new JTable(node.overflowLevel);
+        JTable tCrestLevel = new JTable(node.crestLevel);
+        
+        tabPane.addTab("T.O.V.",makeTableTab(new JLabel("Target Operating Volume"), tTargetVol));
+        tabPane.addTab("M.W.D.",makeTableTab(new JLabel("Minimum Water Depth"), tMinDepth));
+        tabPane.addTab("M.O.L.",makeTableTab(new JLabel("Maximum Operating Level"), tMaxOpLevel));
+        tabPane.addTab("Spill",makeTableTab(new JLabel("Overflow Level"), tOverflowLevel));
+        tabPane.addTab("Crest",makeTableTab(new JLabel("Crest Level"), tCrestLevel));
+        
         tabPane.addTab("Tailings Solids Deposition",tab5);
         tabPane.addTab("Object State",tab6);
 
@@ -854,6 +800,47 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         
         
     }
+
+    
+    
+    private JPanel makeTableTab(JLabel label, JTable table){
+        
+        GridBagLayout layout = new GridBagLayout(); // sets up a layout manager for the tab
+        JPanel tab = new JPanel(layout);
+        Insets insets = new Insets(0,10,0,10); // Padding around Tables
+        int prefCol0Width = 100; // width of Day column
+        int prefCol1Width = 150; // width of Day column
+        int prefCol2Width = 400; // width of Day column
+        Dimension tableDims = new Dimension(650,400); // Prefered dimension of tables
+        // layout constraints 
+        GridBagConstraints gbcLabel = new GridBagConstraints();
+        gbcLabel.gridx = 0;
+        gbcLabel.gridy = 0;  
+        GridBagConstraints gbcTable = new GridBagConstraints();
+        gbcTable.gridx = 0;
+        gbcTable.gridy = 1;
+        gbcTable.insets = insets;
+       
+        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
+        table.getColumnModel().getColumn(0).setPreferredWidth(prefCol0Width);
+        table.getColumnModel().getColumn(1).setPreferredWidth(prefCol1Width);
+        table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
+        
+        //table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
+        JScrollPane sp = new JScrollPane(table);
+        sp.setPreferredSize(tableDims);
+        tab.add (label, gbcLabel);
+        tab.add(sp, gbcTable);
+        
+        
+        return tab;
+    }
+    
+    
+
+ 
+    
+    
     
 
     

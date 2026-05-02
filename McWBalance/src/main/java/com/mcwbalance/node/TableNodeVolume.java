@@ -16,6 +16,9 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * generic day vs volume table for Node info
+ * @deprecated adjusted Table Node Level to accept column names at construct
+ * no need for this second table type
+ * @see TableNodeLevel
  * @author amcintyre
  */
 public class TableNodeVolume extends AbstractTableModel  {

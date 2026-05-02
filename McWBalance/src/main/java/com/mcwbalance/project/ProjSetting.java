@@ -2,7 +2,6 @@ package com.mcwbalance.project;
 
 import com.mcwbalance.flowchart.ImageLib;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
-import com.mcwbalance.climate.ClimateTable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

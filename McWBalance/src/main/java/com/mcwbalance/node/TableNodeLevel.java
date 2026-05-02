@@ -13,6 +13,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Table for storing day vs elevation data
@@ -20,23 +22,75 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TableNodeLevel extends AbstractTableModel {
     
-    private final String[] columnNames = {"Model Day", "Level (m)"};
-    private final Object[][] data = new Object[Limit.MAX_LEVELS][2];
+    private final String[] columnNames = new String[3];
+    private final Object[][] data;
     private int datalength;
     
 
-     private final static int DAY_NULL = DataTimeDoubleSeries.DAY_NULL;
+    private final static int DAY_NULL = DataTimeDoubleSeries.DAY_NULL;
     private final static double VAL_NULL = DataTimeDoubleSeries.VAL_NULL; 
     
     /**
      * Blank table constructor
      */
+    
+    /*
     TableNodeLevel(){
+        
+        data = new Object[Limit.MAX_LEVELS][3];
+        
         data[0][0] = 0;
         data[0][1] = 0;
+        data[0][2] = 0;
         for (int i = 1; i < Limit.MAX_LEVELS; i ++){
             data[i][0] = DAY_NULL;
             data[i][1] = VAL_NULL;
+            data[i][2] = "Placeholder";
+        }
+    }
+    */
+    /**
+     * used for generating a table with a fest size
+     * @param length length of starting array
+     * @param col0Name name of first column
+     * @param col1Name name of Second column
+     * @param col2Name name of third column
+     * 
+     */
+    TableNodeLevel(int length, String col0Name, String col1Name, String col2Name){
+        
+        columnNames[0] = col0Name;
+        columnNames[1] = col1Name;
+        columnNames[2] = col2Name;
+        
+        data = new Object[Limit.MAX_LEVELS][3];
+
+        
+        data[0][0] = 0;
+        data[0][1] = 0;
+        data[0][2] = "Placeholder";
+        
+        for (int i = 1; i < Limit.MAX_LEVELS; i ++){
+            data[i][0] = DAY_NULL;
+            data[i][1] = VAL_NULL;
+            data[i][2] = "Placeholder";
+        }
+        this.fireTableDataChanged();
+        
+    }
+    
+    
+     /**
+     * Used for getting a save file formatted XML element to append into a larger doc
+     * Only appends if length > 0
+     * @see getXMLElement
+     * @param element Element to append too
+     * @param xMLDoc 
+     * @param tagname 
+     */
+    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
+        if(datalength >0){
+            element.appendChild(getXMLElement(xMLDoc, tagname));
         }
     }
     
@@ -61,6 +115,30 @@ public class TableNodeLevel extends AbstractTableModel {
     public Class getColumnClass(int c){        
         return getValueAt(0,c).getClass();  
     }
+    
+    /**
+     * Used for getting a save file formatted XML element to append into a
+     * larger doc
+     *
+     * @param xMLDoc Document required to generate element,
+     * @param tagname Name of element
+     * @return
+     */
+    public Element getXMLElement(Document xMLDoc, String tagname) {
+        Element ele = xMLDoc.createElement(tagname);
+        for (int i = 0; i < datalength; i++) {
+            Element cele = xMLDoc.createElement("row");
+            cele.setAttribute("Index", String.valueOf(data[i][0]));
+            cele.setAttribute("Name", String.valueOf(data[i][1]));
+            cele.setAttribute("Comment", String.valueOf(data[i][2]));
+            ele.appendChild(cele);
+        }
+        return ele;
+    }
+    
+    
+    
+    
     @Override 
     public boolean isCellEditable(int rowIndex, int columnIndex){
         if (rowIndex == 0 && columnIndex == 0){
@@ -143,25 +221,33 @@ public class TableNodeLevel extends AbstractTableModel {
             else if(selectedcol[0] == 0){ // confirms that elevation column is selected
 
                 data[0][0] = 0; // only deletes the first elevation value,  Area and Vol maintained as 0. 
-                if(selectedcol.length > 1){ // maximum columns for this data type is 2. 
+                if(selectedcol.length > 2){ // maximum columns for this data type is 3. 
                     data[0][1] = 0.0;
                 }
             }
             else if (selectedcol[0] == 1){
                 data[0][1] = 0.0;
+                data[0][1] = "empty";
             }
             fireTableDataChanged();     
         }
     }
-     public void setAllData(int inDay[], double inLevel[]){
-        if (inDay.length <= inLevel.length){
-            datalength = inDay.length;
+    /**
+     * used for setting all data in table 
+     * @param day
+     * @param level
+     * @param basis string containing comments on the basis of the data
+     */
+    public void setAllData(int day[], double level[], String basis[]){
+        if (day.length <= level.length){
+            datalength = day.length;
         }else{
-            datalength = inLevel.length;
+            datalength = level.length;
         }
         for (int i = 0; i < datalength; i ++){
-            data[i][0] = inDay[i];
-            data[i][1] = inLevel[i];
+            data[i][0] = day[i];
+            data[i][1] = level[i];
+            data[i][2] = basis[i];
         }
         fireTableDataChanged();    
     }

@@ -88,11 +88,11 @@ public class Nod {
     public IndexList inflows;
     public IndexList outflows;
 
-    public DataTimeIntSeries targetOperatingVol;
-    public DataTimeDoubleSeries minDepth;
-    public DataTimeDoubleSeries maxOpLevel;
-    public DataTimeDoubleSeries overflowLevel;
-    public DataTimeDoubleSeries crestLevel;
+    public TableNodeLevel targetOperatingVol;
+    public TableNodeLevel minDepth;
+    public TableNodeLevel maxOpLevel;
+    public TableNodeLevel overflowLevel;
+    public TableNodeLevel crestLevel;
 
     public TableTailingsDepositionRates depositionRates;
 
@@ -218,11 +218,11 @@ public class Nod {
         oSetYStorage = 0;
         dAC = new DAC();
 
-        targetOperatingVol = new DataTimeIntSeries(1);
-        minDepth = new DataTimeDoubleSeries(1);
-        maxOpLevel = new DataTimeDoubleSeries(1);
-        overflowLevel = new DataTimeDoubleSeries(1);
-        crestLevel = new DataTimeDoubleSeries(1);
+        targetOperatingVol = new TableNodeLevel(1, "Model Day", "Volume (cu.m.)", "Comment");
+        minDepth = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
+        maxOpLevel = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
+        overflowLevel = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
+        crestLevel = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
         
         depositionRates = new TableTailingsDepositionRates(projsetting);
 

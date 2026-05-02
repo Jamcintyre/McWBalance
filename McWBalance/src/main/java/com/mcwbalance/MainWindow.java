@@ -143,7 +143,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
     int viewY;
     int startMouseX;
     int startMouseY;
-    static final double PAN_SPEED = .99; // if set to 1 its gittery
+    static final double PAN_SPEED = 1; // if set to 1 its gittery
     static final double ZOOM_MIN = 0.05;
     static final double ZOOM_MAX = 2;
     static final double ZOOM_STEP = 0.05;
@@ -760,8 +760,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
     
     @Override
     public void mouseMoved(MouseEvent mme){ // will be used for cursor location tracking
-        String.valueOf(mme.getX());
-        
+
         int mx = (int)( mme.getX() / FlowChartCAD.zoomscale) ;
         int my = (int)( mme.getY() / FlowChartCAD.zoomscale) ;
         labelmousex.setText(String.valueOf(mx)+',');

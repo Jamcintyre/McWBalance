@@ -12,6 +12,7 @@ import org.w3c.dom.Element;
 /**
  *
  * @author amcintyre
+ * @deprecated use JTable model instead to allow direct access with GUI
  */
 public class DataTimeDoubleSeries {
       public int length;
