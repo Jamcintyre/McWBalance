@@ -33,25 +33,31 @@ import org.xml.sax.SAXException;
  * @author Alex
  */
 public class Project {
-        
-    /**
-     * This is the active list of Nodes, i.e. ponds, piles, buildings
-     */
-    public NodList nODEList;
     
     /**
      * Available sets of climate data precip evap etc. to use in calcs
      */
     public ClimateTable climateTable;
     
+    /**
+     * This is the active list of Nodes, i.e. ponds, piles, buildings
+     */
+    public NodList nODEList;
+    
+    
+    /**
+     * Flag for tracking if project is saved
+     */
     public static String SAVE_SUCCEEDED = "Saved";
     
     ProjSetting setting;
     
     SolveOrder solveOrder;
     
-    
     TitleBlock titleBlock;
+    
+    int nSheetsHorz;
+    int nSheetsVert;
     
     /**
      * This is the active list of Transfers, i.e. pump and pipelines, discharges
@@ -64,6 +70,8 @@ public class Project {
     public Project(){
         setting = new ProjSetting();
         nODEList = new NodList(setting);
+        nSheetsHorz = 2;
+        nSheetsVert = 3;
         tRNList = new TRNList();
         climateTable = new ClimateTable(1); 
         solveOrder = new SolveOrder(this);
@@ -168,19 +176,37 @@ public class Project {
         return nODEList;
     }
     
-    
+    /**
+     * TODO - need to implement this
+     * @return 
+     */
     public SolveOrder getSolveOrder(){
         return solveOrder;
     }
     
     /**
-     * 
+     * Stores titleblock call and rendering method
      * @return Current Title Block
      */
     public TitleBlock getTitleblock(){
         return titleBlock;
     }
     
+    /**
+     * Used for sizing cad window based on currently active title block and number of sheets
+     * @return Width of titleblock x number vertical
+     */
+    public int getCadHeight(){
+        return titleBlock.getheight()*nSheetsVert;
+    }
+    
+    /**
+     * Used for sizing cad window based on currently active title block and number of sheets
+     * @return Width of titleblock x number vertical
+     */
+    public int getCadWidth(){
+        return titleBlock.getWidth()*nSheetsHorz; 
+    }
     
     /**
      * list of Transfers, i.e. pump and pipelines, discharges
@@ -190,6 +216,21 @@ public class Project {
         return tRNList;
     }
     
+    /**
+     * Tracks number of sheets to draw for the template horizontally
+     * @return Number of Sheet Columns
+     */
+    public int getNumSheetsHorz(){
+        return this.nSheetsHorz;
+    }
+    
+    /**
+     * Tracks number of sheets to draw for the template
+     * @return Number of Sheet rows
+     */
+    public int getNumSheetsVert(){
+        return this.nSheetsVert;
+    }
     
     /**
      * calls save if file name can be written

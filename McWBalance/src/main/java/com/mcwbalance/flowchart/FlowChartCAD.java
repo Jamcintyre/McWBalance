@@ -36,22 +36,6 @@ import javax.swing.JComponent;
  */
 public class FlowChartCAD extends JComponent implements Printable{
 
-    /**
-     * Defines number of columns of Title Blocks to layout in Cad Space
-     */
-    public static final int NUMBER_OF_SHEETS_HORIZONTAL = 1;
-    /**
-     * Defines number of rows of Title Blocks to layout in Cad Space
-     */
-    public static final int NUMBER_OF_SHEETS_VERTICAL = 1;
-    /**
-     * Sets working width of CAD Window
-     */
-    public static final int CAD_AREA_WIDTH = TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH * NUMBER_OF_SHEETS_HORIZONTAL + 1 + NUMBER_OF_SHEETS_HORIZONTAL;
-    /**
-     * Sets working height of CAD Window
-     */
-    public static final int CAD_AREA_HEIGHT = TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT * NUMBER_OF_SHEETS_VERTICAL + 1 + NUMBER_OF_SHEETS_VERTICAL;
 
     public static boolean titleBlockVisible = true;
 
@@ -334,25 +318,15 @@ public class FlowChartCAD extends JComponent implements Printable{
         g2.transform(at);
         g2.setColor(defaultDrawColor);
         if (titleBlockVisible) {
-            int osetX = 1;
-            int osetY = 1;
-            for (int irow = 0; irow < NUMBER_OF_SHEETS_VERTICAL; irow++) {
-                osetX = 1;
-                for (int icol = 0; icol < NUMBER_OF_SHEETS_HORIZONTAL; icol++) {
-
-                    if (isPageOutlineVisible) {
-                        g2.setColor(Color.LIGHT_GRAY);
-                        g2.setStroke(THIN_LINE);
-                        g2.drawRect(osetX - 1, osetY - 1,
-                                TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH + 2,
-                                TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT + 2);
-                    }
-
-                    prj.getTitleblock().drawTitleBlock(g2, osetX, osetY);
-
-                    osetX = osetX + TitleBlockTabloidFigure.PAGE_DIMENSION_WIDTH + 1;
+            int osetX = 0;
+            int osetY = 0;
+            for (int irow = 0; irow < prj.getNumSheetsVert(); irow++) {
+                osetX = 0;
+                for (int icol = 0; icol < prj.getNumSheetsHorz(); icol++) {
+                    prj.getTitleblock().drawTitleBlock(g2, this, osetX, osetY);
+                    osetX = osetX + prj.getTitleblock().pageWidth;
                 }
-                osetY = osetY + TitleBlockTabloidFigure.PAGE_DIMENSION_HEIGHT + 1;
+                osetY = osetY + prj.getTitleblock().pageHeight;
             }
         }
 

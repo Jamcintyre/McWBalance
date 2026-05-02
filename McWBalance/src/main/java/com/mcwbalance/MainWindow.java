@@ -62,7 +62,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
+/**
+ * This is the primary window for the program
+ * @author alex
+ */
+public final class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
     
     
     /**
@@ -139,7 +143,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     int viewY;
     int startMouseX;
     int startMouseY;
-    static final double PAN_SPEED = 0.85; // if set to 1 its gittery
+    static final double PAN_SPEED = .99; // if set to 1 its gittery
     static final double ZOOM_MIN = 0.05;
     static final double ZOOM_MAX = 2;
     static final double ZOOM_STEP = 0.05;
@@ -151,8 +155,37 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     // public static JFrame mainframe = new JFrame("McWBalance Pre-Release Non-Functional"); // JFrame declared here and as static so that ObjELMWindow can refer to it
     public static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
     
+    JMenuBar menubar;
+    JMenu menufile;
+    JMenuItem menufilenew;
+    JMenuItem menufileopen;
+    JMenuItem menufileSave;
+    JMenuItem menufileSaveAs;
+    JMenuItem menufileProjSettings;
+    JMenuItem menufilePrint;
     
+    JMenu menuedit;
+    JMenuItem menueditdelete;
+    JMenuItem menueditaddELM;
+    JMenuItem menueditaddTRN;
     
+    JMenu menusolve;
+    JMenuItem menuclimate;
+    JMenuItem menuRunoffCoefficients;
+    JMenuItem menuSolveOrder;
+    JMenuItem menusolvesall;
+    
+    JLabel labelmousecur;
+    /**
+     * For tracking cursor position
+     */
+    JLabel labelmousex;
+    
+    /**
+     * For tracking cursor position
+     */
+    JLabel labelmousey; 
+       
     /**
      * Constructs a new main window
      */
@@ -165,7 +198,6 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
          */
         int winx = 1500;
         int winy = 200;
-        
         
         flowchart = new FlowChartCAD(aP);
         
@@ -206,11 +238,7 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         }
         
         
-        
-        
-        
-        
-        
+
         //Can replace with enum list.. 
         URL imageUrl = getClass().getResource("/icons/Open.png");
         if (imageUrl != null) {
@@ -273,177 +301,13 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(winx, winy);
 
-        // Overall Menu Bar
-        JMenuBar menubar = new JMenuBar();
-        // Start of File Menu
-        JMenu menufile = new JMenu(McWBalance.langRB.getString("FILE"));
-        menufile.setMnemonic(KeyEvent.VK_F);
-        
-        JMenuItem menufilenew = new JMenuItem(McWBalance.langRB.getString("NEW_PROJECT"), KeyEvent.VK_N); 
-        menufilenew.setActionCommand("new"); // Event trigger to make new project
-        menufilenew.addActionListener(this);
-        menufilenew.setIcon(iconNewProject);
-        menufile.add(menufilenew);
-           
-        JMenuItem menufileopen = new JMenuItem(McWBalance.langRB.getString("OPEN_EXISTING_PROJECT"), KeyEvent.VK_O);
-        menufileopen.setActionCommand("Open"); // Event trigger to change project path
-        menufileopen.addActionListener(this);
-        menufileopen.setIcon(iconOpen);
-        menufile.add(menufileopen);
-        
-        JMenuItem menufileSave = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT"), KeyEvent.VK_O);
-        menufileSave.setActionCommand("Save"); // Event trigger to change project path
-        menufileSave.addActionListener(this);
-        menufileSave.setIcon(iconSave);
-        menufile.add(menufileSave);
-        
-        JMenuItem menufileSaveAs = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT_AS"), KeyEvent.VK_O);
-        menufileSaveAs.setActionCommand("SaveAs"); // Event trigger to change project path
-        menufileSaveAs.addActionListener(this);
-        menufileSaveAs.setIcon(iconSaveAs);
-        menufile.add(menufileSaveAs);
-        
-        JMenuItem menufileProjSettings = new JMenuItem(McWBalance.langRB.getString("PROJECT_SETTINGS"), KeyEvent.VK_S);
-        menufileProjSettings.setActionCommand("PSettings"); // Event trigger to change project path
-        menufileProjSettings.addActionListener(this);
-        menufileProjSettings.setIcon(iconSettings);
-        menufile.add(menufileProjSettings);
-        
-        JMenuItem menufilePrint = new JMenuItem(McWBalance.langRB.getString("PRINT"), KeyEvent.VK_S);
-        menufilePrint.setActionCommand("Print"); // Event trigger to change project path
-        menufilePrint.addActionListener(this);
-        menufilePrint.setIcon(iconSettings);
-        menufile.add(menufilePrint);
+        initMenu();
+        initFlowChart();
+        initViewToolbar();
         
         
-        menubar.add(menufile);
-        //End of File Menu
-
-        //Start of Edit Menu
-        JMenu menuedit = new JMenu(McWBalance.langRB.getString("EDIT"));
-        menuedit.setMnemonic(KeyEvent.VK_E);
         
-        JMenuItem menueditdelete = new JMenuItem(McWBalance.langRB.getString("DELETE_OBJECT"), KeyEvent.VK_D);
-        menueditdelete.setActionCommand("DeleteObj");
-        menueditdelete.addActionListener(this);
-        menueditdelete.setIcon(iconDelete);
-        menuedit.add(menueditdelete);
- 
-        JMenuItem menueditaddELM = new JMenuItem(McWBalance.langRB.getString("ADD_NODE"), KeyEvent.VK_L);
-        menueditaddELM.setActionCommand("AddObjELM");
-        menueditaddELM.addActionListener(this);
-        menueditaddELM.setIcon(iconNewELM);
-        menuedit.add(menueditaddELM);
         
-        JMenuItem menueditaddTRN = new JMenuItem(McWBalance.langRB.getString("ADD_TRANSFER"), KeyEvent.VK_T);
-        menueditaddTRN.setActionCommand("AddObjTRN");
-        menueditaddTRN.addActionListener(this);
-        menueditaddTRN.setIcon(iconNewTRN);
-        menuedit.add(menueditaddTRN);
-        
-        menubar.add(menuedit);
-        //End of Edit Menu
-        
-         // Start of Solver Menu
-        JMenu menusolve = new JMenu(McWBalance.langRB.getString("CALCULATION_SETTINGS"));
-        menufile.setMnemonic(KeyEvent.VK_S);
-        
-        JMenuItem menuclimate = new JMenuItem(McWBalance.langRB.getString("CLIMATE"), KeyEvent.VK_C); 
-        menuclimate.setActionCommand("ClimateSetting"); // Event trigger to make new project
-        menuclimate.addActionListener(this);
-        menusolve.add(menuclimate);
-        
-        JMenuItem menuRunoffCoefficients = new JMenuItem(McWBalance.langRB.getString("RUNOFF_COEFFICIENTS"), KeyEvent.VK_O); 
-        menuRunoffCoefficients.setActionCommand("RunoffCoefficientsWindow"); // Event trigger to make new project
-        menuRunoffCoefficients.addActionListener(this);
-        menusolve.add(menuRunoffCoefficients);
-        
-        JMenuItem menuSolveOrder = new JMenuItem(McWBalance.langRB.getString("SOLVE_ORDER"), KeyEvent.VK_O); 
-        menuSolveOrder.setActionCommand("SolveOrderWindow"); // Event trigger to make new project
-        menuSolveOrder.addActionListener(this);
-        menusolve.add(menuSolveOrder); 
-        
-        JMenuItem menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_S); 
-        menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
-        menusolvesall.addActionListener(this);
-        menusolve.add(menusolvesall);
-        
-        menubar.add(menusolve);
-        //End of Solver Menu
-        
-        this.setJMenuBar(menubar);
-        // End of Overall MenuBar
-        
-        flowChartPanel.setBackground(Preferences.DEFAULT_BACKGROUND_COLOR);
-        flowChartPanel.addMouseListener(this);
-        flowChartPanel.addMouseMotionListener(this); // added to allow for moving of Object
-        // keyboard binding - Doesn't work yet, suspect because focus isn;t pulled away from jSPinner
- 
-        flowChartPanel.setPreferredSize(new Dimension((int)(FlowChartCAD.CAD_AREA_WIDTH*FlowChartCAD.zoomscale),(int)(FlowChartCAD.CAD_AREA_HEIGHT*FlowChartCAD.zoomscale)));
-        flowChartPanel.add(flowchart); // does not seem to work
-      
-        flowChartScPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        flowChartScPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        flowChartScPane.addMouseWheelListener(this);
-        flowChartScPane.setWheelScrollingEnabled(false);
-        flowChartPanel.setFocusable(true);
-        //listens for delete key (note that Ctrl is considered a modifier so cant seem to listen for it alone
-        flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(127, 0), "pressDEL");
-        flowChartPanel.getActionMap().put("pressDEL", new AbstractAction(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                flowchart.deleteSelection();
-                flowchart.repaint();
-            }
-        });
-        flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(67, 128), "pressCtrlC");
-        flowChartPanel.getActionMap().put("pressCtrlC", new AbstractAction(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                flowchart.copySelectiontoClipboard();
-            }
-        });
-        flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(86, 128), "pressCtrlV");
-        flowChartPanel.getActionMap().put("pressCtrlV", new AbstractAction(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                flowchart.pasteFromClipBoard();
-                flowchart.repaint();
-            }
-        });
-        
-        // View Toolbar
-        // Zoom Selector
-        JToolBar toolbarView = new JToolBar();
-        JPanel toolbarViewpanel = new JPanel();
-        JSpinner zoomSpinner = new JSpinner(zoomSpinnerModel);
-        zoomSpinner.setMaximumSize(new Dimension(50, 30));
-        zoomSpinner.addChangeListener(e->{
-            FlowChartCAD.zoomscale = (double)zoomSpinner.getValue();
-            flowChartPanel.setPreferredSize(new Dimension((int)(FlowChartCAD.CAD_AREA_WIDTH*FlowChartCAD.zoomscale),(int)(FlowChartCAD.CAD_AREA_HEIGHT*FlowChartCAD.zoomscale)));
-            flowChartPanel.repaint();
-        });
-        JLabel zoomSpinnerLabel = new JLabel(McWBalance.langRB.getString("ZOOM"));
-        toolbarViewpanel.add(zoomSpinnerLabel);
-        toolbarViewpanel.add(zoomSpinner);
-        
-        //Date Selector
-        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,Limit.MAX_DURATION,1);
-        JSpinner dateSpinner = new JSpinner(dateSpinnerModel);
-        dateSpinner.setMaximumSize(new Dimension(50, 30));
-        dateSpinner.addChangeListener(e->{
-            FlowChartCAD.drawdate = (int)dateSpinner.getValue();
-            flowChartPanel.repaint();
-        });
-        JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
-        toolbarViewpanel.add(dateSpinnerLabel);
-        toolbarViewpanel.add(dateSpinner);
-       
-        toolbarView.add(toolbarViewpanel);
-        toolbarView.setFloatable(true);
-        
-        this.setLayout(new BorderLayout());
-        this.add(toolbarView, BorderLayout.NORTH);
         this.add(flowChartScPane, BorderLayout.CENTER); // adds the FlowChart graphics area to the Frame
         this.validate(); // done because set visible is before the menu additions
         this.setIconImage(McWBalance.mainIcon30);
@@ -576,7 +440,201 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
             
         }
     }
+    
+    
+    /**
+     * Initialize and setup menu,  used to avoid leaking this to main constructor
+     */
+    private void initMenu(){
+        // Overall Menu Bar
+        menubar = new JMenuBar();
+        // Start of File Menu
+        menufile = new JMenu(McWBalance.langRB.getString("FILE"));
+        menufile.setMnemonic(KeyEvent.VK_F);
+        
+        menufilenew = new JMenuItem(McWBalance.langRB.getString("NEW_PROJECT"), KeyEvent.VK_N); 
+        menufilenew.setActionCommand("new"); // Event trigger to make new project
+        menufilenew.addActionListener(this);
+        menufilenew.setIcon(iconNewProject);
+        menufile.add(menufilenew);
+           
+        menufileopen = new JMenuItem(McWBalance.langRB.getString("OPEN_EXISTING_PROJECT"), KeyEvent.VK_O);
+        menufileopen.setActionCommand("Open"); // Event trigger to change project path
+        menufileopen.addActionListener(this);
+        menufileopen.setIcon(iconOpen);
+        menufile.add(menufileopen);
+        
+        menufileSave = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT"), KeyEvent.VK_O);
+        menufileSave.setActionCommand("Save"); // Event trigger to change project path
+        menufileSave.addActionListener(this);
+        menufileSave.setIcon(iconSave);
+        menufile.add(menufileSave);
+        
+        menufileSaveAs = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT_AS"), KeyEvent.VK_O);
+        menufileSaveAs.setActionCommand("SaveAs"); // Event trigger to change project path
+        menufileSaveAs.addActionListener(this);
+        menufileSaveAs.setIcon(iconSaveAs);
+        menufile.add(menufileSaveAs);
+        
+        menufileProjSettings = new JMenuItem(McWBalance.langRB.getString("PROJECT_SETTINGS"), KeyEvent.VK_S);
+        menufileProjSettings.setActionCommand("PSettings"); // Event trigger to change project path
+        menufileProjSettings.addActionListener(this);
+        menufileProjSettings.setIcon(iconSettings);
+        menufile.add(menufileProjSettings);
+        
+        menufilePrint = new JMenuItem(McWBalance.langRB.getString("PRINT"), KeyEvent.VK_S);
+        menufilePrint.setActionCommand("Print"); // Event trigger to change project path
+        menufilePrint.addActionListener(this);
+        menufilePrint.setIcon(iconSettings);
+        menufile.add(menufilePrint);
+        
+        menubar.add(menufile);
+        //End of File Menu
 
+        //Start of Edit Menu
+        menuedit = new JMenu(McWBalance.langRB.getString("EDIT"));
+        menuedit.setMnemonic(KeyEvent.VK_E);
+        
+        menueditdelete = new JMenuItem(McWBalance.langRB.getString("DELETE_OBJECT"), KeyEvent.VK_D);
+        menueditdelete.setActionCommand("DeleteObj");
+        menueditdelete.addActionListener(this);
+        menueditdelete.setIcon(iconDelete);
+        menuedit.add(menueditdelete);
+ 
+        menueditaddELM = new JMenuItem(McWBalance.langRB.getString("ADD_NODE"), KeyEvent.VK_L);
+        menueditaddELM.setActionCommand("AddObjELM");
+        menueditaddELM.addActionListener(this);
+        menueditaddELM.setIcon(iconNewELM);
+        menuedit.add(menueditaddELM);
+        
+        menueditaddTRN = new JMenuItem(McWBalance.langRB.getString("ADD_TRANSFER"), KeyEvent.VK_T);
+        menueditaddTRN.setActionCommand("AddObjTRN");
+        menueditaddTRN.addActionListener(this);
+        menueditaddTRN.setIcon(iconNewTRN);
+        menuedit.add(menueditaddTRN);
+        
+        menubar.add(menuedit);
+        //End of Edit Menu
+        
+         // Start of Solver Menu
+        menusolve = new JMenu(McWBalance.langRB.getString("CALCULATION_SETTINGS"));
+        menufile.setMnemonic(KeyEvent.VK_S);
+        
+        menuclimate = new JMenuItem(McWBalance.langRB.getString("CLIMATE"), KeyEvent.VK_C); 
+        menuclimate.setActionCommand("ClimateSetting"); // Event trigger to make new project
+        menuclimate.addActionListener(this);
+        menusolve.add(menuclimate);
+        
+        menuRunoffCoefficients = new JMenuItem(McWBalance.langRB.getString("RUNOFF_COEFFICIENTS"), KeyEvent.VK_O); 
+        menuRunoffCoefficients.setActionCommand("RunoffCoefficientsWindow"); // Event trigger to make new project
+        menuRunoffCoefficients.addActionListener(this);
+        menusolve.add(menuRunoffCoefficients);
+        
+        menuSolveOrder = new JMenuItem(McWBalance.langRB.getString("SOLVE_ORDER"), KeyEvent.VK_O); 
+        menuSolveOrder.setActionCommand("SolveOrderWindow"); // Event trigger to make new project
+        menuSolveOrder.addActionListener(this);
+        menusolve.add(menuSolveOrder); 
+        
+        menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_S); 
+        menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
+        menusolvesall.addActionListener(this);
+        menusolve.add(menusolvesall);
+        
+        menubar.add(menusolve);
+        //End of Solver Menu
+        
+        this.setJMenuBar(menubar);
+        // End of Overall MenuBar
+    }
+    
+    /**
+     * Initializes the flowchart panel,
+     */
+    private void initFlowChart(){
+        flowChartPanel.setBackground(Preferences.DEFAULT_BACKGROUND_COLOR);
+        flowChartPanel.addMouseListener(this);
+        flowChartPanel.addMouseMotionListener(this); // added to allow for moving of Object
+        // keyboard binding - Doesn't work yet, suspect because focus isn;t pulled away from jSPinner
+ 
+        flowChartPanel.setPreferredSize(new Dimension((int)(aP.getCadWidth()*FlowChartCAD.zoomscale),(int)(aP.getCadHeight()*FlowChartCAD.zoomscale)));
+        flowChartPanel.add(flowchart); // does not seem to work
+      
+        flowChartScPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        flowChartScPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        flowChartScPane.addMouseWheelListener(this);
+        flowChartScPane.setWheelScrollingEnabled(false);
+        flowChartPanel.setFocusable(true);
+        //listens for delete key (note that Ctrl is considered a modifier so cant seem to listen for it alone
+        flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(127, 0), "pressDEL");
+        flowChartPanel.getActionMap().put("pressDEL", new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                flowchart.deleteSelection();
+                flowchart.repaint();
+            }
+        });
+        flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(67, 128), "pressCtrlC");
+        flowChartPanel.getActionMap().put("pressCtrlC", new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                flowchart.copySelectiontoClipboard();
+            }
+        });
+        flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(86, 128), "pressCtrlV");
+        flowChartPanel.getActionMap().put("pressCtrlV", new AbstractAction(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                flowchart.pasteFromClipBoard();
+                flowchart.repaint();
+            }
+        });
+    }
+    
+    /**
+     * Sets out the view toolbar which contains the zoom spinner, mouse pos and 
+     * model day
+     */
+    private void initViewToolbar(){
+        // View Toolbar
+        // Zoom Selector
+        JToolBar toolbarView = new JToolBar();
+        JPanel toolbarViewpanel = new JPanel();
+        JSpinner zoomSpinner = new JSpinner(zoomSpinnerModel);
+        zoomSpinner.setMaximumSize(new Dimension(50, 30));
+        zoomSpinner.addChangeListener(e->{
+            FlowChartCAD.zoomscale = (double)zoomSpinner.getValue();
+            flowChartPanel.setPreferredSize(new Dimension((int)(aP.getCadWidth()*FlowChartCAD.zoomscale),(int)(aP.getCadHeight()*FlowChartCAD.zoomscale)));
+            flowChartPanel.repaint();
+        });
+        JLabel zoomSpinnerLabel = new JLabel(McWBalance.langRB.getString("ZOOM"));
+        toolbarViewpanel.add(zoomSpinnerLabel);
+        toolbarViewpanel.add(zoomSpinner);
+        
+        //Date Selector
+        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,Limit.MAX_DURATION,1);
+        JSpinner dateSpinner = new JSpinner(dateSpinnerModel);
+        dateSpinner.setMaximumSize(new Dimension(50, 30));
+        dateSpinner.addChangeListener(e->{
+            FlowChartCAD.drawdate = (int)dateSpinner.getValue();
+            flowChartPanel.repaint();
+        });
+        JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
+        toolbarViewpanel.add(dateSpinnerLabel);
+        toolbarViewpanel.add(dateSpinner);
+        labelmousecur = new JLabel("Pos ");
+        labelmousex = new JLabel("XXXXX");
+        labelmousey = new JLabel("YYYYY");
+        toolbarViewpanel.add(labelmousecur);
+        toolbarViewpanel.add(labelmousex);
+        toolbarViewpanel.add(labelmousey);
+        toolbarView.add(toolbarViewpanel, BorderLayout.EAST);
+        toolbarView.setFloatable(false);
+        
+        
+        this.setLayout(new BorderLayout());
+        this.add(toolbarView, BorderLayout.SOUTH);
+    }
+    
     @Override
     public void mouseClicked(MouseEvent me) {
         int mx = (int) (me.getX() / FlowChartCAD.zoomscale);
@@ -702,6 +760,12 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
     
     @Override
     public void mouseMoved(MouseEvent mme){ // will be used for cursor location tracking
+        String.valueOf(mme.getX());
+        
+        int mx = (int)( mme.getX() / FlowChartCAD.zoomscale) ;
+        int my = (int)( mme.getY() / FlowChartCAD.zoomscale) ;
+        labelmousex.setText(String.valueOf(mx)+',');
+        labelmousey.setText(String.valueOf(my));
    
     }
     
@@ -736,8 +800,9 @@ public class MainWindow extends JFrame implements MouseListener, ActionListener,
                 panY = flowChartScPane.getVerticalScrollBar().getMaximum();
             }
             flowChartScPane.getVerticalScrollBar().setValue(panY);
-            
         }
+        labelmousex.setText(String.valueOf(mx)+',');
+        labelmousey.setText(String.valueOf(my));
     }
     
     @Override

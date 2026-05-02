@@ -42,6 +42,8 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
@@ -139,6 +141,9 @@ public class SVGRender {
     Line2D.Double lines[];
     Path2D.Double paths[];
     RoundRectangle2D.Double rects[];
+    
+    int width;
+    int height; 
 
     int number;
     
@@ -163,7 +168,22 @@ public class SVGRender {
         ArrayList<Element> eles= new ArrayList<Element>();
         NodeList svgs = svg.getElementsByTagName("svg");
         number = 0;
-
+        
+        Element svg0 = (Element) svgs.item(0);
+        
+        if(svg0.hasAttribute("height")){
+            height = Integer.parseInt(svg0.getAttribute("height"));
+        }else{
+            System.err.println("SVGRender(Document svg) height not found in svg0");
+            height = 100;
+        }
+        if(svg0.hasAttribute("width")){
+            width = Integer.parseInt(svg0.getAttribute("width"));
+        }else{
+            System.err.println("SVGRender(Document svg) width not found in svg0");
+            width = 100;
+        }
+        
         for (int c = 0; c < svgs.getLength(); c++) {
             NodeList cnl = ((Element) svgs.item(c)).getChildNodes();
             for (int d = 0; d < cnl.getLength(); d++) {
@@ -175,8 +195,6 @@ public class SVGRender {
                 }
             }
         }
-        //DEBUG
-        System.out.println("SVGRender.java public SVGRender(Document svg) - found "+ eles.size()+ " Shape Elements in input svg");
         number = eles.size();
         color = new Color[number];
         filled = new Boolean[number];
@@ -203,10 +221,7 @@ public class SVGRender {
                 case Shapes.rect -> nrects++;
             }
         }
-        
-        System.out.println("SVGRender.java public SVGRender(Document svg) - found "+ nellipse + " ellipses in this.eles");
-        System.out.println("SVGRender.java public SVGRender(Document svg) - found "+ nlines + " lines in this.eles");
-        
+
         ellipse = new Ellipse2D.Double[nellipse];
         lines = new Line2D.Double[nlines];
         paths = new Path2D.Double[npaths];
@@ -305,9 +320,7 @@ public class SVGRender {
                                 cmds.add(arg); // needs to add last argument
                             }
                         }
-                        for (int c = 0; c < cmds.size(); c++){
-                            System.out.println("SVGRender paths parse check cmd " + c + ": " + cmds.get(c));
-                        }
+
                         //we know that the first command must be an m
                         //and the next 2 arguments must be x and y;
                         double startx = Double.parseDouble(cmds.get(1));
@@ -616,9 +629,13 @@ public class SVGRender {
     /**
      * Draws the stored ellipses, lines, paths, and rects in order to the 
      * graphics layer
-     * @param g 
+     * @return a buffered image sized to the height and width of first SVG, 100 x 100 if no bounds found
      */
-    public void Draw(Graphics2D g){
+    public BufferedImage getImage(){
+        //Note must be ARGB color modes for the shapes. 
+        BufferedImage bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = bi.createGraphics();
+        
         int nellipse = 0;
         int nlines = 0;
         int npaths = 0;
@@ -670,5 +687,7 @@ public class SVGRender {
                 }
             }
         }
+        
+        return bi;
     }
 }
