@@ -43,7 +43,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
@@ -147,6 +146,9 @@ public class SVGRender {
 
     int number;
     
+    BufferedImage image;
+    
+    
     /**
      * Generates a graphics instance from a provided SVG
      * TODO - Allow Style definition of stroke and color
@@ -183,6 +185,8 @@ public class SVGRender {
             System.err.println("SVGRender(Document svg) width not found in svg0");
             width = 100;
         }
+        
+        image = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
         
         for (int c = 0; c < svgs.getLength(); c++) {
             NodeList cnl = ((Element) svgs.item(c)).getChildNodes();
@@ -625,6 +629,7 @@ public class SVGRender {
                 }
             }
         }
+        render();
     }
     /**
      * Draws the stored ellipses, lines, paths, and rects in order to the 
@@ -632,9 +637,15 @@ public class SVGRender {
      * @return a buffered image sized to the height and width of first SVG, 100 x 100 if no bounds found
      */
     public BufferedImage getImage(){
-        //Note must be ARGB color modes for the shapes. 
-        BufferedImage bi = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = bi.createGraphics();
+        return image;
+    }
+    
+    /**
+     * Draws the stored ellipses, lines, paths, and rects in order to a buffered image;
+     */
+    public final void render(){
+        
+        Graphics2D g = image.createGraphics();
         
         int nellipse = 0;
         int nlines = 0;
@@ -687,7 +698,5 @@ public class SVGRender {
                 }
             }
         }
-        
-        return bi;
     }
 }
