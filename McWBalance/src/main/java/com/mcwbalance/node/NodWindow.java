@@ -9,6 +9,7 @@ import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.dacapacity.DACWindow;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -48,11 +49,7 @@ import javax.swing.table.TableColumn;
  */
 public class NodWindow extends JFrame { // implements ActionListener not needed if lamba is used
     //int objELMNumber = -1;
-    /**
-     * Container for storing and modifying element used for return at end
-     * Setting to static does not fix the problem with action listener making a seperate Copy...
-     */
-    Nod buffNode; 
+
     /**
      * Container for allowing mainwindow access to returned value since return doesnt work in Jdialog
      */
@@ -101,15 +98,15 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
      * @param projSetting used for managing general project details such as save location
      * @return 
      */
-    public Nod ObjELMWindowFunct(Nod node, int nodeNumber, TRNList ctRNList, ProjSetting projSetting){ // requires object number to edit
+    public void ObjELMWindowFunct(Nod node, int nodeNumber, TRNList ctRNList, Project aP){ // requires object number to edit
         
-        buffNode = new Nod(projSetting);
+        //buffNode = new Nod(projSetting);
         
         ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
         
         //objELMNumber = inNumber; // sets value for save and loads, needs to be called external to this function in action listener
         MainWindow.editorIsActive = true; 
-        buffNode = node; // sets buffered object to in object
+
         //returnedObjELM = inNode; // sets default return to whatever was provided
       
         int hPadLabels = 10; // padding relative to left side of window
@@ -149,52 +146,52 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         tab2lableOverflow = new JLabel("Overflow");
         
         // Sets initial Data; intent s to taeke the full list and trim down every time. 
-        buffNode.inflows.overwriteList(ctRNList.getInflowNameListIndex(nodeNumber,false), ctRNList.getInflowNameList(nodeNumber,false));
-        buffNode.inflows.trimFromList(buffNode.inflowFixedTRN.getShortIndexList());
-        buffNode.inflows.trimFromList(buffNode.inflowOnDemandTRN.getShortIndexList());
-        buffNode.inflowFixedTRN.setNames(ctRNList.getNameList(buffNode.inflowFixedTRN.getShortIndexList()));
-        buffNode.inflowOnDemandTRN.setNames(ctRNList.getNameList(buffNode.inflowOnDemandTRN.getShortIndexList()));
+        node.inflows.overwriteList(ctRNList.getInflowNameListIndex(nodeNumber,false), ctRNList.getInflowNameList(nodeNumber,false));
+        node.inflows.trimFromList(node.inflowFixedTRN.getShortIndexList());
+        node.inflows.trimFromList(node.inflowOnDemandTRN.getShortIndexList());
+        node.inflowFixedTRN.setNames(ctRNList.getNameList(node.inflowFixedTRN.getShortIndexList()));
+        node.inflowOnDemandTRN.setNames(ctRNList.getNameList(node.inflowOnDemandTRN.getShortIndexList()));
         
-        buffNode.outflows.overwriteList(ctRNList.getOutflowNameListIndex(nodeNumber,false), ctRNList.getOutflowNameList(nodeNumber,false));
-        buffNode.outflows.trimFromList(buffNode.outflowFixedTRN.getShortIndexList());
-        buffNode.outflows.trimFromList(buffNode.outflowOnDemandTRN.getShortIndexList());
-        buffNode.outflows.trimFromList(buffNode.overflowTRN);
+        node.outflows.overwriteList(ctRNList.getOutflowNameListIndex(nodeNumber,false), ctRNList.getOutflowNameList(nodeNumber,false));
+        node.outflows.trimFromList(node.outflowFixedTRN.getShortIndexList());
+        node.outflows.trimFromList(node.outflowOnDemandTRN.getShortIndexList());
+        node.outflows.trimFromList(node.overflowTRN);
         
         // overflow Options built independently from outflows since i believe the actionlistener somehow skips back to be beginning of the class, but debug breaks don't catch it...
-        buffNode.overflowOptions.overwriteList(ctRNList.getOutflowNameListIndex(nodeNumber,false), ctRNList.getOutflowNameList(nodeNumber,false));
-        buffNode.overflowOptions.trimFromList(buffNode.outflowFixedTRN.getShortIndexList());
-        buffNode.overflowOptions.trimFromList(buffNode.outflowOnDemandTRN.getShortIndexList());     
+        node.overflowOptions.overwriteList(ctRNList.getOutflowNameListIndex(nodeNumber,false), ctRNList.getOutflowNameList(nodeNumber,false));
+        node.overflowOptions.trimFromList(node.outflowFixedTRN.getShortIndexList());
+        node.overflowOptions.trimFromList(node.outflowOnDemandTRN.getShortIndexList());     
        
-        buffNode.outflowFixedTRN.setNames(ctRNList.getNameList(buffNode.outflowFixedTRN.getShortIndexList()));
-        buffNode.outflowOnDemandTRN.setNames(ctRNList.getNameList(buffNode.outflowOnDemandTRN.getShortIndexList()));
+        node.outflowFixedTRN.setNames(ctRNList.getNameList(node.outflowFixedTRN.getShortIndexList()));
+        node.outflowOnDemandTRN.setNames(ctRNList.getNameList(node.outflowOnDemandTRN.getShortIndexList()));
    
         tab2LModelFixedInputs = new DataNameListModel();
-        tab2LModelFixedInputs.setAllData(buffNode.inflowFixedTRN.getShortNameList());
+        tab2LModelFixedInputs.setAllData(node.inflowFixedTRN.getShortNameList());
         tab2listFixedInputs = new JList(tab2LModelFixedInputs);
         
         tab2LModelInputs = new DataNameListModel();
-        tab2LModelInputs.setAllData(buffNode.inflows.getShortNameList());
+        tab2LModelInputs.setAllData(node.inflows.getShortNameList());
         tab2listInputs = new JList(tab2LModelInputs);
         
         tab2LModelDemandInputs = new DataNameListModel();
-        tab2LModelDemandInputs.setAllData(buffNode.inflowOnDemandTRN.getShortNameList());
+        tab2LModelDemandInputs.setAllData(node.inflowOnDemandTRN.getShortNameList());
         tab2listDemandInputs = new JList(tab2LModelDemandInputs);
         
         tab2LModelFixedOutputs = new DataNameListModel();
-        tab2LModelFixedOutputs.setAllData(buffNode.outflowFixedTRN.getShortNameList());
+        tab2LModelFixedOutputs.setAllData(node.outflowFixedTRN.getShortNameList());
         tab2listFixedOutputs = new JList(tab2LModelFixedOutputs);
         
         tab2LModelOutputs = new DataNameListModel();
-        tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
+        tab2LModelOutputs.setAllData(node.outflows.getShortNameList());
         tab2listOutputs = new JList(tab2LModelOutputs);
         
         tab2LModelDemandOutputs = new DataNameListModel();
-        tab2LModelDemandOutputs.setAllData(buffNode.outflowOnDemandTRN.getShortNameList());
+        tab2LModelDemandOutputs.setAllData(node.outflowOnDemandTRN.getShortNameList());
         tab2listDemandOutputs = new JList(tab2LModelDemandOutputs);
         
         //experementing, may not be able ot use the same type of data model for comboBoxes... 
         tab2ComboModelOverflow = new DataComboBoxModel();
-        tab2ComboModelOverflow.setAllData(buffNode.overflowOptions.getShortNameListWithNone());
+        tab2ComboModelOverflow.setAllData(node.overflowOptions.getShortNameListWithNone());
         
         
         Dimension tab2PrefListDim = new Dimension(150,150); // sets the size of the lists
@@ -214,135 +211,135 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         
         JButton tab2buttonAddFixedInput = new JButton("<");
         tab2buttonAddFixedInput.addActionListener(e -> {
-            int tRNIndex = buffNode.inflows.getObjIndex(tab2listInputs.getSelectedIndex());
+            int tRNIndex = node.inflows.getObjIndex(tab2listInputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.inflows.trimFromList(tRNIndex);
-            tab2LModelInputs.setAllData(buffNode.inflows.getShortNameList());
-            buffNode.inflowFixedTRN.appendToList(tRNIndex, tRNName);
-            tab2LModelFixedInputs.setAllData(buffNode.inflowFixedTRN.getShortNameList());
+            node.inflows.trimFromList(tRNIndex);
+            tab2LModelInputs.setAllData(node.inflows.getShortNameList());
+            node.inflowFixedTRN.appendToList(tRNIndex, tRNName);
+            tab2LModelFixedInputs.setAllData(node.inflowFixedTRN.getShortNameList());
         });
         JButton tab2buttonRemFixedInput = new JButton(">");
         tab2buttonRemFixedInput.addActionListener(e -> {
-            int tRNIndex = buffNode.inflowFixedTRN.getObjIndex(tab2listFixedInputs.getSelectedIndex());
+            int tRNIndex = node.inflowFixedTRN.getObjIndex(tab2listFixedInputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.inflows.appendToList(tRNIndex, tRNName);
-            tab2LModelInputs.setAllData(buffNode.inflows.getShortNameList());
-            buffNode.inflowFixedTRN.trimFromList(tRNIndex);
-            tab2LModelFixedInputs.setAllData(buffNode.inflowFixedTRN.getShortNameList());
+            node.inflows.appendToList(tRNIndex, tRNName);
+            tab2LModelInputs.setAllData(node.inflows.getShortNameList());
+            node.inflowFixedTRN.trimFromList(tRNIndex);
+            tab2LModelFixedInputs.setAllData(node.inflowFixedTRN.getShortNameList());
         });
         JButton tab2buttonAddDemandInput = new JButton(">");
         tab2buttonAddDemandInput.addActionListener(e -> {
-            int tRNIndex = buffNode.inflows.getObjIndex(tab2listInputs.getSelectedIndex());
+            int tRNIndex = node.inflows.getObjIndex(tab2listInputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.inflows.trimFromList(tRNIndex);
-            tab2LModelInputs.setAllData(buffNode.inflows.getShortNameList());
-            buffNode.inflowOnDemandTRN.appendToList(tRNIndex, tRNName);
-            tab2LModelDemandInputs.setAllData(buffNode.inflowOnDemandTRN.getShortNameList());
+            node.inflows.trimFromList(tRNIndex);
+            tab2LModelInputs.setAllData(node.inflows.getShortNameList());
+            node.inflowOnDemandTRN.appendToList(tRNIndex, tRNName);
+            tab2LModelDemandInputs.setAllData(node.inflowOnDemandTRN.getShortNameList());
 
         });
         JButton tab2buttonRemDemandInput = new JButton("<");
         tab2buttonRemDemandInput.addActionListener(e -> {
-            int tRNIndex = buffNode.inflowOnDemandTRN.getObjIndex(tab2listDemandInputs.getSelectedIndex());
+            int tRNIndex = node.inflowOnDemandTRN.getObjIndex(tab2listDemandInputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.inflows.appendToList(tRNIndex, tRNName);
-            tab2LModelInputs.setAllData(buffNode.inflows.getShortNameList());
-            buffNode.inflowOnDemandTRN.trimFromList(tRNIndex);
-            tab2LModelDemandInputs.setAllData(buffNode.inflowOnDemandTRN.getShortNameList());
+            node.inflows.appendToList(tRNIndex, tRNName);
+            tab2LModelInputs.setAllData(node.inflows.getShortNameList());
+            node.inflowOnDemandTRN.trimFromList(tRNIndex);
+            tab2LModelDemandInputs.setAllData(node.inflowOnDemandTRN.getShortNameList());
         });
         JButton tab2buttonUpDemandInput = new JButton("UP");
         tab2buttonUpDemandInput.addActionListener(e -> {
-            buffNode.inflowOnDemandTRN.shiftUp(tab2listDemandInputs.getSelectedIndex());
-            tab2LModelDemandInputs.setAllData(buffNode.inflowOnDemandTRN.getShortNameList());
+            node.inflowOnDemandTRN.shiftUp(tab2listDemandInputs.getSelectedIndex());
+            tab2LModelDemandInputs.setAllData(node.inflowOnDemandTRN.getShortNameList());
         });
         JButton tab2buttonDownDemandInput = new JButton("DOWN");
         tab2buttonDownDemandInput.addActionListener(e -> {
-            buffNode.inflowOnDemandTRN.shiftDown(tab2listDemandInputs.getSelectedIndex());
-            tab2LModelDemandInputs.setAllData(buffNode.inflowOnDemandTRN.getShortNameList());
+            node.inflowOnDemandTRN.shiftDown(tab2listDemandInputs.getSelectedIndex());
+            tab2LModelDemandInputs.setAllData(node.inflowOnDemandTRN.getShortNameList());
         });
         JButton tab2buttonAddFixedOutput = new JButton("<");
         tab2buttonAddFixedOutput.addActionListener(e -> {
-            int tRNIndex = buffNode.outflows.getObjIndex(tab2listOutputs.getSelectedIndex());
+            int tRNIndex = node.outflows.getObjIndex(tab2listOutputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.outflows.trimFromList(tRNIndex);
-            tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
-            buffNode.outflowFixedTRN.appendToList(tRNIndex, tRNName);
-            tab2LModelFixedOutputs.setAllData(buffNode.outflowFixedTRN.getShortNameList());
+            node.outflows.trimFromList(tRNIndex);
+            tab2LModelOutputs.setAllData(node.outflows.getShortNameList());
+            node.outflowFixedTRN.appendToList(tRNIndex, tRNName);
+            tab2LModelFixedOutputs.setAllData(node.outflowFixedTRN.getShortNameList());
         });
         JButton tab2buttonRemFixedOutput = new JButton(">");
         tab2buttonRemFixedOutput.addActionListener(e -> {
-            int tRNIndex = buffNode.outflowFixedTRN.getObjIndex(tab2listFixedOutputs.getSelectedIndex());
+            int tRNIndex = node.outflowFixedTRN.getObjIndex(tab2listFixedOutputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.outflows.appendToList(tRNIndex, tRNName);
-            tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
-            buffNode.outflowFixedTRN.trimFromList(tRNIndex);
-            tab2LModelFixedOutputs.setAllData(buffNode.outflowFixedTRN.getShortNameList());
+            node.outflows.appendToList(tRNIndex, tRNName);
+            tab2LModelOutputs.setAllData(node.outflows.getShortNameList());
+            node.outflowFixedTRN.trimFromList(tRNIndex);
+            tab2LModelFixedOutputs.setAllData(node.outflowFixedTRN.getShortNameList());
         });
         JButton tab2buttonAddDemandOutput = new JButton(">");
         tab2buttonAddDemandOutput.addActionListener(e -> {
-            int tRNIndex = buffNode.outflows.getObjIndex(tab2listOutputs.getSelectedIndex());
+            int tRNIndex = node.outflows.getObjIndex(tab2listOutputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.outflows.trimFromList(tRNIndex);
-            tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
-            buffNode.outflowOnDemandTRN.appendToList(tRNIndex, tRNName);
-            tab2LModelDemandOutputs.setAllData(buffNode.outflowOnDemandTRN.getShortNameList());
+            node.outflows.trimFromList(tRNIndex);
+            tab2LModelOutputs.setAllData(node.outflows.getShortNameList());
+            node.outflowOnDemandTRN.appendToList(tRNIndex, tRNName);
+            tab2LModelDemandOutputs.setAllData(node.outflowOnDemandTRN.getShortNameList());
         });
         JButton tab2buttonRemDemandOutput = new JButton("<");
         tab2buttonRemDemandOutput.addActionListener(e -> {
-            int tRNIndex = buffNode.outflowOnDemandTRN.getObjIndex(tab2listDemandOutputs.getSelectedIndex());
+            int tRNIndex = node.outflowOnDemandTRN.getObjIndex(tab2listDemandOutputs.getSelectedIndex());
             if (tRNIndex < 0) {
                 return;
             }
             String tRNName = ctRNList.tRNs[tRNIndex].objname;
-            buffNode.outflows.appendToList(tRNIndex, tRNName);
-            tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
-            buffNode.outflowOnDemandTRN.trimFromList(tRNIndex);
-            tab2LModelDemandOutputs.setAllData(buffNode.outflowOnDemandTRN.getShortNameList());
+            node.outflows.appendToList(tRNIndex, tRNName);
+            tab2LModelOutputs.setAllData(node.outflows.getShortNameList());
+            node.outflowOnDemandTRN.trimFromList(tRNIndex);
+            tab2LModelDemandOutputs.setAllData(node.outflowOnDemandTRN.getShortNameList());
         });    
         JButton tab2buttonUpDemandOutput = new JButton("UP");
         tab2buttonUpDemandOutput.addActionListener(e -> {
-            buffNode.outflowOnDemandTRN.shiftUp(tab2listDemandOutputs.getSelectedIndex());
-            tab2LModelDemandOutputs.setAllData(buffNode.outflowOnDemandTRN.getShortNameList());
+            node.outflowOnDemandTRN.shiftUp(tab2listDemandOutputs.getSelectedIndex());
+            tab2LModelDemandOutputs.setAllData(node.outflowOnDemandTRN.getShortNameList());
         });
         JButton tab2buttonDownDemandOutput = new JButton("DOWN");
         tab2buttonDownDemandOutput.addActionListener(e -> {
-            buffNode.outflowOnDemandTRN.shiftDown(tab2listDemandOutputs.getSelectedIndex());
-            tab2LModelDemandOutputs.setAllData(buffNode.outflowOnDemandTRN.getShortNameList());
+            node.outflowOnDemandTRN.shiftDown(tab2listDemandOutputs.getSelectedIndex());
+            tab2LModelDemandOutputs.setAllData(node.outflowOnDemandTRN.getShortNameList());
         });
         
         JComboBox tab2comboOverflow = new JComboBox(tab2ComboModelOverflow);
-        tab2comboOverflow.setSelectedIndex(buffNode.overflowOptions.getListIndex(buffNode.overflowTRN)+1);
+        tab2comboOverflow.setSelectedIndex(node.overflowOptions.getListIndex(node.overflowTRN)+1);
         tab2comboOverflow.addActionListener(e-> {
-            if( buffNode.overflowTRN != buffNode.overflowOptions.getObjIndex(tab2comboOverflow.getSelectedIndex()-1)){ // confirms selection actually changed
-                if(buffNode.overflowTRN > -1){
-                    buffNode.outflows.appendToList(buffNode.overflowTRN, ctRNList.tRNs[buffNode.overflowTRN].objname);
+            if( node.overflowTRN != node.overflowOptions.getObjIndex(tab2comboOverflow.getSelectedIndex()-1)){ // confirms selection actually changed
+                if(node.overflowTRN > -1){
+                    node.outflows.appendToList(node.overflowTRN, ctRNList.tRNs[node.overflowTRN].objname);
                 }
-                System.out.println("Object Index " + buffNode.overflowOptions.getObjIndex(tab2comboOverflow.getSelectedIndex()) + " minus 1 Selected");
-                buffNode.overflowTRN = buffNode.overflowOptions.getObjIndex(tab2comboOverflow.getSelectedIndex()-1);
-                if(buffNode.overflowTRN > -1){ 
-                    buffNode.outflows.trimFromList(buffNode.overflowTRN);
+                System.out.println("Object Index " + node.overflowOptions.getObjIndex(tab2comboOverflow.getSelectedIndex()) + " minus 1 Selected");
+                node.overflowTRN = node.overflowOptions.getObjIndex(tab2comboOverflow.getSelectedIndex()-1);
+                if(node.overflowTRN > -1){ 
+                    node.outflows.trimFromList(node.overflowTRN);
                 }
-                tab2LModelOutputs.setAllData(buffNode.outflows.getShortNameList());
+                tab2LModelOutputs.setAllData(node.outflows.getShortNameList());
             }
         });
 
@@ -466,7 +463,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         // TAB 5 for handelling Tailings Deposition
         JPanel tab5 = new JPanel();
 
-        JTable tab5TableTails = new JTable(buffNode.depositionRates);
+        JTable tab5TableTails = new JTable(node.depositionRates);
         
         JPopupMenu popupMenuTailsTable = new JPopupMenu();
         JMenuItem popupMenuItemTailsSelectAll = new JMenuItem("Select All");
@@ -476,16 +473,16 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         });
         JMenuItem popupMenuItemTailsDelete = new JMenuItem("Delete Selection");
         popupMenuItemTailsDelete.addActionListener(e->{
-                buffNode.depositionRates.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
+                node.depositionRates.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
         });
         JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy All");
         popupMenuItemTailsCopy.addActionListener(e->{
-                buffNode.depositionRates.copyToClipBoard();
+                node.depositionRates.copyToClipBoard();
         });
 
         JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste All");
         popupMenuItemTailsPaste.addActionListener(e->{
-                buffNode.depositionRates.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
+                node.depositionRates.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
         });
         
         popupMenuTailsTable.add(popupMenuItemTailsSelectAll);
@@ -508,8 +505,8 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         //tab6TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
         JTable tab6TableState = new JTable(tab6TableModelState);      
         for(int i = 0; i < Limit.MAX_STATES; i++){
-            tab6TableModelState.setValueAt((int)buffNode.stateTime[i], i, 0);
-            tab6TableModelState.setValueAt((String)buffNode.state[i], i, 1);
+            tab6TableModelState.setValueAt((int)node.stateTime[i], i, 0);
+            tab6TableModelState.setValueAt((String)node.state[i], i, 1);
         }
 
         JPopupMenu popupMenuStateTable = new JPopupMenu();
@@ -560,116 +557,116 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         tab1.setLayout(layoutTab1);
 
         JLabel ltfobjName = new JLabel("Name");
-        JTextField tfobjName = new JTextField(buffNode.objname);
+        JTextField tfobjName = new JTextField(node.objname);
         tfobjName.setColumns(20); // Sets Width if Name Field
         
         JLabel lcbobjType = new JLabel ("Type");
         JComboBox cbobjType = new JComboBox(Nod.objSubTypesAllowed); // Pulls options list from ObjELM static
-        cbobjType.setSelectedItem(buffNode.objSubType);
+        cbobjType.setSelectedItem(node.objSubType);
         
-        SpinnerModel tab1scaleXSpinnerModel = new SpinnerNumberModel(buffNode.scaleX,.05,5,.05);
+        SpinnerModel tab1scaleXSpinnerModel = new SpinnerNumberModel(node.scaleX,.05,5,.05);
         JSpinner tab1scaleXSpinner = new JSpinner(tab1scaleXSpinnerModel);
         tab1scaleXSpinner.setMaximumSize(new Dimension(50, 30));
         tab1scaleXSpinner.addChangeListener(e->{
-            buffNode.scaleX = (double)tab1scaleXSpinner.getValue();
+            node.scaleX = (double)tab1scaleXSpinner.getValue();
         });
         JLabel tab1scaleXSpinnerLabel = new JLabel("Horizontal Scale");
-        SpinnerModel tab1scaleYSpinnerModel = new SpinnerNumberModel(buffNode.scaleY,.05,5,.05);
+        SpinnerModel tab1scaleYSpinnerModel = new SpinnerNumberModel(node.scaleY,.05,5,.05);
         JSpinner tab1scaleYSpinner = new JSpinner(tab1scaleYSpinnerModel);
         tab1scaleYSpinner.setMaximumSize(new Dimension(50, 30));
         tab1scaleYSpinner.addChangeListener(e->{
-            buffNode.scaleY = (double)tab1scaleYSpinner.getValue();
+            node.scaleY = (double)tab1scaleYSpinner.getValue();
         });
         JLabel tab1scaleYSpinnerLabel = new JLabel("Vertical Scale");
         
         JCheckBox tab1CheckBoxhasCatchment = new JCheckBox("Include Catchment Area");
-        tab1CheckBoxhasCatchment.setSelected(buffNode.hasCatchment);
+        tab1CheckBoxhasCatchment.setSelected(node.hasCatchment);
         tab1CheckBoxhasCatchment.addActionListener(e-> {
-            buffNode.hasCatchment = tab1CheckBoxhasCatchment.isSelected();
+            node.hasCatchment = tab1CheckBoxhasCatchment.isSelected();
         });
         
         JCheckBox tab1CheckBoxhasSolids = new JCheckBox("Include Solids Deposition");
-        tab1CheckBoxhasSolids.setSelected(buffNode.hasSolids);
+        tab1CheckBoxhasSolids.setSelected(node.hasSolids);
         tab1CheckBoxhasSolids.addActionListener(e-> {
-            buffNode.hasSolids = tab1CheckBoxhasSolids.isSelected();
+            node.hasSolids = tab1CheckBoxhasSolids.isSelected();
         });
         JLabel tab1LabelVoidsXoSet = new JLabel("Flowbox Offset Horz:  ");
-        SpinnerModel tab1SpinnerModelVoidsXoSet = new SpinnerNumberModel(buffNode.oSetXVoids, -100, 100, 5);
+        SpinnerModel tab1SpinnerModelVoidsXoSet = new SpinnerNumberModel(node.oSetXVoids, -100, 100, 5);
         JSpinner tab1SpinnerVoidsXoSet = new JSpinner(tab1SpinnerModelVoidsXoSet);
         tab1SpinnerVoidsXoSet.addChangeListener(e->{
-            buffNode.oSetXVoids = (int)tab1SpinnerVoidsXoSet.getValue();
+            node.oSetXVoids = (int)tab1SpinnerVoidsXoSet.getValue();
         });
         JLabel tab1LabelVoidsYoSet = new JLabel("Vert:");
-        SpinnerModel tab1SpinnerModelVoidsYoSet = new SpinnerNumberModel(buffNode.oSetYVoids, -100, 100, 5);
+        SpinnerModel tab1SpinnerModelVoidsYoSet = new SpinnerNumberModel(node.oSetYVoids, -100, 100, 5);
         JSpinner tab1SpinnerVoidsYoSet = new JSpinner(tab1SpinnerModelVoidsYoSet);
         tab1SpinnerVoidsYoSet.addChangeListener(e->{
-            buffNode.oSetYVoids = (int)tab1SpinnerVoidsXoSet.getValue();
+            node.oSetYVoids = (int)tab1SpinnerVoidsXoSet.getValue();
         });
                 
         JCheckBox tab1CheckBoxhasStorage = new JCheckBox("Include Depth Area Capacity");
-        tab1CheckBoxhasStorage.setSelected(buffNode.hasStorage);
+        tab1CheckBoxhasStorage.setSelected(node.hasStorage);
         tab1CheckBoxhasStorage.addActionListener(e-> {
-            buffNode.hasStorage = tab1CheckBoxhasStorage.isSelected();
+            node.hasStorage = tab1CheckBoxhasStorage.isSelected();
         });
         
         JButton tab1ButtonDACWindow = new JButton("Show DAC");
         tab1ButtonDACWindow.addActionListener(e -> {
-            DACWindow dACWindow = new DACWindow(this, buffNode.dAC);
+            DACWindow dACWindow = new DACWindow(this, node.dAC);
         });
 
         
         
         JCheckBox tab1CheckBoxshowStorage = new JCheckBox("Show Net Storage on Flowsheet");
-        tab1CheckBoxshowStorage.setSelected(buffNode.showStorage);
+        tab1CheckBoxshowStorage.setSelected(node.showStorage);
         tab1CheckBoxshowStorage.addActionListener(e-> {
-            buffNode.showStorage = tab1CheckBoxshowStorage.isSelected();
+            node.showStorage = tab1CheckBoxshowStorage.isSelected();
         });
         JLabel tab1LabelStorageXoSet = new JLabel("Flowbox Offset Horz:  ");
-        SpinnerModel tab1SpinnerModelStorageXoSet = new SpinnerNumberModel(buffNode.oSetXStorage, -100, 100, 5);
+        SpinnerModel tab1SpinnerModelStorageXoSet = new SpinnerNumberModel(node.oSetXStorage, -100, 100, 5);
         JSpinner tab1SpinnerStorageXoSet = new JSpinner(tab1SpinnerModelStorageXoSet);
         tab1SpinnerStorageXoSet.addChangeListener(e->{
-            buffNode.oSetXStorage = (int)tab1SpinnerStorageXoSet.getValue();
+            node.oSetXStorage = (int)tab1SpinnerStorageXoSet.getValue();
         });
         JLabel tab1LabelStorageYoSet = new JLabel("Vert:");
-        SpinnerModel tab1SpinnerModelStorageYoSet = new SpinnerNumberModel(buffNode.oSetYStorage, -100, 100, 5);
+        SpinnerModel tab1SpinnerModelStorageYoSet = new SpinnerNumberModel(node.oSetYStorage, -100, 100, 5);
         JSpinner tab1SpinnerStorageYoSet = new JSpinner(tab1SpinnerModelStorageYoSet);
         tab1SpinnerStorageYoSet.addChangeListener(e->{
-            buffNode.oSetYStorage = (int)tab1SpinnerStorageXoSet.getValue();
+            node.oSetYStorage = (int)tab1SpinnerStorageXoSet.getValue();
         });
         
         JCheckBox tab1CheckBoxhasStorageEvapandPrecip = new JCheckBox("Include Direct Evaporation and Precipitation");
-        tab1CheckBoxhasStorageEvapandPrecip.setSelected(buffNode.hasStorageEvapandPrecip);
+        tab1CheckBoxhasStorageEvapandPrecip.setSelected(node.hasStorageEvapandPrecip);
         tab1CheckBoxhasStorageEvapandPrecip.addActionListener(e-> {
-            buffNode.hasStorageEvapandPrecip = tab1CheckBoxhasStorageEvapandPrecip.isSelected();
+            node.hasStorageEvapandPrecip = tab1CheckBoxhasStorageEvapandPrecip.isSelected();
         });
         JButton bSave = new JButton("Save");
         bSave.addActionListener(e ->{ // uses a lambda instead of needing seperate listener override
-            buffNode.objname = tfobjName.getText();
-            buffNode.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE");
+            node.objname = tfobjName.getText();
+            node.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE", aP);
 
 /*
-            buffNode.targetOperatingVol.setAllData(tmTargetVol.getDayColumn(), tmTargetVol.getVolColumn()); // problem seems to lie here
+            node.targetOperatingVol.setAllData(tmTargetVol.getDayColumn(), tmTargetVol.getVolColumn()); // problem seems to lie here
             
-            buffNode.minDepth.setAllData(tmMinDepth.getDayColumn(), tmMinDepth.getLevelColumn()); 
+            node.minDepth.setAllData(tmMinDepth.getDayColumn(), tmMinDepth.getLevelColumn()); 
 
-            buffNode.minDepth.setAllData(tmMaxOpLevel.getDayColumn(), tmMaxOpLevel.getLevelColumn()); 
+            node.minDepth.setAllData(tmMaxOpLevel.getDayColumn(), tmMaxOpLevel.getLevelColumn()); 
             
-            buffNode.overflowLevel.setAllData(tmOverflowLevel.getDayColumn(), tmOverflowLevel.getLevelColumn());
-            buffNode.crestLevel.setAllData(tmCrestLevel.getDayColumn(), tmCrestLevel.getLevelColumn());
+            node.overflowLevel.setAllData(tmOverflowLevel.getDayColumn(), tmOverflowLevel.getLevelColumn());
+            node.crestLevel.setAllData(tmCrestLevel.getDayColumn(), tmCrestLevel.getLevelColumn());
   */          
             
 
             for (int i = 0; i < tab6TableModelState.getRowCount(); i++){
-                if (i >= buffNode.stateTime.length){
+                if (i >= node.stateTime.length){
                     break;
                 }
-                buffNode.stateTime[i] = (int)tab6TableModelState.getValueAt(i, 0);
-                buffNode.state[i] = (String)tab6TableModelState.getValueAt(i, 1);
+                node.stateTime[i] = (int)tab6TableModelState.getValueAt(i, 0);
+                node.state[i] = (String)tab6TableModelState.getValueAt(i, 1);
             }
             
 
             
-            //returnedObjELM = buffNode; // sets returned value to 
+            //returnedObjELM = node; // sets returned value to 
         });
         
         tfobjName.getText(); // not sure what this is doing DELETE? 
@@ -795,8 +792,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         subframe.pack();
         subframe.setBackground(Color.GRAY);
         subframe.setVisible(true);
-        
-        return buffNode;
+
         
         
     }

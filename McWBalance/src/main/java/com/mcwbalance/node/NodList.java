@@ -31,6 +31,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.mcwbalance.node;
 
 import com.mcwbalance.project.ProjSetting;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,15 +51,14 @@ public class NodList {
     public int count; // counter to keep track fo list size
     public Nod[] nodes= new Nod[Limit.MAX_NODES]; 
     
-    ProjSetting projSetting;
     /**
      * Constructor initializes a blank array of Nodes of generally 0 values to avoid issues with null values
+     * @param aP active project
      */
-    public NodList(ProjSetting projSetting){
-        this.projSetting = projSetting;
+    public NodList(Project aP){
         count = 0; // sets number of elements to 0 to start
         for (int i = 0; i < Limit.MAX_NODES; i++){
-            nodes[i] = new Nod(projSetting); // Constructs the node so there is a place in memory for it, only needed for Object arrays
+            nodes[i] = new Nod(aP); // Constructs the node so there is a place in memory for it, only needed for Object arrays
             nodes[i].x = 0;
             nodes[i].y = 0;
             nodes[i].objname = "Node " + i;
@@ -71,12 +71,12 @@ public class NodList {
     * Note it assumes project settings has already been set
     * @param transfers root element from tranfers.xml
     */
-    public void addXMLElements(Element nodeXML){
+    public void addXMLElements(Element nodeXML, Project aP){
            
        NodeList cnl = nodeXML.getElementsByTagName("Node");
        for (int i = 0; i < cnl.getLength(); i++){
            if (cnl.item(i).getNodeType() == Node.ELEMENT_NODE){
-               nodes[count] = new Nod(projSetting, (Element) cnl.item(i));
+               nodes[count] = new Nod(aP, (Element) cnl.item(i));
                count ++;
            }
        }
@@ -88,12 +88,12 @@ public class NodList {
       * @param inY Midpoint of the Node draw location used in FlowChartCAD class
       * @return 0 is returned of successful, -1 if unsuccessful
       */
-    public int addNode(int inX, int inY){
+    public int addNode(int inX, int inY, Project aP){
         if (count - 1 == Limit.MAX_NODES){ // limits object addtion to max number of objects -1 as last object needs to be null for delete to work
             System.out.println("Max Number of Objects");
         return -1; // returns -1 as error code, object could not be added
         }
-        nodes[count] = new Nod(inX, inY, count + 1,projSetting);
+        nodes[count] = new Nod(inX, inY, count + 1, aP);
         count ++; // increments to next element, only allowed if not at maximum
         return 0;
     }

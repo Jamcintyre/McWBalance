@@ -35,6 +35,7 @@ import com.mcwbalance.dacapacity.DAC;
 import com.mcwbalance.landcover.DataCatchment;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.result.ResultLevel;
 import com.mcwbalance.settings.Limit;
@@ -122,7 +123,7 @@ public class Nod {
         "WELL"
     };
     
-    ProjSetting projsetting;
+    //ProjSetting projsetting;
     /**
      * Used for selecting symbol on flowchart, will not be used in the
      * calculations directly
@@ -149,7 +150,7 @@ public class Nod {
     //Results
     ResultFlow resultInDirectPrecip;
     ResultFlow resultInRunoffandMelt;
-    ResultFlow resultInRunoffandMeltlc[];
+    ResultFlow resultInRunoffandMeltbyLC[];
     ResultFlow resultOutEvaporation;
     ResultFlow resultOutSeepage;
     ResultFlow resultOutVoidloss;
@@ -160,28 +161,31 @@ public class Nod {
     
     /**
      * constructs a blank node
+     * @param aP Active project needed for getting sprites
     */
-    Nod(ProjSetting projSetting) {
-        this(0, 0, 0, projSetting);
+    Nod(Project aP) {
+        this(0, 0, 0, aP);
     }
     
     /**
      * Constructs node from xml, used for loading in
-     * @param projSetting
-     * @param nodeXML 
+     * @param aP active project needed for pulling object sprite and land cover names for
+     * @param nodeXML source XML
      */
-    Nod(ProjSetting projSetting, Element nodeXML){
+    Nod(Project aP, Element nodeXML){
         //Generates a null node to fill in if XML is missing information
-        this(projSetting);
+        this(aP);
+        
+        
         //Added wdef method to fill in default values when xml file is incompleted
-        setName(nodeXML.getAttribute("Name"));
+        this.objname = nodeXML.getAttribute("Name");
         objSubType = nodeXML.getAttribute("SubType");
         x = Integer.parseInt(wdef(nodeXML.getAttribute("x"),"0"));
         y = Integer.parseInt(wdef(nodeXML.getAttribute("y"),"0"));
         
         scaleX = Double.parseDouble(wdef(nodeXML.getAttribute("scaleX"),"1"));
         scaleY = Double.parseDouble(wdef(nodeXML.getAttribute("scaleY"),"1"));
-        objSprite = projsetting.getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
+        objSprite = aP.getProjectSetting().getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
         updateHitbox();
         
         //Get from Catchments element
@@ -204,13 +208,12 @@ public class Nod {
     
     /**
      * Generates a blank note at a specified coordinate
-     * @param inX
-     * @param inY
-     * @param number
-     * @param projSetting 
+     * @param inX location where to place node
+     * @param inY location where to place node
+     * @param number index number of node
+     * @param aP Active project
      */
-    Nod(int inX, int inY, int number, ProjSetting projSetting) {
-        this.projsetting = projSetting;
+    Nod(int inX, int inY, int number, Project aP) {
         x = inX;
         y = inY;
         hitBox = new Rectangle(0, 0, 20, 20);
@@ -219,7 +222,7 @@ public class Nod {
         objSubType = "DEFAULT";
         scaleX = 1.0;
         scaleY = 1.0;
-        objSprite = projsetting.getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
+        objSprite = aP.getProjectSetting().getImageLib().getImage(objSubType, "ACTIVE", scaleX, scaleY);
         updateHitbox();
         
         hasCatchment = false;
@@ -256,7 +259,7 @@ public class Nod {
                 McWBalance.langRB.getString("LEVEL")+" (m)", 
                 McWBalance.langRB.getString("BASIS"));
         
-        depositionRates = new TableTailingsDepositionRates(projsetting);
+        depositionRates = new TableTailingsDepositionRates(aP.getProjectSetting());
 
         inflows = new IndexList(Limit.MAX_TRNS);
         outflows = new IndexList(Limit.MAX_TRNS);
@@ -271,29 +274,12 @@ public class Nod {
         overflowOptions = new IndexList(Limit.MAX_TRNS);
         overflowTRN = -1;
 
-            //Results
-            //Result(int totalDays, String inname, String units){
-            //McWBalance.langRB.getString("OPEN_EXISTING_PROJECT")
-        resultInDirectPrecip = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
-        resultInRunoffandMelt = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
-        //resultInRunoffandMeltlc[];
-        resultOutEvaporation = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("EVAPORATION"));;
-        resultOutSeepage = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("SEEPAGE"));;
-        resultOutVoidloss = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("VOID_LOSS"));;
-        
-        
-        
-        
         stateTime[0] = -1;
         for (int i = 1; i < Limit.MAX_STATES; i++) {
             stateTime[i] = Limit.MAX_DURATION;
         }
         state[0] = "ACTIVE";
         stateCount = 0;
-        
-        
-        
-        
         
     }
     /**
@@ -418,21 +404,7 @@ public class Nod {
         return def;
     }
     
-    
-    /**
-     * TODO - setup way of renaming all by land cover runoff and melts
-     * Needs a setter to allow rename of results
-     * @param name 
-     */
-    public final void setName(String name){
-        this.objname = name;
-        resultInDirectPrecip.setName(objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
-        resultInRunoffandMelt.setName(objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
-        //resultInRunoffandMeltlc[];
-        resultOutEvaporation.setName(objname + " " + McWBalance.langRB.getString("EVAPORATION"));
-        resultOutSeepage.setName(objname + " " + McWBalance.langRB.getString("SEEPAGE"));
-        resultOutVoidloss.setName(objname + " " + McWBalance.langRB.getString("VOID_LOSS"));
-    }
+
         
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
@@ -441,9 +413,9 @@ public class Nod {
      * @param inState state from StatesAllowed, if no match is found then
      * imageLib returns a default sprite
      */
-    public void setSubType(String inSubType, String inState) {
+    public void setSubType(String inSubType, String inState, Project aP) {
         objSubType = inSubType;
-        objSprite = projsetting.getImageLib().getImage(objSubType, inState, scaleX, scaleY);
+        objSprite = aP.getProjectSetting().getImageLib().getImage(objSubType, inState, scaleX, scaleY);
         updateHitbox();
         ProjSetting.hasChangedSinceSave = true;
     }
@@ -454,8 +426,8 @@ public class Nod {
      * @param inState state from StatesAllowed, if no match is found then
      * imageLib returns a default sprite
      */
-    public void setSpriteState(String inState) {
-        objSprite = projsetting.getImageLib().getImage(objSubType, inState, scaleX, scaleY);
+    public void setSpriteState(String inState, Project aP) {
+        objSprite = aP.getProjectSetting().getImageLib().getImage(objSubType, inState, scaleX, scaleY);
     }
 
     /**
@@ -481,6 +453,29 @@ public class Nod {
         }
         ProjSetting.hasChangedSinceSave = true;
     }
+    
+    
+    /**
+     * wipes and replaces all results with new instances, useful for duration and landcover change
+     * Should be used prior to each solve 
+     * @param aP 
+     */
+    public final void initResults(Project aP){
+        resultInDirectPrecip = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
+        resultInRunoffandMelt = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
+        resultInRunoffandMeltbyLC = new ResultFlow[aP.runoffCoeffs.getLength()];
+        for (int i = 0; i < resultInRunoffandMeltbyLC.length; i++) {
+            resultInRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(), 
+                    objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT") +
+                    " " + aP.climateTable.getValueAt(i, 0).toString());
+        }
+        resultOutEvaporation = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("EVAPORATION"));
+        resultOutSeepage = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("SEEPAGE"));
+        resultOutVoidloss = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("VOID_LOSS"));
+        resultLvlSolids = new ResultLevel(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("SOLIDS_EL"));
+        resultLvlPond = new ResultLevel(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("POND_EL"));
+    }
+    
     
     private void updateHitbox(){
         hitBox.x = x - objSprite.getWidth() / 2;

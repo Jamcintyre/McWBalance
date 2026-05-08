@@ -77,12 +77,14 @@ public class Project {
      */
     public Project(){
         setting = new ProjSetting();
-        nODEList = new NodList(setting);
+        
         nSheetsHorz = 2;
         nSheetsVert = 3;
         tRNList = new TRNList();
         climateTable = new ClimateTable(1); 
         runoffCoeffs = new TableRunoffCoefficients();
+        //constructors that rely on this go last
+        nODEList = new NodList(this);
         solveOrder = new SolveOrder(this);
         
         // TODO CHECK IF Title Block path is .svg or a zip file
@@ -128,7 +130,7 @@ public class Project {
             setting.setSavePathandName(Path.of(loadfile.getName()));
             
 
-            nODEList = new NodList(setting);
+            nODEList = new NodList(this);
             //Load Nodes if found
             ZipEntry zeNodes = loadfile.getEntry("Nodes.xml");
             if (zeNodes != null) {
@@ -138,7 +140,7 @@ public class Project {
                     Node n = doc.getElementsByTagName("Nodes").item(0);
                     if (n.getNodeType() == Node.ELEMENT_NODE) {
                         Element ele = (Element) n;
-                        nODEList.addXMLElements(ele);
+                        nODEList.addXMLElements(ele, this);
                     }
                 } catch (ParserConfigurationException | IOException | SAXException ex) {
                     System.getLogger(Project.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

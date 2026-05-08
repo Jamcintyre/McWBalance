@@ -184,7 +184,7 @@ public class FlowChartCAD extends JComponent implements Printable{
      * @param inY in pxls
      */
     public void addObjELM(int inX, int inY) {
-        prj.getNodeList().addNode(inX, inY);
+        prj.getNodeList().addNode(inX, inY, prj);
         ProjSetting.hasChangedSinceSave = true;
     }
 
@@ -337,7 +337,7 @@ public class FlowChartCAD extends JComponent implements Printable{
             if (eLMList.nodes[i].getState(drawdate) != "INACTIVE") {
                 drawX = eLMList.nodes[i].hitBox.x;
                 drawY = eLMList.nodes[i].hitBox.y;
-                eLMList.nodes[i].setSpriteState(eLMList.nodes[i].getState(drawdate));
+                eLMList.nodes[i].setSpriteState(eLMList.nodes[i].getState(drawdate), prj);
                 g2.drawImage(eLMList.nodes[i].objSprite, eLMList.nodes[i].hitBox.x, eLMList.nodes[i].hitBox.y, null);
 
                 if (eLMList.nodes[i].isSelected) {

@@ -692,7 +692,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                                         aP.getNodeList().nodes[mELMHit], 
                                         mELMHit, 
                                         aP.getTransferList(), 
-                                        aP.getProjectSetting());
+                                        aP);
                             }
                             break;
                         } else {
