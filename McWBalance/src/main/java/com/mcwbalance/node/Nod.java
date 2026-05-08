@@ -30,12 +30,13 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.mcwbalance.node;
 
+import com.mcwbalance.McWBalance;
 import com.mcwbalance.dacapacity.DAC;
 import com.mcwbalance.landcover.DataCatchment;
-import com.mcwbalance.generics.DataTimeDoubleSeries;
-import com.mcwbalance.generics.DataTimeIntSeries;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
+import com.mcwbalance.result.ResultFlow;
+import com.mcwbalance.result.ResultLevel;
 import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -144,7 +145,17 @@ public class Nod {
     public String state[] = new String[Limit.MAX_STATES];
     int stateCount;
     
-
+    
+    //Results
+    ResultFlow resultInDirectPrecip;
+    ResultFlow resultInRunoffandMelt;
+    ResultFlow resultInRunoffandMeltlc[];
+    ResultFlow resultOutEvaporation;
+    ResultFlow resultOutSeepage;
+    ResultFlow resultOutVoidloss;
+    
+    ResultLevel resultLvlSolids;
+    ResultLevel resultLvlPond;
     
     
     /**
@@ -163,7 +174,7 @@ public class Nod {
         //Generates a null node to fill in if XML is missing information
         this(projSetting);
         //Added wdef method to fill in default values when xml file is incompleted
-        objname = nodeXML.getAttribute("Name");
+        setName(nodeXML.getAttribute("Name"));
         objSubType = nodeXML.getAttribute("SubType");
         x = Integer.parseInt(wdef(nodeXML.getAttribute("x"),"0"));
         y = Integer.parseInt(wdef(nodeXML.getAttribute("y"),"0"));
@@ -191,7 +202,13 @@ public class Nod {
         
     }
     
-
+    /**
+     * Generates a blank note at a specified coordinate
+     * @param inX
+     * @param inY
+     * @param number
+     * @param projSetting 
+     */
     Nod(int inX, int inY, int number, ProjSetting projSetting) {
         this.projsetting = projSetting;
         x = inX;
@@ -218,11 +235,26 @@ public class Nod {
         oSetYStorage = 0;
         dAC = new DAC();
 
-        targetOperatingVol = new TableNodeLevel(1, "Model Day", "Volume (cu.m.)", "Comment");
-        minDepth = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
-        maxOpLevel = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
-        overflowLevel = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
-        crestLevel = new TableNodeLevel(1, "Model Day", "Level (m)", "Comment");
+        targetOperatingVol = new TableNodeLevel(1, 
+                McWBalance.langRB.getString("MODEL_DAY"),
+                McWBalance.langRB.getString("VOLUME")+" (cu.m.)",
+                McWBalance.langRB.getString("BASIS"));
+        minDepth = new TableNodeLevel(1, 
+                McWBalance.langRB.getString("MODEL_DAY"), 
+                McWBalance.langRB.getString("LEVEL")+" (m)", 
+                McWBalance.langRB.getString("BASIS"));
+        maxOpLevel = new TableNodeLevel(1, 
+                McWBalance.langRB.getString("MODEL_DAY"), 
+                McWBalance.langRB.getString("LEVEL")+" (m)", 
+                McWBalance.langRB.getString("BASIS"));
+        overflowLevel = new TableNodeLevel(1, 
+                McWBalance.langRB.getString("MODEL_DAY"), 
+                McWBalance.langRB.getString("LEVEL")+" (m)", 
+                McWBalance.langRB.getString("BASIS"));
+        crestLevel = new TableNodeLevel(1, 
+                McWBalance.langRB.getString("MODEL_DAY"), 
+                McWBalance.langRB.getString("LEVEL")+" (m)", 
+                McWBalance.langRB.getString("BASIS"));
         
         depositionRates = new TableTailingsDepositionRates(projsetting);
 
@@ -239,12 +271,30 @@ public class Nod {
         overflowOptions = new IndexList(Limit.MAX_TRNS);
         overflowTRN = -1;
 
+            //Results
+            //Result(int totalDays, String inname, String units){
+            //McWBalance.langRB.getString("OPEN_EXISTING_PROJECT")
+        resultInDirectPrecip = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
+        resultInRunoffandMelt = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
+        //resultInRunoffandMeltlc[];
+        resultOutEvaporation = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("EVAPORATION"));;
+        resultOutSeepage = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("SEEPAGE"));;
+        resultOutVoidloss = new ResultFlow(projsetting.getDuration(), this.objname + " " + McWBalance.langRB.getString("VOID_LOSS"));;
+        
+        
+        
+        
         stateTime[0] = -1;
         for (int i = 1; i < Limit.MAX_STATES; i++) {
             stateTime[i] = Limit.MAX_DURATION;
         }
         state[0] = "ACTIVE";
         stateCount = 0;
+        
+        
+        
+        
+        
     }
     /**
     * method used to determine the state of the object for any given day
@@ -361,13 +411,28 @@ public class Nod {
      * @return 
      */
     private String wdef(String string, String def){
-        if (string != ""){
+        if (!"".equals(string)){
             return string;
         }
         System.err.println("Possible Error - Nod.Java - wdef() - Default " + def + " value was applied due to blank string");
         return def;
     }
-
+    
+    
+    /**
+     * TODO - setup way of renaming all by land cover runoff and melts
+     * Needs a setter to allow rename of results
+     * @param name 
+     */
+    public final void setName(String name){
+        this.objname = name;
+        resultInDirectPrecip.setName(objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
+        resultInRunoffandMelt.setName(objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
+        //resultInRunoffandMeltlc[];
+        resultOutEvaporation.setName(objname + " " + McWBalance.langRB.getString("EVAPORATION"));
+        resultOutSeepage.setName(objname + " " + McWBalance.langRB.getString("SEEPAGE"));
+        resultOutVoidloss.setName(objname + " " + McWBalance.langRB.getString("VOID_LOSS"));
+    }
         
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever

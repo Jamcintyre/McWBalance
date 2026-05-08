@@ -61,11 +61,6 @@ public class ProjSetting {
     String projectnumber;
 
     /**
-     * Runoff Coefficients for use in calculation
-     */
-    public static TableRunoffCoefficients runoffCoefficients;
-    
-    /**
      * Container for various icons to use on the flowsheet
      */
     ImageLib imageLib; 
@@ -155,9 +150,7 @@ public class ProjSetting {
         String userHome = System.getProperty("user.home");
         savepathfolder = userHome + java.io.File.separator + prop.getProperty("SAVEFOLDER","McBalance");
         titleBlockPath = prop.getProperty("TITLEBLOCKPATH", "/TitleBlock_Default.svg");
-        
-        runoffCoefficients = new TableRunoffCoefficients();
-        
+           
         imageLib = new ImageLib(); 
         
         hasChangedSinceSave = true; // Debug, will update to false

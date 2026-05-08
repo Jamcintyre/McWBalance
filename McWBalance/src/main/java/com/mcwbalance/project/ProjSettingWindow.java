@@ -184,10 +184,10 @@ public class ProjSettingWindow extends JDialog{
 
         tabPane.addTab("General",tab1);
         
-        // TAB 2
+        /** TAB 2
         JPanel tab2 = new JPanel();
         
-        JTable tab2Table = new JTable(ProjSetting.runoffCoefficients);
+        JTable tab2Table = new JTable(aP.runoffCoeffs);
         tab2Table.getColumnModel().getColumn(0).setPreferredWidth(RC_TABLE_FIRST_COL_WIDTH);
         for (int i = 1; i < 13; i ++){
             tab2Table.getColumnModel().getColumn(i).setPreferredWidth(RC_TABLE_OTHER_COL_WIDTH);
@@ -201,7 +201,7 @@ public class ProjSettingWindow extends JDialog{
         
         tab2.add(tab2ScrollPane);
         tabPane.addTab("Runoff Coefficients", tab2);
-        
+        **/
         
         this.add(tabPane);
         this.pack();

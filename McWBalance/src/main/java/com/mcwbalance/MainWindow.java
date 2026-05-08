@@ -432,7 +432,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                 new SolveOrderWindow(this, aP);
             }
             case "RunoffCoefficientsWindow" ->{
-                new RunoffCoefficientWindow(this);
+                new RunoffCoefficientWindow(this, aP);
             }
             case "solve" ->{
                 aP.solve();

@@ -31,8 +31,19 @@ public abstract class Result {
         calculated = false;
     }
     abstract void calculate(); 
-   
     
+    /**
+     * used for setting name post construction
+     * @param name 
+     */
+    public void setName(String name){
+        this.name = name;
+    }
+   
+    /**
+     * Generates tab delimited string of daily results
+     * @return 
+     */
     public String toTabbedStringDaily(){
         StringBuilder resultString = new StringBuilder();
         resultString.append(name);
@@ -48,6 +59,10 @@ public abstract class Result {
         return resultString.toString();
     }
     
+    /**
+     * Generates tab delimited string of monthly results
+     * @return 
+     */
     public String toTabbedStringMonthly(){
         if (!calculated){
             calculate();
@@ -66,7 +81,10 @@ public abstract class Result {
         return resultString.toString();
     }
     
-    
+    /**
+     * Generates tab delimited string of Annual Results
+     * @return 
+     */
      public String toTabbedStringAnnual(){
         if (!calculated){
             calculate();

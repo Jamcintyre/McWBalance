@@ -6,6 +6,7 @@ package com.mcwbalance.landcover;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.project.ProjSetting;
+import com.mcwbalance.project.Project;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JButton;
@@ -27,14 +28,14 @@ public class RunoffCoefficientWindow extends JFrame {
             TABLE_FIRST_COL_WIDTH + TABLE_OTHER_COL_WIDTH * 12,
             TABLE_ROW_HEIGHT * 10);
     
-    public RunoffCoefficientWindow(JFrame owner){
+    public RunoffCoefficientWindow(JFrame owner, Project aP){
         super(McWBalance.langRB.getString("RUNOFF_COEFFICIENTS"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         
-        JTable table = new JTable(ProjSetting.runoffCoefficients);
+        JTable table = new JTable(aP.runoffCoeffs);
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
-        for (int i = 1; i < ProjSetting.runoffCoefficients.getColumnCount(); i++){
+        for (int i = 1; i < aP.runoffCoeffs.getColumnCount(); i++){
             table.getColumnModel().getColumn(i).setPreferredWidth(TABLE_OTHER_COL_WIDTH);
         }
         table.setRowHeight(TABLE_ROW_HEIGHT);
@@ -42,22 +43,22 @@ public class RunoffCoefficientWindow extends JFrame {
         
         JButton buttonaddRow = new JButton(McWBalance.langRB.getString("ADD_ROW"));
         buttonaddRow.addActionListener(l ->{
-            ProjSetting.runoffCoefficients.addRow();
+            aP.runoffCoeffs.addRow();
         });
         
         JButton buttonDeleteRow = new JButton(McWBalance.langRB.getString("DELETE_ROW"));
         buttonDeleteRow.addActionListener(l ->{
-            ProjSetting.runoffCoefficients.deleteRow(table.getSelectedRow());
+            aP.runoffCoeffs.deleteRow(table.getSelectedRow());
         });
         
         JButton buttonmoveUp = new JButton(McWBalance.langRB.getString("MOVE_UP"));
         buttonmoveUp.addActionListener(l ->{
-            ProjSetting.runoffCoefficients.moveUp(table.getSelectedRow());
+            aP.runoffCoeffs.moveUp(table.getSelectedRow());
         });
         
         JButton buttonmoveDown = new JButton(McWBalance.langRB.getString("MOVE_DOWN"));
         buttonmoveDown.addActionListener(l ->{
-            ProjSetting.runoffCoefficients.moveDown(table.getSelectedRow());
+            aP.runoffCoeffs.moveDown(table.getSelectedRow());
         });
         
         setLayout(new BorderLayout());

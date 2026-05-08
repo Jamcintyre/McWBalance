@@ -2,6 +2,7 @@ package com.mcwbalance.project;
 
 import com.mcwbalance.climate.ClimateTable;
 import com.mcwbalance.flowchart.TitleBlock;
+import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
@@ -52,6 +53,13 @@ public class Project {
     
     ProjSetting setting;
     
+    
+    /**
+     * Runoff Coefficients for use in calculation
+     */
+    public TableRunoffCoefficients runoffCoeffs;
+    
+    
     SolveOrder solveOrder;
     
     TitleBlock titleBlock;
@@ -74,6 +82,7 @@ public class Project {
         nSheetsVert = 3;
         tRNList = new TRNList();
         climateTable = new ClimateTable(1); 
+        runoffCoeffs = new TableRunoffCoefficients();
         solveOrder = new SolveOrder(this);
         
         // TODO CHECK IF Title Block path is .svg or a zip file
