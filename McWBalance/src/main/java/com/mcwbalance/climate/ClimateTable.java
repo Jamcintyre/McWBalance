@@ -30,7 +30,6 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.mcwbalance.climate;
 
-import com.mcwbalance.climate.DataClimate;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -38,8 +37,11 @@ import javax.swing.table.AbstractTableModel;
  * @author Alex
  */
 public class ClimateTable extends AbstractTableModel{
-    private static final String[] columnNames = {"Scenario", "Description","Length","Avg Ann Precip","Min Ann Precip","Max Ann Precip", "Yr 1 Precip"};
-    public static final int NUMBER_OF_COLUMNS = 7;
+    /**
+     * Column names are fixed for climate set summary information
+     * Scenario, Description, Length etc...
+     */
+    public static final String[] columnNames = {"Scenario", "Description","Length","Avg Ann Precip","Min Ann Precip","Max Ann Precip", "Yr 1 Precip"};
     
     double[] aaprecip;
     double[] minprecip;
@@ -60,7 +62,7 @@ public class ClimateTable extends AbstractTableModel{
         climates = new DataClimate[size];
         for (int i = 0; i < size; i++) {
             climates[i] = new DataClimate(1);        
-            climates[i].description = DataClimate.NULL_DESCRIP;
+            climates[i].setDescription(DataClimate.NULL_DESCRIP);
             aaprecip[i] = 0;
             minprecip[i] = 0;
             maxprecip[i] = 0;
@@ -68,7 +70,12 @@ public class ClimateTable extends AbstractTableModel{
         }
     }
 
-    
+    /**
+     * For retrieving data from the table
+     * @param row
+     * @param col
+     * @return 
+     */
     @Override 
     public Object getValueAt(int row, int col){
         switch(col){
@@ -76,7 +83,7 @@ public class ClimateTable extends AbstractTableModel{
                 return row;
             }
             case 1 -> {
-                return climates[row].description;
+                return climates[row].getDescription();
             }
             case 2 -> {
                 return climates[row].precip.length;
@@ -96,23 +103,51 @@ public class ClimateTable extends AbstractTableModel{
         }
         return null;
     }
+    /**
+     * For getting number of columns
+     * @return 
+     */
     @Override 
     public int getColumnCount(){
         return columnNames.length;
     }
+    
+    /**
+     * for getting number of timesteps in the climate series
+     * @return 
+     */
     @Override 
     public int getRowCount(){
         return climates.length;
     }
+    
+    /**
+     * for pulling name of column
+     * @param col
+     * @return 
+     */
     @Override 
     public String getColumnName(int col){
         return columnNames[col];
     }
+    
+    /**
+     * For getting data type 
+     * @param c
+     * @return 
+     */
     @Override 
     public Class getColumnClass(int c){        
         return getValueAt(0,c).getClass(); 
     }
     
+    /**
+     * Climate table values are summary of the climate set and not meant for direct
+     * entry
+     * @param rowIndex
+     * @param columnIndex
+     * @return 
+     */
     @Override 
     public boolean isCellEditable(int rowIndex, int columnIndex){
         return false;
@@ -137,7 +172,7 @@ public class ClimateTable extends AbstractTableModel{
             //Do Nothing
         }
         else if(climates.length == 1){
-            if(climates[0].description.equals(DataClimate.NULL_DESCRIP) ){
+            if(climates[0].getDescription().equals(DataClimate.NULL_DESCRIP) ){
                 //Do Nothing
             }
             else{
@@ -186,7 +221,7 @@ public class ClimateTable extends AbstractTableModel{
     public void addClimateScenario(String readString){
         
         int size = climates.length;
-        if(climates[0].description != DataClimate.NULL_DESCRIP){
+        if(climates[0].getDescription() != DataClimate.NULL_DESCRIP){
             size++;
             double[] aaprecipBuff = new double[size];
             double[] minprecipBuff = new double[size];

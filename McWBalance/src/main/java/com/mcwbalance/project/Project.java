@@ -6,7 +6,7 @@ import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
-import com.mcwbalance.util.Time;
+import com.mcwbalance.measure.Time;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;

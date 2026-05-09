@@ -1,7 +1,7 @@
 package com.mcwbalance.project;
 
 import com.mcwbalance.flowchart.ImageLib;
-import com.mcwbalance.util.Time;
+import com.mcwbalance.measure.Time;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

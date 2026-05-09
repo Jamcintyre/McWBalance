@@ -5,7 +5,6 @@
 package com.mcwbalance.climate;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.climate.DataClimate;
 import com.mcwbalance.project.Project;
 import com.mcwbalance.result.ResultViewer;
 import java.awt.BorderLayout;
@@ -26,8 +25,14 @@ public class DataClimateSettingWindow extends JFrame{
     private final int TABLE_SECOND_COL_WIDTH = 150;
     private final int TABLE_OTHER_COL_WIDTH = 80;
     private final int TABLE_ROW_HEIGHT = 20;
-    private final Dimension TABLE_PREF_DIMENSION = new Dimension(TABLE_FIRST_COL_WIDTH+TABLE_SECOND_COL_WIDTH+(ClimateTable.NUMBER_OF_COLUMNS-1)*TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*5);
+    private final Dimension TABLE_PREF_DIMENSION = new Dimension(TABLE_FIRST_COL_WIDTH+TABLE_SECOND_COL_WIDTH+(ClimateTable.columnNames.length-1)*TABLE_OTHER_COL_WIDTH,TABLE_ROW_HEIGHT*5);
     
+    
+    /**
+     * Calls in a window for managing climate data sets
+     * @param owner
+     * @param aP 
+     */
     public DataClimateSettingWindow(JFrame owner, Project aP){
         
         super(McWBalance.langRB.getString("CLIMATE_SCENARIOS"));
@@ -37,7 +42,7 @@ public class DataClimateSettingWindow extends JFrame{
         
         table.getColumnModel().getColumn(0).setPreferredWidth(TABLE_FIRST_COL_WIDTH);
         table.getColumnModel().getColumn(1).setPreferredWidth(TABLE_SECOND_COL_WIDTH);
-        for (int i = 2; i < ClimateTable.NUMBER_OF_COLUMNS; i ++){
+        for (int i = 2; i < ClimateTable.columnNames.length; i ++){
             table.getColumnModel().getColumn(i).setPreferredWidth(TABLE_OTHER_COL_WIDTH);
         }
         table.setRowHeight(TABLE_ROW_HEIGHT);
@@ -60,7 +65,7 @@ public class DataClimateSettingWindow extends JFrame{
             int scenario = table.getSelectedRow();
             if (scenario >= 0
                     && scenario < aP.climateTable.climates.length
-                    && !aP.climateTable.climates[scenario].equals(DataClimate.NULL_DESCRIP)) {
+                    && !aP.climateTable.climates[scenario].equals(DataClimate.NULL_DESCRIP.toString())) {
 
                 double[][] results = new double[4][];
                 String[] resultnames = new String[4];
@@ -79,17 +84,17 @@ public class DataClimateSettingWindow extends JFrame{
                 //results[4] = ProjSetting.climateScenarios.climateScenarios[scenario].snowpack;
                 
                 String[] rgb = McWBalance.style.getProperty("PREF_COLOR_PRECIP","255,255,255").split(",");
-                rescolors[0] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rescolors[0] = new Color(Integer.parseInt(rgb[0]),Integer.parseInt(rgb[1]),Integer.parseInt(rgb[2]));
                 rgb = McWBalance.style.getProperty("PREF_COLOR_RAIN","255,255,255").split(",");
-                rescolors[1] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rescolors[1] = new Color(Integer.parseInt(rgb[0]),Integer.parseInt(rgb[1]),Integer.parseInt(rgb[2]));
                 rgb = McWBalance.style.getProperty("PREF_COLOR_MELT","255,255,255").split(",");
-                rescolors[2] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rescolors[2] = new Color(Integer.parseInt(rgb[0]),Integer.parseInt(rgb[1]),Integer.parseInt(rgb[2]));
                 rgb = McWBalance.style.getProperty("PREF_COLOR_EVAP","255,255,255").split(",");
-                rescolors[3] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
+                rescolors[3] = new Color(Integer.parseInt(rgb[0]),Integer.parseInt(rgb[1]),Integer.parseInt(rgb[2]));
                 //rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_SNOWPACK","255,255,255").split(",");
                 //rescolors[4] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
                 
-                ResultViewer rv = new ResultViewer(aP.climateTable.climates[scenario].description,
+                ResultViewer rv = new ResultViewer(aP.climateTable.climates[scenario].getDescription(),
                          results,
                          resultnames,
                          rescolors,

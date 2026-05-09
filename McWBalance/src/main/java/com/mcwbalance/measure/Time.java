@@ -27,10 +27,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.mcwbalance.util;
+package com.mcwbalance.measure;
 
 /**
- *
+ * For operations involving time units , and conversions from
+ * say hours to days, or day to Julian day
+ * 
  * @author alex
  */
 public class Time {
@@ -64,7 +66,32 @@ public class Time {
         private TimeUnit(int hours){
             this.hours = hours;
         }
-        
+ 
+        /**
+         * For getting a conversion factor from one unit to another Double
+         * precision in water balance is fine
+         *
+         * Method is overly simple, and is only here to minimize risk of flipped
+         * operators and accidental conversion the wrong way.
+         *
+         * @param from base input units
+         * @param to units to convert to
+         * @return value to multiply the from value to get the to value
+         */
+        public static double getConversion(TimeUnit from, TimeUnit to) {
+            return to.hours / from.hours;
+        }
+
+        /**
+         * Used for scaling time steps, assumes 1 year = 365 days and that 1
+         * month = 1/12 of a year
+         *
+         * @return number of hours in the time unit
+         */
+        public int getHours() {
+            return hours;
+        }
+                
         /**
          * same as value of just ignores the case, note values are not plural
          * i.e. Hour  not hours or hrs, Day or day not days
@@ -79,22 +106,12 @@ public class Time {
             }
             return null;
         }
-        
-        /**
-         * Used for scaling time steps, assumes 1 year = 365 days and that
-         * 1 month = 1/12 of a year
-         * @return number of hours in the time unit
-         */
-        public int getHours(){
-            return hours; 
-        }
-        
     }
     
     /**
      * Months to use in model, note no leap year allowance
      */
-    public enum Month{
+    public static enum Month{
         /**
          * January 31 days, Month 1
          */
@@ -150,6 +167,14 @@ public class Time {
         private Month (int number, int days){
             this.days = days;
             this.number = number;
+        }
+        
+        public static int toJulianDay(int month){
+            int day = 1;
+            for (int m = 2; m < month; m++){
+                day += valueOf(m-1).days;
+            }
+            return day;
         }
         
         /**
@@ -224,6 +249,33 @@ public class Time {
         
     }
     
+    /**
+     * Method for trimming years off of and input day to get julian day of 
+     * final year
+     * assumes 365 days per year, no leap years
+     * @param day model day any number above 1, note that start day will need to be
+     * added or subtracted outside this method if Day 1 is not jan 1. 
+     * @return value between 1 and 365, unless input day is less then 1, in which
+     * case 0 is returned
+     */
+    public static int getJulianDayFromDay(int day){
+        if(day < 1){
+            return 0;
+        }
+        return day - (getYearFromDay(day) - 1)/365;
+    }
     
-    
+    /**
+     * Method for determining which year an input day is from
+     * assumes 365 days per year, no leap years
+     * @param day number above 1
+     * @return year starting at 1 and counting up, returns 0 for invalid entry 
+     * below 1;
+     */
+    public static int getYearFromDay(int day){
+        if(day < 1){
+            return 0;
+        }
+        return day/365 + 1; 
+    }
 }

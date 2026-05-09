@@ -18,12 +18,19 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * This JDialog is used to load a .cclm Unicode text formatted climate dataset.
- * cclm is a propriatary format developed for McWBalance
+ * This JDialog is used to load a .cclm Unicode text formatted climate data set.
+ * cclm is a proprietary format developed for McWBalance
  * @author Alex
  */
 public class DataClimateImportWindow extends JDialog{
+    
+    /**
+     * Status flag for successful operation
+     */
     public final static int FILE_OBTAINED = 1;
+    /**
+     * Status flag for unsuccessful operation, i.e. import file could not be read
+     */
     public final static int FILE_NOT_READ = 0;
     
     private int status = FILE_NOT_READ;
