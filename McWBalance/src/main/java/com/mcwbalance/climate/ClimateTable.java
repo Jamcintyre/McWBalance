@@ -34,7 +34,7 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  *
- * @author Alex
+ * @author Alex McIntyre
  */
 public class ClimateTable extends AbstractTableModel{
     /**

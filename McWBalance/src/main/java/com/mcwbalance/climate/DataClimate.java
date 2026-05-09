@@ -35,7 +35,7 @@ import com.mcwbalance.measure.Time;
 
 /**
  *
- * @author amcintyre
+ * @author Alex McIntyre
  */
 public class DataClimate {  // Climate must begin on Jan 1. No Leap years. 
     
