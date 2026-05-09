@@ -282,9 +282,32 @@ public class Nod {
         stateCount = 0;
         
     }
+    
+    /**
+     * wipes and replaces all results with new instances, useful for duration
+     * and landcover change Should be used prior to each solve
+     *
+     * @param aP active project
+     */
+    public final void initResults(Project aP) {
+        resultInDirectPrecip = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
+        resultInRunoffandMelt = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
+        resultInRunoffandMeltbyLC = new ResultFlow[aP.runoffCoeffs.getLength()];
+        for (int i = 0; i < resultInRunoffandMeltbyLC.length; i++) {
+            resultInRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(),
+                    objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT")
+                    + " " + aP.climateTable.getValueAt(i, 0).toString());
+        }
+        resultOutEvaporation = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("EVAPORATION"));
+        resultOutSeepage = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("SEEPAGE"));
+        resultOutVoidloss = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("VOID_LOSS"));
+        resultLvlSolids = new ResultLevel(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("SOLIDS_EL"));
+        resultLvlPond = new ResultLevel(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("POND_EL"));
+    }
+
     /**
     * method used to determine the state of the object for any given day
-    * @param day 
+    * @param day timestep to get state
     * @return 
     */
     public String getState(int day) {
@@ -299,6 +322,28 @@ public class Nod {
             }
         }
         return state[0];
+    }
+    
+    /**
+     * TODO - Not completed
+     * @param day 
+     */
+    private int getPondArea(int day){
+        if (day < 0){
+            return 0;
+        }
+        else return 100; //DEBUG placeholder for testing
+    }
+    
+    /**
+     * TODO - Not completed
+     * @param day 
+     */
+    private int getBasinArea(int day){
+        if (day < 0){
+            return 0;
+        }
+        else return 100; //DEBUG placeholder for testing
     }
     
     /**
@@ -389,22 +434,31 @@ public class Nod {
         nXML.appendChild(statesXML);        
         return nXML;
     }
-    
-    /**
-     * Simple Util for ensuring default values are read in;
-     * @param string string to read
-     * @param def string to use if string is ""
-     * @return 
-     */
-    private String wdef(String string, String def){
-        if (!"".equals(string)){
-            return string;
-        }
-        System.err.println("Possible Error - Nod.Java - wdef() - Default " + def + " value was applied due to blank string");
-        return def;
-    }
-    
 
+    
+  /**
+     * method used to purge references of a specific transfer from any settings
+     * within the Node
+     *
+     * @param rTRN
+     */
+    public void remove(int rTRN) {
+        inflows.trimFromList(rTRN);
+        outflows.trimFromList(rTRN);
+        tailsTRNOptions.trimFromList(rTRN);
+        if (tailsTRN == rTRN) {
+            tailsTRN = -1;
+        }
+        inflowFixedTRN.trimFromList(rTRN);
+        outflowFixedTRN.trimFromList(rTRN);
+        inflowOnDemandTRN.trimFromList(rTRN);
+        outflowOnDemandTRN.trimFromList(rTRN);
+        overflowOptions.trimFromList(rTRN);
+        if (overflowTRN == rTRN) {
+            overflowTRN = -1;
+        }
+        ProjSetting.hasChangedSinceSave = true;
+    }
         
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
@@ -429,52 +483,82 @@ public class Nod {
     public void setSpriteState(String inState, Project aP) {
         objSprite = aP.getProjectSetting().getImageLib().getImage(objSubType, inState, scaleX, scaleY);
     }
-
-    /**
-     * method used to purge references of a specific transfer from any settings
-     * within the Node
-     *
-     * @param rTRN
-     */
-    public void remove(int rTRN) {
-        inflows.trimFromList(rTRN);
-        outflows.trimFromList(rTRN);
-        tailsTRNOptions.trimFromList(rTRN);
-        if (tailsTRN == rTRN) {
-            tailsTRN = -1;
-        }
-        inflowFixedTRN.trimFromList(rTRN);
-        outflowFixedTRN.trimFromList(rTRN);
-        inflowOnDemandTRN.trimFromList(rTRN);
-        outflowOnDemandTRN.trimFromList(rTRN);
-        overflowOptions.trimFromList(rTRN);
-        if (overflowTRN == rTRN) {
-            overflowTRN = -1;
-        }
-        ProjSetting.hasChangedSinceSave = true;
-    }
     
     
     /**
-     * wipes and replaces all results with new instances, useful for duration and landcover change
-     * Should be used prior to each solve 
-     * @param aP 
+     * Resolves Precipitation, evaporation, and seepage
+     * @param step timestep to solve
+     * @param aP Active project
+     * @param climateScenario picks which Scenario
      */
-    public final void initResults(Project aP){
+    public void solveEnvironmentals(int step, int climateScenario, Project aP){
+        
+        
+        // need to calc upstream catch first, then evap,, 
+        
+        if(hasStorageEvapandPrecip && hasStorage){
+            int pondarea = getPondArea(step-1);
+            double precip = pondarea*aP.climateTable.getClimates()[climateScenario].precip[step] / 1000;
+            double evap = pondarea*aP.climateTable.getClimates()[climateScenario].evap[step] / 1000;
+            
+            //TODO Limit evap 
+            
+            resultInDirectPrecip.add(precip, step); 
+            resultInDirectPrecip.add(evap, step); 
+            
+            
+        }
+        
+        if(hasCatchment){
+            
+            double rainandmelt = (aP.climateTable.getClimates()[climateScenario].rain[step] 
+                    + aP.climateTable.getClimates()[climateScenario].melt[step]) / 1000;
+            
+            for (int i = 0; i < resultInRunoffandMeltbyLC.length; i++) {
+                int area = Catchment[i].getTimeAtIndex(step);
+                
+                if(area <= 0 ){
+                    resultInRunoffandMeltbyLC[i].add(0, step);
+                    
+                }else {
+                    double rC = aP.runoffCoeffs.getCoefficient(Catchment[i].getLandCover(), aP.stepToMonth(step));
+                }
+                
+            resultInRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(),
+                    objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT")
+                    + " " + aP.climateTable.getValueAt(i, 0).toString());
+        }
+            
+           
+            
+            
+        }
+        
+        
+        /*
         resultInDirectPrecip = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
         resultInRunoffandMelt = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
         resultInRunoffandMeltbyLC = new ResultFlow[aP.runoffCoeffs.getLength()];
         for (int i = 0; i < resultInRunoffandMeltbyLC.length; i++) {
-            resultInRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(), 
-                    objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT") +
-                    " " + aP.climateTable.getValueAt(i, 0).toString());
+            resultInRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(),
+                    objname + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT")
+                    + " " + aP.climateTable.getValueAt(i, 0).toString());
         }
         resultOutEvaporation = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("EVAPORATION"));
         resultOutSeepage = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("SEEPAGE"));
         resultOutVoidloss = new ResultFlow(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("VOID_LOSS"));
         resultLvlSolids = new ResultLevel(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("SOLIDS_EL"));
         resultLvlPond = new ResultLevel(aP.getProjectSetting().getDuration(), objname + " " + McWBalance.langRB.getString("POND_EL"));
+        */
+        
+        
     }
+    
+    
+    
+    
+    
+
     
     
     private void updateHitbox(){
@@ -483,5 +567,22 @@ public class Nod {
         hitBox.width = objSprite.getWidth();
         hitBox.height = objSprite.getHeight();
     }
+    
+    
+        
+    /**
+     * Simple Util for ensuring default values are read in;
+     * @param string string to read
+     * @param def string to use if string is ""
+     * @return 
+     */
+    private String wdef(String string, String def){
+        if (!"".equals(string)){
+            return string;
+        }
+        System.err.println("Possible Error - Nod.Java - wdef() - Default " + def + " value was applied due to blank string");
+        return def;
+    }
+    
     
 }

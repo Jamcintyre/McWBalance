@@ -1,7 +1,7 @@
 package com.mcwbalance.project;
 
 import com.mcwbalance.flowchart.ImageLib;
-import com.mcwbalance.landcover.TableRunoffCoefficients;
+import com.mcwbalance.util.Time;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +22,8 @@ import org.w3c.dom.Element;
 * @version Pre-Alpha 0.2023.06.24
 */
 public class ProjSetting {
+    
+
     
     /**
      * Initial software version stamping, to be replaced eventually
@@ -76,9 +78,19 @@ public class ProjSetting {
     String savepathfolder;
     
     /**
+     * Day for start of model in julien days (i.e. 1 to 365)
+     */
+    int startday; 
+    
+    /**
      * Path of the default Title Block
      */
     String titleBlockPath;
+    
+    /**
+     * Tracks what timestep the model is set to
+     */
+    Time.TimeUnit timestep; 
         
     /**
      * Number of decimals to be used in calculations
@@ -149,62 +161,133 @@ public class ProjSetting {
         
         String userHome = System.getProperty("user.home");
         savepathfolder = userHome + java.io.File.separator + prop.getProperty("SAVEFOLDER","McBalance");
+        
+        startday = 1; 
         titleBlockPath = prop.getProperty("TITLEBLOCKPATH", "/TitleBlock_Default.svg");
+        timestep = Time.TimeUnit.Day;
            
         imageLib = new ImageLib(); 
         
         hasChangedSinceSave = true; // Debug, will update to false
         
     }
-        
-    public String getBalanceName(){
+    
+    /**
+     * balance name for use in title block
+     * @return string containing he balance name
+     */
+    public String getBalanceName() {
         return balancename;
     }
-    
-    public String getClientName(){
+
+    /**
+     * client name for use in title block
+     * @return string containing the client name
+     */
+    public String getClientName() {
         return clientname;
     }
-    
+
+    /**
+     * Used to set length of result arrays and duration of analysis loop
+     * note this is intended to update dynamically if switching time step duration
+     * @return number of time steps in the model
+     */
     public int getDuration(){
         return duration; 
     }
     
+    /**
+     * Used for formatting Annual results
+     * @return annual result format
+     */
     public DecimalFormat getFmtAnn(){
         return fmtAnn;
     }
     
+    /**
+     * Used for formatting day results
+     * @return day format
+     */
     public DecimalFormat getFmtDay(){
         return fmtDay;
-        
     }
+    
+    /**
+     * Used for formatting hr results
+     * @return hr format
+     */
     public DecimalFormat getFmtHr(){
         return fmtHr;
     }
     
+    /**
+     * Container for sprite images
+     * @return Sprite image container
+     */
     public ImageLib getImageLib(){
         return imageLib;
     }
     
+    /**
+     * Project reference name for use in title block
+     * @return string containing the project name 
+     */
     public String getProjectName(){
         return projectname;
     }
     
+    /**
+     * Project reference number for use in title block
+     * @return string containing the project number 
+     */
     public String getProjectNumber(){
         return projectnumber;
     }
     
+    /**
+     * Used for rounding and display
+     * @return number of decimals to display for day results
+     */
     public int getPrecisionDay(){
         return precisionDay;
     }
-
+    
+    /**
+     * Model save folder
+     * @return Model save folder 
+     */
     public File getPathFolder(){
         return new File(savepathfolder);
     }
 
+    /**
+     * Points to where the model will be saved
+     * @return File to save the model to
+     */
     public File getSaveFile(){
         return new File(savepathfolder + java.io.File.separator + fileName);
     }
+    /**
+     * Start day of model in Julian days
+     * @return value between 1 and 365
+     */
+    public int getStartDay(){
+        return startday;
+    }
     
+    /**
+     * Current calculation time step i.e. hour, day, month, year
+     * @return calculation time step
+     */
+    public Time.TimeUnit getTimeStep(){
+        return timestep; 
+    }
+    
+    /**
+     * Active title block save path
+     * @return path to active title block
+     */
     public String getTitleBlockPath(){
         return titleBlockPath;
     }
@@ -239,6 +322,9 @@ public class ProjSetting {
         ele.setAttribute("clientname", clientname);
         //Climate Scenarios
         ele.setAttribute("duration", String.valueOf(duration));
+        ele.setAttribute("timestep", String.valueOf(timestep));
+        ele.setAttribute("startday", String.valueOf(startday));
+        
         ele.setAttribute("fmtAnn",fmtAnn.toPattern());
         ele.setAttribute("fmtDay",fmtDay.toPattern());
         ele.setAttribute("fmtHr",fmtHr.toPattern());
@@ -265,7 +351,8 @@ public class ProjSetting {
         setBalanceName(settingsXML.getAttribute("balancename"));
         setClientName(settingsXML.getAttribute("clientname"));
         setDuration(Integer.parseInt(settingsXML.getAttribute("duration")));
-        
+        setTimeStep(Time.TimeUnit.valueOfIngoreCase(settingsXML.getAttribute("timestep")));
+        setStartDay(Integer.parseInt(settingsXML.getAttribute("startday")));
         //setfmtAnn
         //setfmtDay
         //setfmtHr
@@ -371,6 +458,20 @@ public class ProjSetting {
         this.fileName = absolutePath.getFileName().toString();
         
     }
+    /**
+     * sets start day from Julian day
+     * @param day between 1 and 365, does not recognize leap years
+     */
+    public void setStartDay(int day){
+        if (day > 365){
+            startday = day - 365*(int)(day/365);
+        }else if(day < 1){
+            startday = 1;
+    
+        } else{
+            startday = day;
+        }
+    }
     
     /**
      * Sets filename from a File
@@ -380,8 +481,12 @@ public class ProjSetting {
         this.fileName = savepathfolder.getName();
     }
     
-    
-    
-    
-    
+    /**
+     * Used for selecting days, months or years as the calculation time step
+     * @param timestep 
+     */
+    public void setTimeStep(Time.TimeUnit timestep){
+        this.timestep = timestep;
+    }
+        
 }

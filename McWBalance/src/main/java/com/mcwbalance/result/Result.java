@@ -30,6 +30,16 @@ public abstract class Result {
         this.units = units;
         calculated = false;
     }
+    
+    /**
+     * Adds a result value to a day
+     * @param result
+     * @param day 
+     */
+    public void add(double result, int day){
+        daily[day] = result;
+    }
+        
     abstract void calculate(); 
     
     /**

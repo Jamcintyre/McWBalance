@@ -6,6 +6,7 @@ import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
+import com.mcwbalance.util.Time;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,6 +78,9 @@ public class Project {
      */
     public Project(){
         setting = new ProjSetting();
+        
+        
+        
         
         nSheetsHorz = 2;
         nSheetsVert = 3;
@@ -171,6 +175,30 @@ public class Project {
         }
     }
     
+    /**
+     * Converts day to month value based on project start date and timestep
+     * @param step timestep of model, typically day
+     * @return Month in int form
+     */
+    public int stepToMonth(int step) {
+        switch (setting.getTimeStep()) {
+            case Time.TimeUnit.Year ->{
+                return 1;
+            } 
+            case Time.TimeUnit.Month ->{
+                int start = Time.Month.valueOf(setting.startday).getNumber();
+                return Time.Month.valueOf(step).getNumber() + start;
+            }
+            case Time.TimeUnit.Day ->{
+                return Time.Month.valueOf(step + setting.startday - 1).getNumber();
+            }
+            case Time.TimeUnit.Hour ->{
+                return Time.Month.valueOf(step/24 + setting.startday).getNumber();
+            }
+        }
+       return 0; 
+    }
+    
     
     /**
      * Project settings such as duration, save path, title, project name etc...
@@ -246,6 +274,7 @@ public class Project {
     /**
      * calls save if file name can be written
      * note does not check for overwrite confirmation 
+     * @param rfile target save file
      * @return 
      */
     public String saveToFile(File rfile){

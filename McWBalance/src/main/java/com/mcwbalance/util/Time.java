@@ -1,0 +1,178 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package com.mcwbalance.util;
+
+/**
+ *
+ * @author alex
+ */
+public class Time {
+    /**
+     * Units of time measure allowed in this model
+     */
+    public static enum TimeUnit{
+        Hour(1),
+        Day(24),
+        Week(168),
+        Month(730),
+        Year(8760);
+        
+        private final int hours;
+        
+        private TimeUnit(int hours){
+            this.hours = hours;
+        }
+        
+        /**
+         * same as value of just ignores the case, note values are not plural
+         * i.e. Hour  not hours or hrs, Day or day not days
+         * @param timeunit Hour, HOUR, hour or similar not plural string
+         * @return 
+         */
+        public static TimeUnit valueOfIngoreCase(String timeunit) {
+            for (TimeUnit tu : TimeUnit.values()) {
+                if (tu.name().equalsIgnoreCase(timeunit)) {
+                    return tu;
+                }
+            }
+            return null;
+        }
+        
+        /**
+         * Used for scaling time steps, assumes 1 year = 365 days and that
+         * 1 month = 1/12 of a year
+         * @return number of hours in the time unit
+         */
+        public int getHours(){
+            return hours; 
+        }
+        
+    }
+    
+    /**
+     * Months to use in model, note no leap year allowance
+     */
+    public enum Month{
+        Jan (1,31),
+        Feb (2,28),
+        Mar (3,31),
+        Apr (4,30),
+        May (5,31),
+        Jun (6,30),
+        Jul (7,31),
+        Aug (8,31),
+        Sep (9,30),
+        Oct (10,31),
+        Nov (11,30),
+        Dec (12,31);
+        
+        private final int days;
+        private final int number;
+        
+        private Month (int number, int days){
+            this.days = days;
+            this.number = number;
+        }
+        
+        /**
+         * Takes in an english month name, looks at first 3 characters ignoring
+         * case and returns matching enum value
+         * @param month name of month i.e. JAN, jan, Jan, January all accepted
+         * @return 
+         */
+        public static Month valueOfIgnoreCase(String month){
+            for (Month m : Month.values()) {
+                if (m.name().equalsIgnoreCase(month.substring(0, 2))) {
+                    return m;
+                }
+            }
+            return null;
+        }
+        
+        /**
+         * Picks matching month from integer value, allows rollover i.e.
+         * month 1 = month 13 = Jan; 
+         * @param month months assuming month 1 is January;
+         * @return returns a month value or null if value below 1 is provided
+         */
+        public static Month valueOf(int month){
+            if(month > 12){
+                month = month - 12*(int)(month/12);
+            }
+            if(month > 0){
+                for (Month m : Month.values()){
+                    if(m.number == month){
+                        return m;
+                    }
+                }
+            }
+            return null;
+        }
+        
+        /**
+         * assumes all years are 365 days, and that day count starts at 1 on January 1
+         * @param day int value of 1 or above
+         * @return month between Jan and Dec or null if month is not matched (i.e. 0 value or day 366
+         */
+        public static Month valueOfDay(int day){
+            if(day > 365){
+                day = day - 365*(int)(day/365);
+            }
+            
+            for (Month m : Month.values()){
+                if(m.days >= day){
+                    return m;
+                }
+                day += m.days;
+            }
+            return null;
+        }
+        
+        /**
+         * converts month to int value
+         * @return value from 1 to 12 representing the month 
+         */
+        public int getNumber(){
+            return number;
+        }
+        
+        /**
+         * converts month to int value of days
+         * @return number of days in month, ignores leap years
+         */
+        public int getDays(){
+            return days;
+        }
+        
+    }
+    
+    
+    
+}
