@@ -34,10 +34,18 @@ package com.mcwbalance;
  * @author alex
  */
 public class Config {
+
+    /**
+     * blank constructor
+     */
     public Config(){
         
     }
     
+    /**
+     * 
+     * @return
+     */
     public String getConfigXML(){
         return "/Config.xml";
     }

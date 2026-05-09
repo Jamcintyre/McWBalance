@@ -38,10 +38,25 @@ public class Time {
      * Units of time measure allowed in this model
      */
     public static enum TimeUnit{
+        /**
+         * 1 hour
+         */
         Hour(1),
+        /**
+         * 24 hour day
+         */
         Day(24),
+        /**
+         * 7 day week
+         */
         Week(168),
+        /**
+         * 1/12 of a 365 day year;
+         */
         Month(730),
+        /**
+         * non leap year 365 days
+         */
         Year(8760);
         
         private final int hours;
@@ -80,17 +95,53 @@ public class Time {
      * Months to use in model, note no leap year allowance
      */
     public enum Month{
+        /**
+         * January 31 days, Month 1
+         */
         Jan (1,31),
+        /**
+         * February 28 days, no leap years, Month 2
+         */
         Feb (2,28),
+        /**
+         * March 31 days, Month 3
+         */
         Mar (3,31),
+        /**
+         * April 30 days, Month 4
+         */
         Apr (4,30),
+        /**
+         * May 31 days, Month 5
+         */
         May (5,31),
+        /**
+         * June 30 days, Month 6
+         */
         Jun (6,30),
+        /**
+         * July 31 days, Month 7
+         */
         Jul (7,31),
+        /**
+         * August 31 days, Month 8
+         */
         Aug (8,31),
+        /**
+         * September 30 days, Month 9
+         */        
         Sep (9,30),
+        /**
+         * October 31 days, Month 10
+         */
         Oct (10,31),
+        /**
+         * November 30 days, Month 11
+         */
         Nov (11,30),
+        /**
+         * December 31 days, Month 12
+         */
         Dec (12,31);
         
         private final int days;
