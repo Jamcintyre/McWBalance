@@ -106,13 +106,15 @@ public class Depth {
         /**
          * same as valueOf with relaxed inputs ignores the case, note values are not plural
          * and accepts common aliases,  i.e. inch, in, inches,  ft, feet, etc...
-         *
+         * also compares to getDescriptor() 
+         * 
          * @param depthunit Hour, HOUR, hour or similar not plural string
          * @return
          */
         public static DepthUnit valueOfIngoreCase(String depthunit) {
             for (DepthUnit du : DepthUnit.values()) {
-                if (du.name().equalsIgnoreCase(depthunit)) {
+                if (du.name().equalsIgnoreCase(depthunit) ||
+                        du.getDesciptor().equalsIgnoreCase(depthunit)) {
                     return du;
                 }
             }
