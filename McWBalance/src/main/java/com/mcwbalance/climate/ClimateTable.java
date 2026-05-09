@@ -27,7 +27,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.mcwbalance.climate;
 
 import javax.swing.table.AbstractTableModel;
@@ -36,32 +35,33 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Alex McIntyre
  */
-public class ClimateTable extends AbstractTableModel{
+public class ClimateTable extends AbstractTableModel {
+
     /**
-     * Column names are fixed for climate set summary information
-     * Scenario, Description, Length etc...
+     * Column names are fixed for climate set summary information Scenario,
+     * Description, Length etc...
      */
-    public static final String[] columnNames = {"Scenario", "Description","Length","Avg Ann Precip","Min Ann Precip","Max Ann Precip", "Yr 1 Precip"};
-    
+    public static final String[] columnNames = {"Scenario", "Description", "Length", "Avg Ann Precip", "Min Ann Precip", "Max Ann Precip", "Yr 1 Precip"};
+
     double[] aaprecip;
     double[] minprecip;
     double[] maxprecip;
     double[] yr1precip;
-    DataClimate[] climates; 
-    
-    
+    DataClimate[] climates;
+
     /**
      * Generates a null list of climates
-     * @param size 
+     *
+     * @param size
      */
-    public ClimateTable(int size){
+    public ClimateTable(int size) {
         aaprecip = new double[size];
         minprecip = new double[size];
         maxprecip = new double[size];
         yr1precip = new double[size];
         climates = new DataClimate[size];
         for (int i = 0; i < size; i++) {
-            climates[i] = new DataClimate(1);        
+            climates[i] = new DataClimate(1);
             climates[i].setDescription(DataClimate.NULL_DESCRIP);
             aaprecip[i] = 0;
             minprecip[i] = 0;
@@ -72,13 +72,14 @@ public class ClimateTable extends AbstractTableModel{
 
     /**
      * For retrieving data from the table
+     *
      * @param row
      * @param col
-     * @return 
+     * @return
      */
-    @Override 
-    public Object getValueAt(int row, int col){
-        switch(col){
+    @Override
+    public Object getValueAt(int row, int col) {
+        switch (col) {
             case 0 -> {
                 return row;
             }
@@ -103,79 +104,84 @@ public class ClimateTable extends AbstractTableModel{
         }
         return null;
     }
+
     /**
      * For getting number of columns
-     * @return 
+     *
+     * @return
      */
-    @Override 
-    public int getColumnCount(){
+    @Override
+    public int getColumnCount() {
         return columnNames.length;
     }
-    
+
     /**
      * for getting number of timesteps in the climate series
-     * @return 
+     *
+     * @return
      */
-    @Override 
-    public int getRowCount(){
+    @Override
+    public int getRowCount() {
         return climates.length;
     }
-    
+
     /**
      * for pulling name of column
+     *
      * @param col
-     * @return 
+     * @return
      */
-    @Override 
-    public String getColumnName(int col){
+    @Override
+    public String getColumnName(int col) {
         return columnNames[col];
     }
-    
+
     /**
-     * For getting data type 
+     * For getting data type
+     *
      * @param c
-     * @return 
+     * @return
      */
-    @Override 
-    public Class getColumnClass(int c){        
-        return getValueAt(0,c).getClass(); 
+    @Override
+    public Class getColumnClass(int c) {
+        return getValueAt(0, c).getClass();
     }
-    
+
     /**
-     * Climate table values are summary of the climate set and not meant for direct
-     * entry
+     * Climate table values are summary of the climate set and not meant for
+     * direct entry
+     *
      * @param rowIndex
      * @param columnIndex
-     * @return 
+     * @return
      */
-    @Override 
-    public boolean isCellEditable(int rowIndex, int columnIndex){
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
-        
+
     }
-    
-    
+
     /**
      *
      * @return provides access to climate list
      */
-    public DataClimate[] getClimates(){
+    public DataClimate[] getClimates() {
         return climates;
     }
-    
+
     /**
-     * Method to remove a climate set, if all data is removed a Null value will be placed into row 0
-     * @param rowIndex 
+     * Method to remove a climate set, if all data is removed a Null value will
+     * be placed into row 0
+     *
+     * @param rowIndex
      */
-    public void removeRow(int rowIndex){
-        if(rowIndex < 0 || rowIndex >= climates.length){
+    public void removeRow(int rowIndex) {
+        if (rowIndex < 0 || rowIndex >= climates.length) {
             //Do Nothing
-        }
-        else if(climates.length == 1){
-            if(climates[0].getDescription().equals(DataClimate.NULL_DESCRIP) ){
+        } else if (climates.length == 1) {
+            if (climates[0].getDescription().equals(DataClimate.NULL_DESCRIP)) {
                 //Do Nothing
-            }
-            else{
+            } else {
                 climates[0] = new DataClimate(1);
                 aaprecip[0] = 0;
                 minprecip[0] = 0;
@@ -183,28 +189,27 @@ public class ClimateTable extends AbstractTableModel{
                 yr1precip[0] = 0;
                 fireTableRowsUpdated(0, 0);
             }
-        }
-        else{
-            int size = climates.length -1;
+        } else {
+            int size = climates.length - 1;
             double[] aaprecipBuff = new double[size];
             double[] minprecipBuff = new double[size];
             double[] maxprecipBuff = new double[size];
             double[] yr1precipBuff = new double[size];
             DataClimate[] climateScenariosBuff = new DataClimate[size];
-            
-            for (int i = 0; i < rowIndex; i++){
+
+            for (int i = 0; i < rowIndex; i++) {
                 aaprecipBuff[i] = aaprecip[i];
                 minprecipBuff[i] = minprecip[i];
                 maxprecipBuff[i] = maxprecip[i];
                 yr1precipBuff[i] = yr1precip[i];
                 climateScenariosBuff[i] = climates[i];
             }
-            for (int i = rowIndex; i < size; i++){
-                aaprecipBuff[i] = aaprecip[i+1];
-                minprecipBuff[i] = minprecip[i+1];
-                maxprecipBuff[i] = maxprecip[i+1];
-                yr1precipBuff[i] = yr1precip[i+1];
-                climateScenariosBuff[i] = climates[i+1];
+            for (int i = rowIndex; i < size; i++) {
+                aaprecipBuff[i] = aaprecip[i + 1];
+                minprecipBuff[i] = minprecip[i + 1];
+                maxprecipBuff[i] = maxprecip[i + 1];
+                yr1precipBuff[i] = yr1precip[i + 1];
+                climateScenariosBuff[i] = climates[i + 1];
             }
             aaprecip = aaprecipBuff;
             minprecip = minprecipBuff;
@@ -214,22 +219,25 @@ public class ClimateTable extends AbstractTableModel{
             fireTableDataChanged();
         }
     }
+
     /**
-     * Method to take a string value of a cclm file and add it to the list of climate scenarios
-     * @param readString 
+     * Method to take a string value of a cclm file and add it to the list of
+     * climate scenarios
+     *
+     * @param readString
      */
-    public void addClimateScenario(String readString){
-        
+    public void addClimateScenario(String readString) {
+
         int size = climates.length;
-        if(climates[0].getDescription() != DataClimate.NULL_DESCRIP){
+        if (climates[0].getDescription() != DataClimate.NULL_DESCRIP) {
             size++;
             double[] aaprecipBuff = new double[size];
             double[] minprecipBuff = new double[size];
             double[] maxprecipBuff = new double[size];
             double[] yr1precipBuff = new double[size];
             DataClimate[] climateScenariosBuff = new DataClimate[size];
-            
-            for (int i = 0; i < size -1; i++){
+
+            for (int i = 0; i < size - 1; i++) {
                 aaprecipBuff[i] = aaprecip[i];
                 minprecipBuff[i] = minprecip[i];
                 maxprecipBuff[i] = maxprecip[i];
@@ -242,14 +250,13 @@ public class ClimateTable extends AbstractTableModel{
             yr1precip = yr1precipBuff;
             climates = climateScenariosBuff;
         }
-        climates[size-1] = new DataClimate(readString);
-        aaprecip[size-1] = climates[size-1].getAnnualAvgPrecip();
-        minprecip[size-1] = climates[size-1].getMinimumAnnualPrecip();
-        maxprecip[size-1] = climates[size-1].getMaximumAnnualPrecip();
-        yr1precip[size-1] = climates[size-1].getyr1Precip();
+        climates[size - 1] = new DataClimate(readString);
+        aaprecip[size - 1] = climates[size - 1].getAnnualAvgPrecip();
+        minprecip[size - 1] = climates[size - 1].getMinimumAnnualPrecip();
+        maxprecip[size - 1] = climates[size - 1].getMaximumAnnualPrecip();
+        yr1precip[size - 1] = climates[size - 1].getyr1Precip();
         fireTableDataChanged();
-        
+
     }
 
-    
 }

@@ -1,6 +1,31 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.mcwbalance.generics;
 
@@ -10,79 +35,100 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
+ * used for storing a time series that can be looked up by day, where the time
+ * step may not match the index value
  *
- * @author amcintyre
- * @deprecated use JTable model instead to allow direct access with GUI
+ * @author Alex McIntyre
+ *
  */
 public class DataTimeDoubleSeries {
-      public int length;
-    private int[] day;
-    private double[] value;
-    public static int MAX_LENGTH = Limit.MAX_LEVELS; 
-    public static final int DAY_NULL = -1;
-    public static final double VAL_NULL = -9999;
-    
+
     /**
-     * constructs a blank null value array, mostly as a placeholder for table generation, note that calling remove DoupAndDUlls will erase the list.
-     * @param nPoints 
+     * length of data in series, note that length of array can be resized and
+     * does not match the length of data, so this length value should be used
+     * instead
      */
-    public DataTimeDoubleSeries(int nPoints){
-        if (nPoints > MAX_LENGTH){
+    public int length;
+    private int[] step;
+    private double[] value;
+    /**
+     * Used for limiting the length of the data series
+     */
+    public static int MAX_LENGTH = Limit.MAX_LEVELS;
+    /**
+     * Used for identification of null value
+     */
+    public static final int DAY_NULL = -1;
+    /**
+     * Used for identification of null value
+     */
+    public static final double VAL_NULL = -9999;
+
+    /**
+     * constructs a blank null value array, mostly as a placeholder for table
+     * generation, note that calling remove DoupAndDUlls will erase the list.
+     *
+     * @param nPoints
+     */
+    public DataTimeDoubleSeries(int nPoints) {
+        if (nPoints > MAX_LENGTH) {
             nPoints = MAX_LENGTH;
-        }else if (nPoints < 1){
+        } else if (nPoints < 1) {
             nPoints = 1;
         }
         length = nPoints;
-        day = new int[length];
+        step = new int[length];
         value = new double[length];
-        day[0] = 0; // first day mmust be 0; 
+        step[0] = 0; // first day mmust be 0; 
         value[0] = 0; // note program will ignore the first DAC area and storage given as they must be 0;
-        for (int i = 1; i < nPoints; i ++){
-            day[i] = DAY_NULL;
+        for (int i = 1; i < nPoints; i++) {
+            step[i] = DAY_NULL;
             value[i] = VAL_NULL;
         }
     }
+
     /**
-     * constructs the full set of both arrays, as well calls removeDoupAndNulls and sortAssending Methods
+     * constructs the full set of both arrays, as well calls removeDoupAndNulls
+     * and sortAssending Methods
+     *
      * @param inDay
-     * @param inValue 
+     * @param inValue
      */
-    public DataTimeDoubleSeries(int inDay[], double inValue[]){
-        if(inDay.length < 1 || inValue.length <1){
+    public DataTimeDoubleSeries(int inDay[], double inValue[]) {
+        if (inDay.length < 1 || inValue.length < 1) {
             length = 1;
-            day = new int[length];
+            step = new int[length];
             value = new double[length];
-            day[0] = 0; 
+            step[0] = 0;
             value[0] = 0;
-        }else if (inDay.length == inValue.length){
-            if (inDay.length <= MAX_LENGTH){
-                day = inDay;
+        } else if (inDay.length == inValue.length) {
+            if (inDay.length <= MAX_LENGTH) {
+                step = inDay;
                 value = inValue;
-            }
-            else {
+            } else {
                 length = MAX_LENGTH;
-                day = new int[length];
+                step = new int[length];
                 value = new double[length];
-                for (int i = 0; i < length; i ++){
-                    day[i] = inDay[i];
+                for (int i = 0; i < length; i++) {
+                    step[i] = inDay[i];
                     value[i] = inValue[i];
                 }
             }
-            
-        }else if (inDay.length < inValue.length){
+
+        } else if (inDay.length < inValue.length) {
             length = inDay.length;
-            day = new int[length];
+            step = new int[length];
             value = new double[length];
-            for (int i = 0; i < length; i ++){
-                day[i] = inDay[i];
+            for (int i = 0; i < length; i++) {
+                step[i] = inDay[i];
                 value[i] = inValue[i];
             }
-        }else {
+        } else {
             length = inValue.length;
-            day = new int[length];
+            step = new int[length];
             value = new double[length];
-            for (int i = 0; i < length; i ++){
-                day[i] = inDay[i];
+            for (int i = 0; i < length; i++) {
+                step[i] = inDay[i];
                 value[i] = inValue[i];
             }
         }
@@ -90,203 +136,237 @@ public class DataTimeDoubleSeries {
         removeDoupAndNulls();
 
     }
-    
+
     /**
-     * Used for getting a save file formatted XML element to append into a larger doc
-     * Only appends if length > 0
+     * Used for getting a save file formatted XML element to append into a
+     * larger doc Only appends if length > 0
+     *
      * @see getXMLElement
      * @param element Element to append too
-     * @param xMLDoc 
-     * @param tagname 
+     * @param xMLDoc
+     * @param tagname
      */
-    public void appendXMLElement(Element element, Document xMLDoc, String tagname){
-        if(length >0){
+    public void appendXMLElement(Element element, Document xMLDoc, String tagname) {
+        if (length > 0) {
             element.appendChild(getXMLElement(xMLDoc, tagname));
         }
     }
-    
-    
+
     /**
-     * Replaces array data with new inputs then calls removeDoupAndNulls and sortAssending Methods
-     * @param inDay
-     * @param inValue 
+     *
+     * @return array list of days
      */
-    public int[] getDays(){
-        return day;
+    public int[] getDays() {
+        return step;
     }
-    public double[] getValues(){
+
+    /**
+     *
+     * @return array list of values
+     */
+    public double[] getValues() {
         return value;
     }
-    public double getValue(int inDay){
-        for (int i = length - 1; i > -1; i --){
-           if(inDay >= day[i]){
-               return value[i];
-           } 
+
+    /**
+     * Used for pulling a value from a specific date
+     *
+     * @param step day to look for,
+     * @return value if found or returns value at index 0 for data that isn't
+     * found
+     */
+    public double getValue(int step) {
+        for (int i = length - 1; i > -1; i--) {
+            if (step >= this.step[i]) {
+                return value[i];
+            }
         }
-        System.err.println("DataTimeIntSeries - WARNING VALUE NOT FOUND FOR SEARCHED DAY " + inDay +" VALUE OF " + value[0] + "RETURNED INSTEAD");
+        System.err.println("DataTimeIntSeries - WARNING VALUE NOT FOUND FOR SEARCHED time step " + step + " VALUE OF " + value[0] + "RETURNED INSTEAD");
         return value[0];
     }
-    public StringBuilder getTabbedString(String header){
+
+    /**
+     * For generating a tab delimeted version of the contained data, useful for
+     * cut and paste
+     *
+     * @param header
+     * @return
+     */
+    public StringBuilder getTabbedString(String header) {
         StringBuilder tabbedString = new StringBuilder();
         tabbedString.append(header);
         tabbedString.append(System.getProperty("line.separator"));
-        for (int i = 0; i < length; i ++){
-            tabbedString.append(day[i]);
+        for (int i = 0; i < length; i++) {
+            tabbedString.append(step[i]);
             tabbedString.append("\\t");
             tabbedString.append(value[i]);
             tabbedString.append(System.getProperty("line.separator"));
         }
         tabbedString.append(Preferences.LIST_TERMINATOR);
         tabbedString.append(System.getProperty("line.separator"));
-        return tabbedString; 
+        return tabbedString;
     }
-    
+
     /**
-     * Used for getting a save file formatted XML element to append into a larger doc
-     * @param xMLDoc Document required to generate element, 
+     * Used for getting a save file formatted XML element to append into a
+     * larger doc
+     *
+     * @param xMLDoc Document required to generate element,
      * @param tagname Name of element
-     * @return 
+     * @return
      */
-    public Element getXMLElement(Document xMLDoc, String tagname){
+    public Element getXMLElement(Document xMLDoc, String tagname) {
         Element ele = xMLDoc.createElement(tagname);
         for (int i = 0; i < length; i++) {
             Element cele = xMLDoc.createElement("row");
-            cele.setAttribute("Index", String.valueOf(day[i]));
+            cele.setAttribute("Index", String.valueOf(step[i]));
             cele.setAttribute("Name", String.valueOf(value[i]));
             ele.appendChild(cele);
         }
         return ele;
     }
-    
-    
-    
-    public void setFromStringLine(String line, int index){
-        if (index < MAX_LENGTH && index >= 0 && line != Preferences.LIST_TERMINATOR){
-            if (index +1 < length){
-                int newdayArray[] = new int[index +1];
-                double newvalueArray[] = new double[index +1];
-                for (int i = 0; i < length; i ++){
-                    newdayArray[i] = day[i];
+
+    /**
+     * Allows overwrite a line of data from a string
+     *
+     * @param line string of data
+     * @param index index to overwrite
+     */
+    public void setFromStringLine(String line, int index) {
+        if (index < MAX_LENGTH && index >= 0 && !line.equals(Preferences.LIST_TERMINATOR)) {
+            if (index + 1 < length) {
+                int newdayArray[] = new int[index + 1];
+                double newvalueArray[] = new double[index + 1];
+                for (int i = 0; i < length; i++) {
+                    newdayArray[i] = step[i];
                     newvalueArray[i] = value[i];
                 }
-                int newday = Integer.valueOf(line.split("\\t")[0]);
-                double newvalue = Double.valueOf(line.split("\\t")[1]);
-                newdayArray[index +1] = newday;
-                newvalueArray[index +1] = newvalue;
-                day = newdayArray;
-                value = newvalueArray; 
-            }else{ // needed for the first row.
-                int newday = Integer.valueOf(line.split("\\t")[0]);
-                double newvalue = Double.valueOf(line.split("\\t")[1]);
-                day[index +1] = newday;
-                value[index +1] = newvalue;
-            }  
+                int newday = Integer.parseInt(line.split("\\t")[0]);
+                double newvalue = Double.parseDouble(line.split("\\t")[1]);
+                newdayArray[index + 1] = newday;
+                newvalueArray[index + 1] = newvalue;
+                step = newdayArray;
+                value = newvalueArray;
+            } else { // needed for the first row.
+                int newStep = Integer.parseInt(line.split("\\t")[0]);
+                double newvalue = Double.parseDouble(line.split("\\t")[1]);
+                step[index + 1] = newStep;
+                value[index + 1] = newvalue;
+            }
         }
     }
-    public void setAllData(int inDay[], double inValue[]){
-        int newDay[];
+
+    /**
+     * used for overwriting all contained data,
+     *
+     * @param inStep new time step string
+     * @param inValue new values string
+     */
+    public void setAllData(int[] inStep, double inValue[]) {
+        int[] newStep;
         double newValue[];
-        if(inDay.length < 1 || inValue.length <1){
+        if (inStep.length < 1 || inValue.length < 1) {
             length = 1;
-            newDay = new int[length];
+            newStep = new int[length];
             newValue = new double[length];
-            newDay[0] = 0; 
+            newStep[0] = 0;
             newValue[0] = 0;
-        }else if (inDay.length == inValue.length){
-            if (inDay.length <= MAX_LENGTH){
-                length = inDay.length;
-                newDay = inDay;
+        } else if (inStep.length == inValue.length) {
+            if (inStep.length <= MAX_LENGTH) {
+                length = inStep.length;
+                newStep = inStep;
                 newValue = inValue;
-            }
-            else {
+            } else {
                 length = MAX_LENGTH;
-                newDay = new int[length];
+                newStep = new int[length];
                 newValue = new double[length];
-                for (int i = 0; i < length; i ++){
-                    newDay[i] = inDay[i];
+                for (int i = 0; i < length; i++) {
+                    newStep[i] = inStep[i];
                     newValue[i] = inValue[i];
                 }
             }
-            
-        }else if (inDay.length < inValue.length){
-            length = inDay.length;
-            newDay = new int[length];
+
+        } else if (inStep.length < inValue.length) {
+            length = inStep.length;
+            newStep = new int[length];
             newValue = new double[length];
-            for (int i = 0; i < length; i ++){
-                newDay[i] = inDay[i];
+            for (int i = 0; i < length; i++) {
+                newStep[i] = inStep[i];
                 newValue[i] = inValue[i];
             }
-        }else {
+        } else {
             length = inValue.length;
-            newDay = new int[length];
+            newStep = new int[length];
             newValue = new double[length];
-            for (int i = 0; i < length; i ++){
-                newDay[i] = inDay[i];
+            for (int i = 0; i < length; i++) {
+                newStep[i] = inStep[i];
                 newValue[i] = inValue[i];
             }
         }
-        
-        day = newDay;
-        value = newValue; 
+
+        step = newStep;
+        value = newValue;
         sortAssending();
         removeDoupAndNulls();
     }
+
     /**
-     * Removes any douplicated day values since 1 day should not have 2 seperate operating targets
-     * Also removes null values from list (i.e. -1) to minimize clutter
+     * Removes any duplicate day values since 1 day should not have 2 separate
+     * operating targets Also removes null values from list (i.e. -1) to
+     * minimize clutter
      */
-    public void removeDoupAndNulls(){ // this is having the problem
-        double cDay;
-        for (int i = 0; i < length; i ++){
-            cDay = day[i];
-            for (int j = i + 1; j < length; j ++){
-                if (day[j] == cDay || day[j] == DAY_NULL || value[j] == VAL_NULL){
-                    for (int k = j + 1; k < length; k ++){
-                        day[k-1] = day[k];
-                        value[k-1] = value[k];
+    public final void removeDoupAndNulls() { // this is having the problem
+        double cStep;
+        for (int i = 0; i < length; i++) {
+            cStep = step[i];
+            for (int j = i + 1; j < length; j++) {
+                if (step[j] == cStep || step[j] == DAY_NULL || value[j] == VAL_NULL) {
+                    for (int k = j + 1; k < length; k++) {
+                        step[k - 1] = step[k];
+                        value[k - 1] = value[k];
                     }
                     length--;
                 }
             }
         }
-        if (length != day.length){
-            int newDay[] = new int[length];
+        if (length != step.length) {
+            int[] newStep = new int[length];
             double newValue[] = new double[length];
-             newDay[0] = 0; // forces first day value to be 0;
-             newValue[0] = value[0];
-            
-            for (int i = 1; i < length; i ++){
-                newDay[i] = day[i];
+            newStep[0] = 0; // forces first day value to be 0;
+            newValue[0] = value[0];
+
+            for (int i = 1; i < length; i++) {
+                newStep[i] = step[i];
                 newValue[i] = value[i];
             }
-            
-            
-            day = newDay;
+
+            step = newStep;
             value = newValue;
         }
     }
+
     /**
-     * Sorts both day and Value arrays in assending order of day; 
+     * Sorts both day and Value arrays in ascending order of day;
      */
-    public void sortAssending(){
-        int swapDay;
+    public final void sortAssending() {
+        int swapStep;
         double swapValue;
-        for (int i = 0; i < length; i ++){ // may need to move the i++ and j++, want to repeat the step if needed;
-            for (int j = i+1; j < length; j ++){
-                if(day[j] < day[i]){ // if it matches leave it alone, the doublicate cleaner will deal with it; 
-                    swapDay = day[j];
+        for (int i = 0; i < length; i++) { // may need to move the i++ and j++, want to repeat the step if needed;
+            for (int j = i + 1; j < length; j++) {
+                if (step[j] < step[i]) { // if it matches leave it alone, the doublicate cleaner will deal with it; 
+                    swapStep = step[j];
                     swapValue = value[j];
-                    for (int k = j-1; k > i-1; k --){
-                        day[k+1] = day[k];
-                        value[k+1] = value[k];
+                    for (int k = j - 1; k > i - 1; k--) {
+                        step[k + 1] = step[k];
+                        value[k + 1] = value[k];
                     }
-                    day[i] = swapDay;
+                    step[i] = swapStep;
                     value[i] = swapValue;
                     i = -1; // assumes i++ will bring this back to 0 and loop will restart;
-                    break; 
+                    break;
                 }
             }
         }
     }
-    
+
 }
