@@ -26,8 +26,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
+ */
 package com.mcwbalance;
 
 import com.mcwbalance.project.ProjSetting;
@@ -41,61 +40,70 @@ import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * POTENTIAL NAME CHANGE -MAquaBal or MAB Mine Water Balance
- * McWBalance is intended to function as a deterministic daily time step mine 
- * water balance planner and solver. The intention is to allow simplified 
- * flowsheet development and operational logic entry that can be visually reviewed.
- * The program is attempting to balance flexibility to allow any and all mine water
+ * POTENTIAL NAME CHANGE -MAquaBal or MAB Mine Water Balance McWBalance is
+ * intended to function as a deterministic daily time step mine water balance
+ * planner and solver. The intention is to allow simplified flowsheet
+ * development and operational logic entry that can be visually reviewed. The
+ * program is attempting to balance flexibility to allow any and all mine water
  * balance problems to be solved, however, it will remain ridged in enforcing
  * non-material stylistic rules (i.e. font size, chart styles, output format) to
  * ensure consistency between users and projects.
- * @author amcintyre
+ *
+ * @author Alex McIntyre
  */
 public class McWBalance {
+
     static BufferedImage mainIcon30;
     static final String FILE_EXTENSION = "mcbl";
     static final String LANGUAGE_RESOURCE = "Language";
-    
+
     static final String PROGRAM_NAME = "McBalance";
     static Locale currentLocale;
-    
+
     /**
      * Bin for all short dialogs and words
      */
     public static ResourceBundle langRB;
-    
+    /**
+     * Plot style properties, such as boarder size, line colour etc..
+     */
     public static Properties style = new Properties();
     static Properties localeprops = new Properties();
-    
-    
-    public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File",FILE_EXTENSION);
 
+    /**
+     * file extension for save files
+     */
+    public static FileNameExtensionFilter DEFAULT_FILEEXTENSION_FILTER = new FileNameExtensionFilter("McBalance File", FILE_EXTENSION);
+
+    /**
+     * Primary entry point to program
+     *
+     * @param args accepted but ignored, no command arguments are recognized at
+     * this time
+     */
     public static void main(String[] args) {
 
         //setLocale("es");
-
         langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE);
 
-        try{
+        try {
             style.load(new java.io.FileInputStream("src/main/resources/Style.properties"));
         } catch (IOException e) {
             System.out.println("Style Properties Not Found");
         }
-        
-        try{
+
+        try {
             localeprops.load(new java.io.FileInputStream("src/main/resources/Locales.properties"));
         } catch (IOException e) {
             System.out.println("Locales Properties Not Found");
         }
-        
-        
-        
+
         try {
             mainIcon30 = ImageIO.read(new File("bin/Icon30.png"));
         } catch (IOException e) {
             System.out.println("IconFile Not Found");
         }
-        
+
         /*
         try {
             // Set System L&F
@@ -107,35 +115,34 @@ public class McWBalance {
         } catch (UnsupportedLookAndFeelException e) {
         
         }
-        */
-
-         
+         */
         System.out.println("McBalance Version " + ProjSetting.verInfo + " is loading");
-        MainWindow mainWin = new MainWindow(); 
-    }
-    /**
-     * note this doesn't work correctly, once data bundle is loaded it appears the data cannot change
-     * @param newLocal 
-     */
-    public static void setLocale(String newLocal){
-        
-        String[] localCodes = newLocal.split("_");
-        
-        Locale.of(newLocal);
-        
-        if(localCodes.length == 1){
-           currentLocale = Locale.of(localCodes[0]);
-           
-           System.out.println("language Changed to " + localCodes[0]);
-        }
-        else{
-           currentLocale = Locale.of(localCodes[0], localCodes[1]);
-           System.out.println("language Changed to " + localCodes[0] + " " + localCodes[1]);
-        }
-        
-        langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
-        
+        MainWindow mainWin = new MainWindow();
     }
 
-    
+    /**
+     * note this doesn't work correctly, once data bundle is loaded it appears
+     * the data cannot change
+     *
+     * @param newLocal
+     */
+    public static void setLocale(String newLocal) {
+
+        String[] localCodes = newLocal.split("_");
+
+        Locale.of(newLocal);
+
+        if (localCodes.length == 1) {
+            currentLocale = Locale.of(localCodes[0]);
+
+            System.out.println("language Changed to " + localCodes[0]);
+        } else {
+            currentLocale = Locale.of(localCodes[0], localCodes[1]);
+            System.out.println("language Changed to " + localCodes[0] + " " + localCodes[1]);
+        }
+
+        langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE, currentLocale);
+
+    }
+
 }

@@ -169,8 +169,14 @@ public class Time {
             this.number = number;
         }
         
+        /**
+         * For converting month to Julian Day
+         * @param month int value of month from 1 through 12; month 13 should act as 1, 14 as 2 etc.. 
+         * @return the first Julian Day of a month ignoring leap years
+         */
         public static int toJulianDay(int month){
             int day = 1;
+            month -= 12*(int)(month/12); 
             for (int m = 2; m < month; m++){
                 day += valueOf(m-1).days;
             }

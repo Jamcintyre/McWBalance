@@ -1,9 +1,34 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.mcwbalance.flowchart;
 
-/* TO DO LATERS
-- implement controls to prevent negitive origin corridinates for boxes
-
- */
 import com.mcwbalance.settings.Preferences;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.transfer.TRN;
@@ -27,23 +52,30 @@ import java.awt.print.PrinterException;
 import javax.swing.JComponent;
 
 /**
- * Known Bugs font size changes, between transfer lables, must not be setting
- * the font immediately prior to drawing, or there is a scale occuring Object
+ *
+ * TO DO LATERS implement controls to prevent negative origin corridinates for
+ * boxes
+ *
+ *
+ * Known Bugs font size changes, between transfer labels, must not be setting
+ * the font immediately prior to drawing, or there is a scale occurring Object
  * Deletion sometimes deletes extra elements
  *
  *
  * @author Alex McIntyre
  */
-public class FlowChartCAD extends JComponent implements Printable{
+public class FlowChartCAD extends JComponent implements Printable {
 
-
+    /**
+     * for tracking if title block should be plotted
+     */
     public static boolean titleBlockVisible = true;
 
     /**
      * Active project which contains the main data model, nodes, transfers,
      * results
      */
-    private Project prj;
+    private final Project prj;
 
     private int drawX;
     private int drawY;
@@ -51,25 +83,25 @@ public class FlowChartCAD extends JComponent implements Printable{
     private Dimension eLMdim; // variable for holding dimesion of origin elm
     private int eLMx;
     private int eLMy;
-    private Rectangle eLMrect; // used in flow line drawing
+    private final Rectangle eLMrect; // used in flow line drawing
 
     /**
-     * TODO - move this to the Template file
-     * used for setting size of transfer box
+     * TODO - move this to the Template file used for setting size of transfer
+     * box
      */
     public final static int TRN_BOX_WIDTH = 60;
     /**
-     * TODO - move this to the Template file
-     * used for setting size of transfer box
+     * TODO - move this to the Template file used for setting size of transfer
+     * box
      */
     public final static int TRN_BOX_HEIGHT = 60;
 
     private Dimension tRNdim; // placeholder sizing
     private int tRNx;
     private int tRNy;
-    private Rectangle tRNrect; // used in flow line drawing
+    private final Rectangle tRNrect; // used in flow line drawing
 
-    private FlowChartLines fpline; // sets up a bin to hold a polyline
+    private final FlowChartLines fpline; // sets up a bin to hold a polyline
 
     BasicStroke FLOW_LINE;
     BasicStroke THIN_LINE;
@@ -80,9 +112,9 @@ public class FlowChartCAD extends JComponent implements Printable{
 
     private boolean isPageOutlineVisible = true;
 
-    private int minLineLength; // used to set stublines from objects
+    private final int minLineLength; // used to set stublines from objects
 
-    private int vlableoffset;
+    private final int vlableoffset;
     private double nameWidthDouble; // used for centering the name
     private int nameWidth; // used for centering the name
     private double nameHeightDouble; // used for centering the name
@@ -102,9 +134,21 @@ public class FlowChartCAD extends JComponent implements Printable{
     private int lshadow = 4; // used to size the shaddow box shadow
     private int spadding = 2; // used to pad bottom of numbers. 
 
+    /**
+     * Current zoom scale for drawing
+     */
     public static double zoomscale;
+
+    /**
+     * Current time step for rendering and displaying results
+     */
     public static int drawdate;
 
+    /**
+     * Generates a flowchart based on the provided project
+     *
+     * @param project
+     */
     public FlowChartCAD(Project project) {
         this.prj = project;
 
@@ -150,18 +194,32 @@ public class FlowChartCAD extends JComponent implements Printable{
         drawdate = -1;
     }
 
+    /**
+     * Cass the rendering method and applies to the display graphics context
+     *
+     * @param g
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         render(g);
-        }
-    
+    }
+
+    /**
+     * Similar to paint component but for printing
+     *
+     * @param g graphics layer to render to
+     * @param pf
+     * @param i
+     * @return
+     * @throws PrinterException
+     */
     @Override
     public int print(Graphics g, PageFormat pf, int i) throws PrinterException {
-        
+
         System.out.println(pf.toString());
         System.out.println("page to print" + i);
-        
+
         if (i > 0) {
             return NO_SUCH_PAGE;
         }
@@ -172,7 +230,6 @@ public class FlowChartCAD extends JComponent implements Printable{
         System.out.println("Imageable y = " + pf.getImageableY());
 
         //grphcs.drawOval(75, 75, 50, 50);
-        
         render(g);
 
         return PAGE_EXISTS;
@@ -180,6 +237,7 @@ public class FlowChartCAD extends JComponent implements Printable{
 
     /**
      * Calls a constructor to generate a new blank node at a given coordinate
+     *
      * @param inX in pxls
      * @param inY in pxls
      */
@@ -190,6 +248,7 @@ public class FlowChartCAD extends JComponent implements Printable{
 
     /**
      * Calls a constructor to generate a new blank transfer at given coordinates
+     *
      * @param inX in pxls
      * @param inY in pxls
      */
@@ -201,6 +260,7 @@ public class FlowChartCAD extends JComponent implements Printable{
     /**
      * Sets a node to selected, used for managing double clicks and selection
      * highlight
+     *
      * @param index index of node selected
      */
     public void addSelectionELM(int index) {
@@ -211,8 +271,9 @@ public class FlowChartCAD extends JComponent implements Printable{
     }
 
     /**
-     * Sets a transfer to selected, used for managing double clicks and selection
-     * highlight
+     * Sets a transfer to selected, used for managing double clicks and
+     * selection highlight
+     *
      * @param index index of transfer selected
      */
     public void addSelectionTRN(int index) {
@@ -224,8 +285,9 @@ public class FlowChartCAD extends JComponent implements Printable{
 
     /**
      * Used to check if a node is already selected, used for double clicks
+     *
      * @param index index of node
-     * @return true if Node is actively selected 
+     * @return true if Node is actively selected
      */
     public boolean checkSelectionELM(int index) {
         return prj.getNodeList().nodes[index].isSelected;
@@ -233,6 +295,7 @@ public class FlowChartCAD extends JComponent implements Printable{
 
     /**
      * Used to check if a transfer is already selected, used for double clicks
+     *
      * @param index index of transfer
      * @return true of transfer is actively selected
      */
@@ -253,18 +316,16 @@ public class FlowChartCAD extends JComponent implements Printable{
     }
 
     /**
-     * TODO
-     * Not written, intend to copy selected ELMS and TRNS to clipboard in ascii
-     * (unicode) format tab delimited
+     * TODO Not written, intend to copy selected ELMS and TRNS to clipboard in
+     * ascii (unicode) format tab delimited
      */
     public void copySelectiontoClipboard() {
 
     }
 
     /**
-     * TODO
-     * only single delete tested to date should remove all selected ELMS and
-     * TRNS. will be called from main window using delete key
+     * TODO only single delete tested to date should remove all selected ELMS
+     * and TRNS. will be called from main window using delete key
      */
     public void deleteSelection() {
         for (int i = 0; i < prj.getNodeList().count; i++) {
@@ -279,9 +340,10 @@ public class FlowChartCAD extends JComponent implements Printable{
         }
         ProjSetting.hasChangedSinceSave = true;
     }
-    
+
     /**
      * removes a node from the active node list
+     *
      * @param index index of node to remove
      */
     public void removeELM(int index) {
@@ -289,21 +351,22 @@ public class FlowChartCAD extends JComponent implements Printable{
         prj.getTransferList().removeELM(index);
         ProjSetting.hasChangedSinceSave = true;
     }
-    
+
     /**
      * removes a transfer from the active node list
-     * @param index  index of transfer to remove
+     *
+     * @param index index of transfer to remove
      */
     public void removeTRN(int index) {
         prj.getNodeList().removeTRN(index);
         prj.getTransferList().removeTRN(index);
         ProjSetting.hasChangedSinceSave = true;
     }
-    
+
     /**
-     * This is where the bulk of the work happens
-     * Intended to provide common rendering between display and print
-     * 
+     * This is where the bulk of the work happens Intended to provide common
+     * rendering between display and print
+     *
      */
     private void render(Graphics g) {
 
@@ -449,9 +512,9 @@ public class FlowChartCAD extends JComponent implements Printable{
         }
     }
 
-    
     /**
      * Adjusts the location of a node on the flowchart
+     *
      * @param inX X coordinate in pxls
      * @param inY Y coordinate in pxls
      * @param index index of node to move
@@ -464,9 +527,10 @@ public class FlowChartCAD extends JComponent implements Printable{
                 inY - prj.getNodeList().nodes[index].hitBox.getSize().height / 2);
         ProjSetting.hasChangedSinceSave = true;
     }
-    
+
     /**
      * Adjusts the location of a transfer box
+     *
      * @param inX X coordinate in pxls
      * @param inY Y coordinate in pxls
      * @param index index of transfer to move
@@ -491,6 +555,7 @@ public class FlowChartCAD extends JComponent implements Printable{
 
     /**
      * overwrites the target node in the active node list with the provided node
+     *
      * @param index index of node to overwrite
      * @param inObjELM source node
      */
@@ -502,7 +567,9 @@ public class FlowChartCAD extends JComponent implements Printable{
     }
 
     /**
-     * overwrites the target transfer in the active transfer list with the provided transfer
+     * overwrites the target transfer in the active transfer list with the
+     * provided transfer
+     *
      * @param index index on of transfer to overwrite
      * @param inObjTRN source transfer
      */
@@ -512,8 +579,9 @@ public class FlowChartCAD extends JComponent implements Printable{
     }
 
     /**
-     * Used for finding if a set of coordinates make contact with a node, and 
-     * if so returns the node that was hit
+     * Used for finding if a set of coordinates make contact with a node, and if
+     * so returns the node that was hit
+     *
      * @param inX in pxls
      * @param inY in pxls
      * @return index of node that is hit, or -1 for no hit
@@ -528,10 +596,11 @@ public class FlowChartCAD extends JComponent implements Printable{
         }
         return -1;
     }
-    
+
     /**
-     * Used for finding if a set of coordinates make contact with a transfer, and 
-     * if so returns the transfer that was hit
+     * Used for finding if a set of coordinates make contact with a transfer,
+     * and if so returns the transfer that was hit
+     *
      * @param inX in pxls
      * @param inY in pxls
      * @return index of transfer that is hit, or -1 for no hit

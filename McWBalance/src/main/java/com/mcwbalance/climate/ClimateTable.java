@@ -116,9 +116,9 @@ public class ClimateTable extends AbstractTableModel {
     }
 
     /**
-     * for getting number of timesteps in the climate series
+     * for getting number of climate series
      *
-     * @return
+     * @return climates.length
      */
     @Override
     public int getRowCount() {

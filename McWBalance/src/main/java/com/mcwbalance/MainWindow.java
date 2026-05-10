@@ -1,5 +1,37 @@
-package com.mcwbalance;
+/*
 
+With exclusion of code under SVGRender(Document svg), specific to case "A" 
+converting an SVG arc to a Java Arc
+
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package com.mcwbalance;
 
 import com.mcwbalance.project.ProjSettingWindow;
 import com.mcwbalance.project.ProjOpenExistingWindow;
@@ -64,80 +96,82 @@ import org.xml.sax.SAXException;
 
 /**
  * This is the primary window for the program
- * @author alex
+ *
+ * @author Alex McIntyre
  */
-public final class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener{
-    
-    
+public final class MainWindow extends JFrame implements MouseListener, ActionListener, MouseMotionListener, MouseWheelListener {
+
     /**
      * Cad drawing area
      */
     FlowChartCAD flowchart;
-    
+
     /**
      * Open Icon
      */
     ImageIcon iconOpen;
-    
+
     /**
      * Save Icon
      */
     ImageIcon iconSave;
-    
+
     /**
      * SaveAs Icon
      */
     ImageIcon iconSaveAs;
-    
+
     /**
      * New Project Icon
      */
     ImageIcon iconNewProject;
-    
+
     /**
      * Settings Icon
      */
     ImageIcon iconSettings;
-    
+
     /**
      * Delete Icon
      */
     ImageIcon iconDelete;
-    
+
     /**
      * New Element Icon
      */
     ImageIcon iconNewELM;
-    
+
     /**
      * New Transfer Icon
      */
     ImageIcon iconNewTRN;
-    
+
     /**
      * current active project
      */
     public Project aP;
-    
+
     /**
      * Spinner for selecting zoom level on CAD interface
      */
     SpinnerModel zoomSpinnerModel;
-    
+
     /**
      * sets a switch to allow adding an ELM on next mouse click
      */
     String requestedAction = "None";
-    
+
     /**
-     * used to allow object to become mobile on mouse click, -1 for not on the move
+     * used to allow object to become mobile on mouse click, -1 for not on the
+     * move
      */
     int nodeOnTheMove = -1;
     /**
-     * used to allow object to become mobile on mouse click, -1 for not on the move
+     * used to allow object to become mobile on mouse click, -1 for not on the
+     * move
      */
     int tRNOnTheMove = -1;
-    
+
     boolean isViewPanning = false;
     int viewX;
     int viewY;
@@ -147,14 +181,16 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
     static final double ZOOM_MIN = 0.05;
     static final double ZOOM_MAX = 2;
     static final double ZOOM_STEP = 0.05;
-    
-    
+
     JPanel flowChartPanel = new JPanel(new BorderLayout()); // declair comment flow chart panel
     JScrollPane flowChartScPane = new JScrollPane(flowChartPanel); // moved from beginning to here. 
-    
+
     // public static JFrame mainframe = new JFrame("McWBalance Pre-Release Non-Functional"); // JFrame declared here and as static so that ObjELMWindow can refer to it
-    public static boolean editorIsActive = false; // boolean used to track if ObjELM or ObjTRN windows are arleady active.  
-    
+    /**
+     * boolean used to track if ObjELM or ObjTRN windows are already active.
+     */
+    public static boolean editorIsActive = false;
+
     JMenuBar menubar;
     JMenu menufile;
     JMenuItem menufilenew;
@@ -163,34 +199,34 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
     JMenuItem menufileSaveAs;
     JMenuItem menufileProjSettings;
     JMenuItem menufilePrint;
-    
+
     JMenu menuedit;
     JMenuItem menueditdelete;
     JMenuItem menueditaddELM;
     JMenuItem menueditaddTRN;
-    
+
     JMenu menusolve;
     JMenuItem menuclimate;
     JMenuItem menuRunoffCoefficients;
     JMenuItem menuSolveOrder;
     JMenuItem menusolvesall;
-    
+
     JLabel labelmousecur;
     /**
      * For tracking cursor position
      */
     JLabel labelmousex;
-    
+
     /**
      * For tracking cursor position
      */
-    JLabel labelmousey; 
-       
+    JLabel labelmousey;
+
     /**
      * Constructs a new main window
      */
     public MainWindow() {
-        
+
         aP = new Project();
         this.setTitle(McWBalance.PROGRAM_NAME + " " + aP.getProjectSetting().getSaveFile().toString());
         /**
@@ -198,125 +234,125 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
          */
         int winx = 1500;
         int winy = 200;
-        
+
         flowchart = new FlowChartCAD(aP);
-        
+
         /**
          * loads in config
          */
         Config cf = new Config();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try{
+        try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc;
             doc = db.parse(getClass().getResourceAsStream(cf.getConfigXML()));
             NodeList nl = doc.getElementsByTagName("mainwindow");
             Node n = nl.item(0);
             Element ele = (Element) n;
-            
+
             /* Sets Screeen Bounds Graphics environment should allow multi monitor*/
             int cwinx = Integer.parseInt(ele.getAttribute("winx"));
             int cwiny = Integer.parseInt(ele.getAttribute("winy"));
             Rectangle screenbounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-            if (cwinx < 100){
+            if (cwinx < 100) {
                 winx = 100;
-            }else if (cwinx > (screenbounds.width-screenbounds.x)){
-                winx = screenbounds.width-screenbounds.x;
-            }else{
+            } else if (cwinx > (screenbounds.width - screenbounds.x)) {
+                winx = screenbounds.width - screenbounds.x;
+            } else {
                 winx = cwinx;
             }
-            if (cwiny < 100){
+            if (cwiny < 100) {
                 winy = 100;
-            }else if (cwiny > (screenbounds.height-screenbounds.y)){
-                winy = screenbounds.height-screenbounds.y;
-            }else{
+            } else if (cwiny > (screenbounds.height - screenbounds.y)) {
+                winy = screenbounds.height - screenbounds.y;
+            } else {
                 winy = cwiny;
             }
-            
+
         } catch (SAXException | IOException | ParserConfigurationException ex) {
             System.getLogger(MainWindow.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-        
-        
 
         //Can replace with enum list.. 
         URL imageUrl = getClass().getResource("/icons/Open.png");
         if (imageUrl != null) {
             iconOpen = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/Open.png");
+            System.err.println("Error: Image not found at path /icons/Open.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/Save.png");
         if (imageUrl != null) {
             iconSave = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/Save.png");
+            System.err.println("Error: Image not found at path /icons/Save.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/SaveAs.png");
         if (imageUrl != null) {
             iconSaveAs = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/SaveAs.png");
+            System.err.println("Error: Image not found at path /icons/SaveAs.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/NewProject.png");
         if (imageUrl != null) {
             iconNewProject = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/NewProject.png");
+            System.err.println("Error: Image not found at path /icons/NewProject.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/Settings.png");
         if (imageUrl != null) {
             iconSettings = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/Settings.png");
+            System.err.println("Error: Image not found at path /icons/Settings.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/Delete.png");
         if (imageUrl != null) {
             iconDelete = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/Delete.png");
+            System.err.println("Error: Image not found at path /icons/Delete.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/NewNode.png");
         if (imageUrl != null) {
             iconNewELM = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/NewNode.png");
+            System.err.println("Error: Image not found at path /icons/NewNode.png");
         }
-        
+
         imageUrl = getClass().getResource("/icons/NewTRN.png");
         if (imageUrl != null) {
             iconNewTRN = new ImageIcon(imageUrl);
         } else {
-        System.err.println("Error: Image not found at path /icons/NewTRN.png");
+            System.err.println("Error: Image not found at path /icons/NewTRN.png");
         }
-        
-        zoomSpinnerModel = new SpinnerNumberModel(FlowChartCAD.zoomscale,ZOOM_MIN,ZOOM_MAX,ZOOM_STEP);
-        
+
+        zoomSpinnerModel = new SpinnerNumberModel(FlowChartCAD.zoomscale, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP);
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(winx, winy);
 
         initMenu();
         initFlowChart();
         initViewToolbar();
-        
-        
-        
-        
+
         this.add(flowChartScPane, BorderLayout.CENTER); // adds the FlowChart graphics area to the Frame
         this.validate(); // done because set visible is before the menu additions
         this.setIconImage(McWBalance.mainIcon30);
-        
+
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         //mainframe.repaint(); not needed unless a refesh is required
     }
-    
+
+    /**
+     * Method to call actions if input has occurred
+     *
+     * @param e
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
@@ -347,28 +383,28 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             }
             case "Save" -> {
                 String msg = aP.saveToFile();
-                if (msg == Project.SAVE_SUCCEEDED){
+                if (msg == Project.SAVE_SUCCEEDED) {
                     new WarningDialog(this, "Save Succeeded");
-                } else{
+                } else {
                     new WarningDialog(this, "Save Failed " + msg);
                 }
                 this.setTitle(McWBalance.PROGRAM_NAME + " " + aP.getProjectSetting().getSaveFile().toString());
-                
+
             }
             case "SaveAs" -> {
                 JFileChooser fc = new JFileChooser();
                 fc.setDialogType(JFileChooser.SAVE_DIALOG);
                 fc.setSelectedFile(aP.getProjectSetting().getSaveFile());
-                FileNameExtensionFilter mcblFilter = new FileNameExtensionFilter("McBalance File (*."+ McWBalance.FILE_EXTENSION +")", McWBalance.FILE_EXTENSION);
-                fc.addChoosableFileFilter(mcblFilter);    
-                
+                FileNameExtensionFilter mcblFilter = new FileNameExtensionFilter("McBalance File (*." + McWBalance.FILE_EXTENSION + ")", McWBalance.FILE_EXTENSION);
+                fc.addChoosableFileFilter(mcblFilter);
+
                 int selection = fc.showSaveDialog(this);
-                if (selection == JFileChooser.APPROVE_OPTION){
+                if (selection == JFileChooser.APPROVE_OPTION) {
                     File sfp = fc.getSelectedFile();
-                    
+
                     String filepath = sfp.getAbsolutePath();
                     //ensures that extension gets added
-                    if(!filepath.endsWith("."+McWBalance.FILE_EXTENSION)){
+                    if (!filepath.endsWith("." + McWBalance.FILE_EXTENSION)) {
                         filepath = filepath + "." + McWBalance.FILE_EXTENSION;
                     }
                     String msg = aP.saveToFile(new File(filepath));
@@ -377,19 +413,18 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                     } else {
                         new WarningDialog(this, "Save Failed " + msg);
                     }
-                } else{
+                } else {
                     new WarningDialog(this, "Failed, file selection not approved: " + fc.getSelectedFile().getAbsolutePath());
                 }
                 this.setTitle(McWBalance.PROGRAM_NAME + " " + aP.getProjectSetting().getSaveFile().toString());
-                
-                
+
                 //saveProject();
             }
-            
+
             case "PSettings" -> {
-                new ProjSettingWindow(this,aP.getProjectSetting());
+                new ProjSettingWindow(this, aP.getProjectSetting());
             }
-            
+
             case "Print" -> {
 
                 PrinterJob job = PrinterJob.getPrinterJob();
@@ -398,11 +433,8 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                 Paper tabloid = new Paper();
                 tabloid.setImageableArea(0, 0, 500, 500);
                 pf.setPaper(tabloid);
-                
-                
-                job.setPrintable(flowchart,pf);
-                
-                
+
+                job.setPrintable(flowchart, pf);
 
                 if (job.printDialog()) {
                     try {
@@ -414,8 +446,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                 }
 
             }
-            
-            
+
             case "AddObjELM" -> {
                 requestedAction = "AddObjELM";
             }
@@ -426,139 +457,138 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                 requestedAction = "DeleteObj";
             }
             case "ClimateSetting" -> {
-                new DataClimateSettingWindow(this,aP);
+                new DataClimateSettingWindow(this, aP);
             }
             case "SolveOrderWindow" -> {
                 new SolveOrderWindow(this, aP);
             }
-            case "RunoffCoefficientsWindow" ->{
+            case "RunoffCoefficientsWindow" -> {
                 new RunoffCoefficientWindow(this, aP);
             }
-            case "solve" ->{
+            case "solve" -> {
                 aP.solve();
             }
-            
+
         }
     }
-    
-    
+
     /**
-     * Initialize and setup menu,  used to avoid leaking this to main constructor
+     * Initialize and setup menu, used to avoid leaking this to main constructor
      */
-    private void initMenu(){
+    private void initMenu() {
         // Overall Menu Bar
         menubar = new JMenuBar();
         // Start of File Menu
         menufile = new JMenu(McWBalance.langRB.getString("FILE"));
         menufile.setMnemonic(KeyEvent.VK_F);
-        
-        menufilenew = new JMenuItem(McWBalance.langRB.getString("NEW_PROJECT"), KeyEvent.VK_N); 
+
+        menufilenew = new JMenuItem(McWBalance.langRB.getString("NEW_PROJECT"), KeyEvent.VK_N);
         menufilenew.setActionCommand("new"); // Event trigger to make new project
         menufilenew.addActionListener(this);
         menufilenew.setIcon(iconNewProject);
         menufile.add(menufilenew);
-           
+
         menufileopen = new JMenuItem(McWBalance.langRB.getString("OPEN_EXISTING_PROJECT"), KeyEvent.VK_O);
         menufileopen.setActionCommand("Open"); // Event trigger to change project path
         menufileopen.addActionListener(this);
         menufileopen.setIcon(iconOpen);
         menufile.add(menufileopen);
-        
+
         menufileSave = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT"), KeyEvent.VK_O);
         menufileSave.setActionCommand("Save"); // Event trigger to change project path
         menufileSave.addActionListener(this);
         menufileSave.setIcon(iconSave);
         menufile.add(menufileSave);
-        
+
         menufileSaveAs = new JMenuItem(McWBalance.langRB.getString("SAVE_PROJECT_AS"), KeyEvent.VK_O);
         menufileSaveAs.setActionCommand("SaveAs"); // Event trigger to change project path
         menufileSaveAs.addActionListener(this);
         menufileSaveAs.setIcon(iconSaveAs);
         menufile.add(menufileSaveAs);
-        
+
         menufileProjSettings = new JMenuItem(McWBalance.langRB.getString("PROJECT_SETTINGS"), KeyEvent.VK_S);
         menufileProjSettings.setActionCommand("PSettings"); // Event trigger to change project path
         menufileProjSettings.addActionListener(this);
         menufileProjSettings.setIcon(iconSettings);
         menufile.add(menufileProjSettings);
-        
+
         menufilePrint = new JMenuItem(McWBalance.langRB.getString("PRINT"), KeyEvent.VK_S);
         menufilePrint.setActionCommand("Print"); // Event trigger to change project path
         menufilePrint.addActionListener(this);
         menufilePrint.setIcon(iconSettings);
         menufile.add(menufilePrint);
-        
+
         menubar.add(menufile);
         //End of File Menu
 
         //Start of Edit Menu
         menuedit = new JMenu(McWBalance.langRB.getString("EDIT"));
         menuedit.setMnemonic(KeyEvent.VK_E);
-        
+
         menueditdelete = new JMenuItem(McWBalance.langRB.getString("DELETE_OBJECT"), KeyEvent.VK_D);
         menueditdelete.setActionCommand("DeleteObj");
         menueditdelete.addActionListener(this);
         menueditdelete.setIcon(iconDelete);
         menuedit.add(menueditdelete);
- 
+
         menueditaddELM = new JMenuItem(McWBalance.langRB.getString("ADD_NODE"), KeyEvent.VK_L);
         menueditaddELM.setActionCommand("AddObjELM");
         menueditaddELM.addActionListener(this);
         menueditaddELM.setIcon(iconNewELM);
         menuedit.add(menueditaddELM);
-        
+
         menueditaddTRN = new JMenuItem(McWBalance.langRB.getString("ADD_TRANSFER"), KeyEvent.VK_T);
         menueditaddTRN.setActionCommand("AddObjTRN");
         menueditaddTRN.addActionListener(this);
         menueditaddTRN.setIcon(iconNewTRN);
         menuedit.add(menueditaddTRN);
-        
+
         menubar.add(menuedit);
         //End of Edit Menu
-        
-         // Start of Solver Menu
+
+        // Start of Solver Menu
         menusolve = new JMenu(McWBalance.langRB.getString("CALCULATION_SETTINGS"));
         menufile.setMnemonic(KeyEvent.VK_S);
-        
-        menuclimate = new JMenuItem(McWBalance.langRB.getString("CLIMATE"), KeyEvent.VK_C); 
+
+        menuclimate = new JMenuItem(McWBalance.langRB.getString("CLIMATE"), KeyEvent.VK_C);
         menuclimate.setActionCommand("ClimateSetting"); // Event trigger to make new project
         menuclimate.addActionListener(this);
         menusolve.add(menuclimate);
-        
-        menuRunoffCoefficients = new JMenuItem(McWBalance.langRB.getString("RUNOFF_COEFFICIENTS"), KeyEvent.VK_O); 
+
+        menuRunoffCoefficients = new JMenuItem(McWBalance.langRB.getString("RUNOFF_COEFFICIENTS"), KeyEvent.VK_O);
         menuRunoffCoefficients.setActionCommand("RunoffCoefficientsWindow"); // Event trigger to make new project
         menuRunoffCoefficients.addActionListener(this);
         menusolve.add(menuRunoffCoefficients);
-        
-        menuSolveOrder = new JMenuItem(McWBalance.langRB.getString("SOLVE_ORDER"), KeyEvent.VK_O); 
+
+        menuSolveOrder = new JMenuItem(McWBalance.langRB.getString("SOLVE_ORDER"), KeyEvent.VK_O);
         menuSolveOrder.setActionCommand("SolveOrderWindow"); // Event trigger to make new project
         menuSolveOrder.addActionListener(this);
-        menusolve.add(menuSolveOrder); 
-        
-        menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_S); 
+        menusolve.add(menuSolveOrder);
+
+        menusolvesall = new JMenuItem(McWBalance.langRB.getString("SOLVE"), KeyEvent.VK_S);
         menusolvesall.setActionCommand("Solve"); // Event trigger to make new project
         menusolvesall.addActionListener(this);
         menusolve.add(menusolvesall);
-        
+
         menubar.add(menusolve);
         //End of Solver Menu
-        
+
         this.setJMenuBar(menubar);
         // End of Overall MenuBar
     }
-    
+
     /**
      * Initializes the flowchart panel,
      */
-    private void initFlowChart(){
+    private void initFlowChart() {
         flowChartPanel.setBackground(Preferences.DEFAULT_BACKGROUND_COLOR);
         flowChartPanel.addMouseListener(this);
         flowChartPanel.addMouseMotionListener(this); // added to allow for moving of Object
         // keyboard binding - Doesn't work yet, suspect because focus isn;t pulled away from jSPinner
- 
-        flowChartPanel.setPreferredSize(new Dimension((int)(aP.getCadWidth()*FlowChartCAD.zoomscale),(int)(aP.getCadHeight()*FlowChartCAD.zoomscale)));
+
+        flowChartPanel.setPreferredSize(new Dimension((int) (aP.getCadWidth() * FlowChartCAD.zoomscale), (int) (aP.getCadHeight() * FlowChartCAD.zoomscale)));
         flowChartPanel.add(flowchart); // does not seem to work
-      
+
         flowChartScPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         flowChartScPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         flowChartScPane.addMouseWheelListener(this);
@@ -566,56 +596,56 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         flowChartPanel.setFocusable(true);
         //listens for delete key (note that Ctrl is considered a modifier so cant seem to listen for it alone
         flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(127, 0), "pressDEL");
-        flowChartPanel.getActionMap().put("pressDEL", new AbstractAction(){
+        flowChartPanel.getActionMap().put("pressDEL", new AbstractAction() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 flowchart.deleteSelection();
                 flowchart.repaint();
             }
         });
         flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(67, 128), "pressCtrlC");
-        flowChartPanel.getActionMap().put("pressCtrlC", new AbstractAction(){
+        flowChartPanel.getActionMap().put("pressCtrlC", new AbstractAction() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 flowchart.copySelectiontoClipboard();
             }
         });
         flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(86, 128), "pressCtrlV");
-        flowChartPanel.getActionMap().put("pressCtrlV", new AbstractAction(){
+        flowChartPanel.getActionMap().put("pressCtrlV", new AbstractAction() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 flowchart.pasteFromClipBoard();
                 flowchart.repaint();
             }
         });
     }
-    
+
     /**
-     * Sets out the view toolbar which contains the zoom spinner, mouse pos and 
+     * Sets out the view toolbar which contains the zoom spinner, mouse pos and
      * model day
      */
-    private void initViewToolbar(){
+    private void initViewToolbar() {
         // View Toolbar
         // Zoom Selector
         JToolBar toolbarView = new JToolBar();
         JPanel toolbarViewpanel = new JPanel();
         JSpinner zoomSpinner = new JSpinner(zoomSpinnerModel);
         zoomSpinner.setMaximumSize(new Dimension(50, 30));
-        zoomSpinner.addChangeListener(e->{
-            FlowChartCAD.zoomscale = (double)zoomSpinner.getValue();
-            flowChartPanel.setPreferredSize(new Dimension((int)(aP.getCadWidth()*FlowChartCAD.zoomscale),(int)(aP.getCadHeight()*FlowChartCAD.zoomscale)));
+        zoomSpinner.addChangeListener(e -> {
+            FlowChartCAD.zoomscale = (double) zoomSpinner.getValue();
+            flowChartPanel.setPreferredSize(new Dimension((int) (aP.getCadWidth() * FlowChartCAD.zoomscale), (int) (aP.getCadHeight() * FlowChartCAD.zoomscale)));
             flowChartPanel.repaint();
         });
         JLabel zoomSpinnerLabel = new JLabel(McWBalance.langRB.getString("ZOOM"));
         toolbarViewpanel.add(zoomSpinnerLabel);
         toolbarViewpanel.add(zoomSpinner);
-        
+
         //Date Selector
-        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1,-1,Limit.MAX_DURATION,1);
+        SpinnerModel dateSpinnerModel = new SpinnerNumberModel(-1, -1, Limit.MAX_DURATION, 1);
         JSpinner dateSpinner = new JSpinner(dateSpinnerModel);
         dateSpinner.setMaximumSize(new Dimension(50, 30));
-        dateSpinner.addChangeListener(e->{
-            FlowChartCAD.drawdate = (int)dateSpinner.getValue();
+        dateSpinner.addChangeListener(e -> {
+            FlowChartCAD.drawdate = (int) dateSpinner.getValue();
             flowChartPanel.repaint();
         });
         JLabel dateSpinnerLabel = new JLabel(McWBalance.langRB.getString("MODEL_DAY"));
@@ -629,12 +659,16 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         toolbarViewpanel.add(labelmousey);
         toolbarView.add(toolbarViewpanel, BorderLayout.EAST);
         toolbarView.setFloatable(false);
-        
-        
+
         this.setLayout(new BorderLayout());
         this.add(toolbarView, BorderLayout.SOUTH);
     }
-    
+
+    /**
+     * Used to manage mouse click inputs
+     *
+     * @param me
+     */
     @Override
     public void mouseClicked(MouseEvent me) {
         int mx = (int) (me.getX() / FlowChartCAD.zoomscale);
@@ -667,16 +701,16 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                     mELMHit = flowchart.checkELMHit(mx, my);
                     if (mTRNHit != -1) {
                         if (flowchart.checkSelectionTRN(mTRNHit)) {
-                            if (!editorIsActive) { 
-                                
-                                TRNWindow objTRNWindow = new TRNWindow(this, aP.getTransferList().tRNs[mTRNHit], 
+                            if (!editorIsActive) {
+
+                                TRNWindow objTRNWindow = new TRNWindow(this, aP.getTransferList().tRNs[mTRNHit],
                                         aP.getNodeList().getNameList());
-                                objTRNWindow.addWindowListener(new WindowAdapter(){
+                                objTRNWindow.addWindowListener(new WindowAdapter() {
                                     @Override
-                                    public void windowClosed(WindowEvent e){
+                                    public void windowClosed(WindowEvent e) {
                                         //NOT CLEAR HOW DATA IS TRANSFERED FROM buffOBJ into the active list. 
                                         //will want to add a step here to confirm changes and set has changed flag                                     
-                                    }     
+                                    }
                                 });
                             }
                             break;
@@ -689,9 +723,9 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                             if (!editorIsActive) {
                                 NodWindow objELMWindow = new NodWindow();
                                 objELMWindow.ObjELMWindowFunct(
-                                        aP.getNodeList().nodes[mELMHit], 
-                                        mELMHit, 
-                                        aP.getTransferList(), 
+                                        aP.getNodeList().nodes[mELMHit],
+                                        mELMHit,
+                                        aP.getTransferList(),
                                         aP);
                             }
                             break;
@@ -706,14 +740,19 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             }
             flowChartPanel.repaint();
         }
-  
+
     }
 
+    /**
+     * used for moving and object or panning with mouse
+     *
+     * @param me
+     */
     @Override
     public void mousePressed(MouseEvent me) {
-        int mx = (int)(me.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
-        int my = (int)(me.getY() / FlowChartCAD.zoomscale);
-        
+        int mx = (int) (me.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
+        int my = (int) (me.getY() / FlowChartCAD.zoomscale);
+
         switch (me.getButton()) {
             case MouseEvent.BUTTON1 -> {
                 switch (requestedAction) {
@@ -726,17 +765,22 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
 
                 }
             }
-            case MouseEvent.BUTTON2 ->{
-                isViewPanning = true; 
+            case MouseEvent.BUTTON2 -> {
+                isViewPanning = true;
                 viewX = flowChartScPane.getHorizontalScrollBar().getValue();
                 viewY = flowChartScPane.getVerticalScrollBar().getValue();
                 startMouseX = me.getX();
                 startMouseY = me.getY();
             }
         }
-          //blank for now  
+        //blank for now  
     }
 
+    /**
+     * used for stopping move or pan action with mouse
+     *
+     * @param me
+     */
     @Override
     public void mouseReleased(MouseEvent me) {
         switch (me.getButton()) {
@@ -744,91 +788,114 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                 nodeOnTheMove = -1;
                 tRNOnTheMove = -1; // Halts movement of any object
             }
-            case MouseEvent.BUTTON2 ->{
+            case MouseEvent.BUTTON2 -> {
                 isViewPanning = false;
             }
-        }    
-    }
- 
-    @Override
-    public void mouseEntered(MouseEvent e) { // not used
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) { // not used for anything 
-    }
-    
-    @Override
-    public void mouseMoved(MouseEvent mme){ // will be used for cursor location tracking
-
-        int mx = (int)( mme.getX() / FlowChartCAD.zoomscale) ;
-        int my = (int)( mme.getY() / FlowChartCAD.zoomscale) ;
-        labelmousex.setText(String.valueOf(mx)+',');
-        labelmousey.setText(String.valueOf(my));
-   
-    }
-    
-    @Override
-    public void mouseDragged(MouseEvent mme){
-        int mx = (int)(mme.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
-        int my = (int)(mme.getY()/ FlowChartCAD.zoomscale);
-        if (nodeOnTheMove > -1){
-            flowchart.moveObjELM(mx, my, nodeOnTheMove);
-            flowChartPanel.repaint(); 
         }
-        else if (tRNOnTheMove > -1){
+    }
+
+    /**
+     * Not used,
+     *
+     * @param e
+     */
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    /**
+     * Not used
+     *
+     * @param e
+     */
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    /**
+     * Used for cursor location tracking
+     *
+     * @param mme
+     */
+    @Override
+    public void mouseMoved(MouseEvent mme) {
+
+        int mx = (int) (mme.getX() / FlowChartCAD.zoomscale);
+        int my = (int) (mme.getY() / FlowChartCAD.zoomscale);
+        labelmousex.setText(String.valueOf(mx) + ',');
+        labelmousey.setText(String.valueOf(my));
+
+    }
+
+    /**
+     * Used for panning and moving
+     *
+     * @param mme
+     */
+    @Override
+    public void mouseDragged(MouseEvent mme) {
+        int mx = (int) (mme.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
+        int my = (int) (mme.getY() / FlowChartCAD.zoomscale);
+        if (nodeOnTheMove > -1) {
+            flowchart.moveObjELM(mx, my, nodeOnTheMove);
+            flowChartPanel.repaint();
+        } else if (tRNOnTheMove > -1) {
             flowchart.moveObjTRN(mx, my, tRNOnTheMove);
             flowChartPanel.repaint();
-        }
-        else if (isViewPanning){
+        } else if (isViewPanning) {
             int mouseMoveX = mme.getX() - startMouseX;
             int mouseMoveY = mme.getY() - startMouseY;
-            int panX = viewX - (int)(mouseMoveX*PAN_SPEED);
-            if (panX < 0){
+            int panX = viewX - (int) (mouseMoveX * PAN_SPEED);
+            if (panX < 0) {
                 panX = 0;
-            }
-            else if (panX > flowChartScPane.getHorizontalScrollBar().getMaximum()){
+            } else if (panX > flowChartScPane.getHorizontalScrollBar().getMaximum()) {
                 panX = flowChartScPane.getHorizontalScrollBar().getMaximum();
             }
             flowChartScPane.getHorizontalScrollBar().setValue(panX);
-            int panY = viewY - (int)(mouseMoveY*PAN_SPEED);
-            if (panY < 0){
+            int panY = viewY - (int) (mouseMoveY * PAN_SPEED);
+            if (panY < 0) {
                 panY = 0;
-            }
-            else if (panY > flowChartScPane.getVerticalScrollBar().getMaximum()){
+            } else if (panY > flowChartScPane.getVerticalScrollBar().getMaximum()) {
                 panY = flowChartScPane.getVerticalScrollBar().getMaximum();
             }
             flowChartScPane.getVerticalScrollBar().setValue(panY);
         }
-        labelmousex.setText(String.valueOf(mx)+',');
+        labelmousex.setText(String.valueOf(mx) + ',');
         labelmousey.setText(String.valueOf(my));
     }
-    
+
+    /**
+     * used for zooming
+     *
+     * @param mwe
+     */
     @Override
-    public void mouseWheelMoved(MouseWheelEvent mwe){
-        if(mwe.isControlDown()){
-            if(mwe.getWheelRotation() < 0){
+    public void mouseWheelMoved(MouseWheelEvent mwe) {
+        if (mwe.isControlDown()) {
+            if (mwe.getWheelRotation() < 0) {
                 FlowChartCAD.zoomscale = FlowChartCAD.zoomscale + ZOOM_STEP;
-                if (FlowChartCAD.zoomscale > ZOOM_MAX){
+                if (FlowChartCAD.zoomscale > ZOOM_MAX) {
                     FlowChartCAD.zoomscale = ZOOM_MAX;
                 }
-            }
-            else if(mwe.getWheelRotation() > 0){
+            } else if (mwe.getWheelRotation() > 0) {
                 FlowChartCAD.zoomscale = FlowChartCAD.zoomscale - ZOOM_STEP;
-                if (FlowChartCAD.zoomscale < ZOOM_MIN){
+                if (FlowChartCAD.zoomscale < ZOOM_MIN) {
                     FlowChartCAD.zoomscale = ZOOM_MIN;
                 }
             }
             zoomSpinnerModel.setValue(FlowChartCAD.zoomscale);
-            
+
             flowchart.repaint();
         }
     }
-    
-    public void resetProject(){
+
+    /**
+     * used to generate a new blank project
+     */
+    public void resetProject() {
 
         aP = new Project();
         flowchart.repaint();
     }
-    
+
 }

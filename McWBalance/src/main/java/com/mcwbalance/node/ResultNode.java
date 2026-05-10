@@ -1,5 +1,37 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.mcwbalance.node;
 
+import com.mcwbalance.McWBalance;
+import com.mcwbalance.project.Project;
 import com.mcwbalance.result.ResultFlow;
 import com.mcwbalance.result.ResultLevel;
 import com.mcwbalance.result.ResultStorageVolume;
@@ -13,22 +45,27 @@ import org.w3c.dom.Element;
  */
 public class ResultNode {
     
-    public ResultLevel resultWaterLevel;
-    public ResultLevel resultSolidsLevel;
+    ResultLevel lvlPond;
+    ResultLevel lvlSolids;
     
-    public ResultStorageVolume resultTotalVolume;
-    public ResultStorageVolume resultPondVolume;
+    ResultStorageVolume volPond;
+    ResultStorageVolume volSolids;
     
-    public ResultFlow resultSolidsInflow;
+    ResultFlow inSolids;
     
-    public ResultFlow resultRunoff[];
-    public ResultFlow resultDirectPrecip;
-    public ResultFlow resultEvaporation;
-    public ResultFlow resultSeepage;
+    ResultFlow inDirectPrecip;
+    ResultFlow inRunoffandMeltbyLC[];
+    ResultFlow inRunoffandMelt;
     
-    private final String[] landCovers; 
+    
+    
+    ResultFlow outEvaporation;
+    ResultFlow outSeepage;
+    ResultFlow outVoidloss;
+    
+
     private final int nodeIndex;
-    private final String nodeName;
+    private final String name;
     private final String scenario;
         
     /**
@@ -36,31 +73,41 @@ public class ResultNode {
      * @param nodeIndex index of node within NodList
      * @param nodeName String name of node for reporting
      * @param scenario String name of scenario for reporting
-     * @param landCovers String name of land covers within Runoff Coefficients for reporting
-     * @param duration duration of run in days, determines length of result arrays
+
      */
-    public ResultNode(int nodeIndex, String nodeName, String scenario, String[] landCovers, int duration) {
-        
-        this.landCovers = landCovers;
+    public ResultNode(int nodeIndex, String nodeName, String scenario) {
         this.nodeIndex = nodeIndex;
-        this.nodeName = nodeName;
+        this.name = nodeName;
         this.scenario = scenario;
-        resultWaterLevel = new ResultLevel(duration, nodeName + " Water Level");
-        resultSolidsLevel = new ResultLevel(duration, nodeName + " Solids Level");
-        resultSolidsInflow = new ResultFlow(duration, nodeName + " Solids Inflow");
-        
-        resultTotalVolume = new ResultStorageVolume(duration, nodeName + " Total Stored Volume");
-        
-        resultPondVolume = new ResultStorageVolume(duration, nodeName + " Pond Volume");
-        
-        resultRunoff = new ResultFlow[landCovers.length];
-        for (int i = 0; i < resultRunoff.length; i++) {
-            resultRunoff[i] = new ResultFlow(duration, nodeName + landCovers[i]);
+    }
+    
+    /**
+     * Initializes results based on the provided project
+     * TODO - should only initialize result arrays that need to exist to save on memory
+     * @param aP 
+     */
+    final void initResults(Project aP){
+
+        inDirectPrecip = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
+        inRunoffandMelt = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
+        inRunoffandMeltbyLC = new ResultFlow[aP.runoffCoeffs.getLength()];
+        for (int i = 0; i < inRunoffandMeltbyLC.length; i++) {
+            inRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(),
+                    name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT")
+                    + " " + aP.climateTable.getValueAt(i, 0).toString());
         }
-        resultDirectPrecip = new ResultFlow(duration, nodeName + " Direct Precip");
         
-        resultEvaporation = new ResultFlow(duration, nodeName + " Evaporation");
-        resultSeepage = new ResultFlow(duration, nodeName + " Seepage");
+        lvlSolids = new ResultLevel(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("SOLIDS_EL"));
+        lvlPond = new ResultLevel(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("POND_EL"));
+        
+        volPond = new ResultStorageVolume(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("POND_VOLUME"));
+        volSolids = new ResultStorageVolume(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("SOLIDS_VOLUME"));
+        
+        outEvaporation = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("EVAPORATION"));
+        outSeepage = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("SEEPAGE"));
+        outVoidloss = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("VOID_LOSS"));
+        
+        
     }
     
     /**
@@ -110,13 +157,7 @@ public class ResultNode {
         System.err.println("ResultNode.java loadXMLElement() method not implemented");
     }
     
-    /**
-     * Used for getting list of land covers based on Runoff Coefficients table
-     * @return list of land covers
-     */
-    public String[] getlandCovers(){
-        return landCovers;
-    } 
+
     
     /**
      * Used for getting NODList index of node
@@ -124,14 +165,6 @@ public class ResultNode {
      */
     public int getnodeIndex(){
         return nodeIndex;
-    }
-    
-    /**
-     * Used for getting name of node
-     * @return Name of Node
-     */
-    public String getnodeName(){
-        return nodeName;
     }
     
     /**
