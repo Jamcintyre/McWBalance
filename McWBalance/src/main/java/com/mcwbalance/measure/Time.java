@@ -176,9 +176,10 @@ public class Time {
          */
         public static int toJulianDay(int month){
             int day = 1;
-            month -= 12*(int)(month/12); 
-            for (int m = 2; m < month; m++){
-                day += valueOf(m-1).days;
+            month -= 12*(int)(month/12);
+            
+            for (int m = 1; m < month; m++){
+                day += valueOf(m).days;
             }
             return day;
         }
@@ -268,7 +269,7 @@ public class Time {
         if(day < 1){
             return 0;
         }
-        return day - (getYearFromDay(day) - 1)/365;
+        return day - 365*(getYearFromDay(day) -1);
     }
     
     /**
