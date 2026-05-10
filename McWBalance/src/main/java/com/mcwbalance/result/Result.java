@@ -1,59 +1,462 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.mcwbalance.result;
 
+import com.mcwbalance.measure.Time;
+import com.mcwbalance.measure.Unit;
+
 /**
+ * Class used to store a time series result in multiple time step options, i.e.
+ * hourly, daily, weekly, monthly, annual.
+ *
+ * Class is intended to allow fast data retrieval and plotting, this may not be
+ * memory efficient as it generates summary arrays.
+ * 
+ * TODO - Add testing
+ * 
+ * TEST STATUS - Not tested
  *
  * @author Alex
  */
-public abstract class Result {
+public class Result {
 
-    public double[] daily; // this will be a memory hog, may switch to storing as int or shifted int if memory becomes a limitation
-    public double[] monthly; // Any value more then daily is stored as int to save memory
-    public double[] annual;
-    public String name;
-    public String units;
-    boolean calculated; 
+    private final double[] hourly;
+    private final double[] daily; // this will be a memory hog, may switch to storing as int or shifted int if memory becomes a limitation
+    private final double[] weekly;
+    private final double[] monthly; // Any value more then daily is stored as int to save memory
+    private final double[] annual;
+    private String name;
+    private Unit unit;
+    private Time.TimeUnit timeUnit;
+    private boolean isflow;
+    private int hours;
+    private int days;
+    private int weeks;
+    private int months;
+    private int years;
 
-    Result(int totalDays, String inname, String units){
-        daily = new double[totalDays +1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
-        for (int i = 0; i < daily.length; i++){
-            daily[i] = 0;
+    private boolean calculated;
+
+    /**
+     * Initializes a result array Note that it is assumed that element 0 of the
+     * result is for initial conditions and in most cases the initial condition
+     * will be 0 unless initial conditions i.e. pond volume or level are set
+     * explicitly
+     *
+     * @param name name of result
+     * @param timesteps number of time steps
+     * @param timeUnit time step unit such as hour, day, week, month, year
+     * @param unit result unit of measure
+     * @param isFlow Sets if values should be calculated as flows, or as levels
+     * / stored volumes
+     */
+    public Result(String name, int timesteps, Time.TimeUnit timeUnit, Unit unit, boolean isFlow) {
+
+        this.name = name;
+        this.timeUnit = timeUnit;
+        this.unit = unit;
+        this.isflow = isFlow;
+
+        switch (this.timeUnit) {
+            case Time.TimeUnit.Hour -> {
+                hours = timesteps;
+                days = hours / 24;
+                weeks = days / 7;
+                years = days / 365;
+                months = Time.Month.valueOfDay(days).getNumber() + years;
+            }
+            case Time.TimeUnit.Day -> {
+                hours = 0;
+                days = timesteps;
+                weeks = days / 7;
+                years = timesteps / 365;
+                months = Time.Month.valueOfDay(timesteps).getNumber() + years;
+            }
+            case Time.TimeUnit.Week -> {
+                hours = 0;
+                days = 0;
+                weeks = timesteps;
+                years = timesteps * 7 / 365;
+                months = Time.Month.valueOfDay(timesteps * 7).getNumber() + years;
+            }
+            case Time.TimeUnit.Month -> {
+                hours = 0;
+                days = 0;
+                weeks = 0;
+                months = timesteps;
+                years = months / 12;
+            }
+            case Time.TimeUnit.Year -> {
+                hours = 0;
+                days = 0;
+                weeks = 0;
+                months = 0;
+                years = timesteps;
+            }
+
+            default -> {
+                hours = 0;
+                days = 0;
+                weeks = 0;
+                months = 0;
+                years = 0;
+            }
         }
-        int years = totalDays/365 + 1;
-        int months = years * 12;
+        hourly = new double[hours + 1];
+        daily = new double[days + 1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
+        weekly = new double[weeks + 1];
         monthly = new double[months + 1];
-        annual = new double[years +1];
-        name = inname;
-        this.units = units;
+        annual = new double[years + 1];
+        hourly[0] = 0;
+        weekly[0] = 0;
+        daily[0] = 0;
+        monthly[0] = 0;
+        annual[0] = 0;
+
         calculated = false;
     }
-    
+
     /**
-     * Adds a result value to a day
-     * @param result
-     * @param day 
+     * Adds a result value to a corresponding result series based on current
+     * units Note that this method does not implement error handling, i.e. out
+     * of bounds requests wont be handled.
+     *
+     * @param result value to add
+     * @param timestep to add result to, note that time step can be in hours
+     * days, months, years etc.. should check units if needed before adding
      */
-    public void add(double result, int day){
-        daily[day] = result;
+    public void add(double result, int timestep) {
+        switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                hourly[timestep] = result;
+            case Time.TimeUnit.Week ->
+                weekly[timestep] = result;
+            case Time.TimeUnit.Day ->
+                daily[timestep] = result;
+            case Time.TimeUnit.Month ->
+                monthly[timestep] = result;
+            case Time.TimeUnit.Year ->
+                annual[timestep] = result;
+        }
     }
-        
-    abstract void calculate(); 
-    
+
+    /**
+     * used to calculate summary results of different time steps from result
+     * needs to check if flow
+     */
+    public void calculate() {
+
+        if (isflow) { // if flow then sum the value to get year and day
+            switch (timeUnit) {
+                case Time.TimeUnit.Day -> {
+
+                }
+
+                default -> {
+
+                }
+            }
+        } else { // if not just pick last value
+
+        }
+        /*
+        int d;
+        int m;
+        int y;
+        for (d = 1; d < daily.length; d ++){ // day 0 is left out of sums
+            m = CalcBasics.getMonth(d);
+            y = CalcBasics.getYear(d);
+            
+            monthly[m] = (int)daily[d]; // ensures the last day for each month gets written
+            annual[y] = (int)daily[d]; // ensures the last day for each year gets written
+        }
+        calculated = true;
+         */
+        calculated = true;
+    }
+
+    /**
+     * For pulling an array of Annual data will trigger a calculation run if
+     * needed
+     *
+     * @return array containing years + 1, year 0 being initial conditions
+     */
+    public double[] getAnnual() {
+        if (calculated) {
+            return this.annual;
+        }
+        calculate();
+        return annual;
+    }
+
+    /**
+     * For pulling an array of daily data will trigger a calculation run if
+     * needed
+     *
+     * @param timestep to retrieve, year 0 for initial conditions
+     * @return value out of array representing day
+     */
+    public double getAnnual(int timestep) {
+             if (timestep == 0) {
+            return getAnnual()[timestep];
+        }
+        return switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                getAnnual()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Hour, Time.TimeUnit.Year))];
+            case Time.TimeUnit.Day ->
+                getAnnual()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Day, Time.TimeUnit.Year))];
+            case Time.TimeUnit.Week ->
+                getAnnual()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Year))];
+            case Time.TimeUnit.Month ->
+                getAnnual()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Year))];
+            case Time.TimeUnit.Year ->
+                getAnnual()[timestep];
+            default ->
+                0;
+        };
+    }
+
+    /**
+     * For pulling an array of daily data will trigger a calculation run if
+     * needed
+     *
+     * @return array containing days + 1, day 0 being initial conditions
+     */
+    public double[] getDaily() {
+        if (calculated) {
+            return daily;
+        }
+        calculate();
+        return daily;
+    }
+
+    /**
+     * For pulling an array of daily data will trigger a calculation run if
+     * needed
+     *
+     * @param timestep to retrieve, step 0 for initial conditions
+     * @return daily data based on daily data if available or factored down
+     * from next smallest time step
+     */
+    public double getDaily(int timestep) {
+        if (timestep == 0) {
+            return getDaily()[timestep];
+        }
+        return switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                getDaily()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Hour, Time.TimeUnit.Day))];
+            case Time.TimeUnit.Day ->
+                getDaily()[timestep];
+            case Time.TimeUnit.Week ->
+                getWeekly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Day);
+            case Time.TimeUnit.Month ->
+                getMonthly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Day);
+            case Time.TimeUnit.Year ->
+                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Day);
+            default ->
+                0;
+        };
+    }
+
+    /**
+     * For pulling an array of hourly data will trigger a calculation run if
+     * needed
+     *
+     * @return array containing hours + 1, day 0 being initial conditions
+     */
+    public double[] getHourly() {
+        if (calculated) {
+            return daily;
+        }
+        calculate();
+        return daily;
+    }
+
+    /**
+     * For pulling an array of hourly data will trigger a calculation run if
+     * needed
+     *
+     * @param timestep to retrieve, step 0 for initial conditions
+     * @return hourly data based on hourly data if available or factored down
+     * from next smallest timestep will return 0 if timeunit isnt recognized
+     *
+     */
+    public double getHourly(int timestep) {
+        if (timestep == 0) {
+            return getHourly()[timestep];
+        }
+        return switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                getHourly()[timestep];
+            case Time.TimeUnit.Day ->
+                getDaily()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Day, Time.TimeUnit.Hour);
+            case Time.TimeUnit.Week ->
+                getWeekly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Hour);
+            case Time.TimeUnit.Month ->
+                getMonthly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Hour);
+            case Time.TimeUnit.Year ->
+                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Hour);
+            default ->
+                0;
+        };
+    }
+
+    /**
+     * For pulling an array of daily data will trigger a calculation run if
+     * needed
+     *
+     * @return array containing months + 1, month 0 being initial conditions
+     */
+    public double[] getMonthly() {
+        if (calculated) {
+            return monthly;
+        }
+        calculate();
+        return monthly;
+    }
+
+    /**
+     * For pulling an array of daily data will trigger a calculation run if
+     * needed
+     *
+     * @param timestep to retrieve, step 0 for initial conditions
+     * @return monthly data based on monthly data if available or factored down
+     * from next smallest time step unless time step is annual in which case a
+     * conversion will be used
+     */
+    public double getMonthly(int timestep) {
+        if (timestep == 0) {
+            return getMonthly()[timestep];
+        }
+        return switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                getMonthly()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Hour, Time.TimeUnit.Month))];
+            case Time.TimeUnit.Day ->
+                getMonthly()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Day, Time.TimeUnit.Month))];
+            case Time.TimeUnit.Week ->
+                getMonthly()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Month))];
+            case Time.TimeUnit.Month ->
+                getMonthly()[timestep];
+            case Time.TimeUnit.Year ->
+                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Month);
+            default ->
+                0;
+        };
+    }
+
+    /**
+     * For pulling an array of weekly data will trigger a calculation run if
+     * needed
+     *
+     * @return array containing weeks + 1, week 0 being initial conditions Array
+     * length will be 1 if time unit is larger then weekly
+     */
+    public double[] getWeekly() {
+        if (calculated) {
+            return weekly;
+        }
+        calculate();
+        return weekly;
+    }
+
+    /**
+     * For pulling an array of daily data will trigger a calculation run if
+     * needed
+     *
+     * @param timestep to retrieve, step 0 for initial conditions
+     * @return value out of array representing weekly result
+     */
+    public double getWeekly(int timestep) {
+        if (timestep == 0) {
+            return getWeekly()[timestep];
+        }
+        return switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                getWeekly()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Hour, Time.TimeUnit.Week))];
+            case Time.TimeUnit.Day ->
+                getWeekly()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Day, Time.TimeUnit.Week))];
+            case Time.TimeUnit.Week ->
+                getWeekly()[timestep];
+            case Time.TimeUnit.Month ->
+                getMonthly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Week);
+            case Time.TimeUnit.Year ->
+                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Week);
+            default ->
+                0;
+        };
+    }
+
+
+    /**
+     * Used to access name useful when plotting
+     * @return name of result
+     */
+    public String getName(){
+        return name;
+    }
+
+    /**
+     * Gets the time step unit for the result
+     *
+     * @return
+     */
+    public Time.TimeUnit getTimeUnit() {
+        return timeUnit;
+    }
+
+    /**
+     * gets the unit of measure for the result
+     *
+     * @return
+     */
+    public Unit getUnit() {
+        return unit;
+    }
+
     /**
      * used for setting name post construction
-     * @param name 
+     *
+     * @param name
      */
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
+
+
+    
+    
    
     /**
      * Generates tab delimited string of daily results
      * @return 
-     */
+     *
     public String toTabbedStringDaily(){
         StringBuilder resultString = new StringBuilder();
         resultString.append(name);
@@ -72,7 +475,7 @@ public abstract class Result {
     /**
      * Generates tab delimited string of monthly results
      * @return 
-     */
+     *
     public String toTabbedStringMonthly(){
         if (!calculated){
             calculate();
@@ -94,7 +497,7 @@ public abstract class Result {
     /**
      * Generates tab delimited string of Annual Results
      * @return 
-     */
+     *
      public String toTabbedStringAnnual(){
         if (!calculated){
             calculate();
@@ -112,4 +515,5 @@ public abstract class Result {
         }
         return resultString.toString();
     }
+    */
 }

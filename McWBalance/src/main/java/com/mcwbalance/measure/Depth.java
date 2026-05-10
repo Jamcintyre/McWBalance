@@ -40,31 +40,31 @@ public class Depth {
     /**
      * Units of water equivalent depths allowed to be used in the model
      */
-    public static enum DepthUnit{
+    public static enum DepthUnit implements Unit{
         /**
          * Millimeter mm, 10/10 mm
          */
-        mm("(mm)",10),
+        mm("mm",10),
         
         /**
          * centimeter cm, 100/10 mm
          */
-        cm("(cm)",100),
+        cm("cm",100),
         
         /**
          * Meter m, 10000/10 mm
          */
-        m("(m)",10000),
+        m("m",10000),
         
         /**
          * 12 SAE inches 
          */
-        feet("(feet)",3048),
+        feet("feet",3048),
         
         /**
          * Modern SAE inch 25.4 mm / inch => 254 /10 mm 
          */
-        inches("(inches)",254);
+        inches("inches",254);
         
         private final String desc;
         
@@ -95,9 +95,20 @@ public class Depth {
         }
         
         /**
-         * Used for getting the bracketed unit description, i.e.
-         * (mm) or (inches).
-         * @return 
+         * Used for getting the bracketed unit description, i.e. (mm) or
+         * (feet).
+         *
+         * @return bracketed descriptor
+         */
+        @Override
+        public String getBracketedDesciptor() {
+            return "("+desc+")";
+        }
+        
+        /**
+         * Used for getting the non bracketed unit description, i.e.
+         * mm or inches.
+         * @return descriptor without brackets
          */
         public String getDesciptor(){
             return desc;

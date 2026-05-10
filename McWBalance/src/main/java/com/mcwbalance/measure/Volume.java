@@ -39,24 +39,24 @@ public class Volume {
     /**
      * units of volume allowed in model
      */
-    public static enum VolumeUnit {
+    public static enum VolumeUnit implements Unit{
 
         /**
          * Cubic meter
          */
-        m3("(cu.m.)", 1),
+        m3("cu.m.", 1),
         /**
          * Cubic hectometer = 1,000,000 m3
          */
-        hm3("(Million cu.m.)", 1000000),
+        hm3("Million cu.m.", 1000000),
         /**
          * Cubic Yard
          */
-        yd3("(cu.yd.)", 0.764554857984),
+        yd3("cu.yd.", 0.764554857984),
         /**
          * Acre-foot
          */
-        acrefoot("(acre-foot)", 1233.48);
+        acrefoot("acre-foot", 1233.48);
 
         private final String desc;
         private final double baseunit;
@@ -82,16 +82,32 @@ public class Volume {
         public static double getConversion(VolumeUnit from, VolumeUnit to) {
             return to.baseunit / from.baseunit;
         }
-
+        
+        
         /**
-         * Used for getting the bracketed unit description, i.e. (acre-foot) or
-         * (cu.m).
+         * Used for getting the bracketed unit description, i.e. (cu.m) or
+         * (acre-foot).
          *
-         * @return
+         * @return bracketed descriptor
          */
+        @Override
+        public String getBracketedDesciptor() {
+            return "("+desc+")";
+        }
+        
+        /**
+         * Used for getting the unbracketed unit description, i.e. acre-foot or
+         * cu.m.
+         *
+         * @return descriptor without brackets
+         */
+        @Override
         public String getDesciptor() {
             return desc;
         }
+        
+        
+        
 
         /**
          * same as valueOf with relaxed inputs ignores the case, note values are
@@ -104,7 +120,8 @@ public class Volume {
         public static VolumeUnit valueOfIngoreCase(String depthunit) {
             for (VolumeUnit vu : VolumeUnit.values()) {
                 if (vu.name().equalsIgnoreCase(depthunit)
-                        || vu.getDesciptor().equalsIgnoreCase(depthunit)) {
+                        || vu.getDesciptor().equalsIgnoreCase(depthunit)
+                        || vu.getBracketedDesciptor().equalsIgnoreCase(depthunit)) {
                     return vu;
                 }
             }

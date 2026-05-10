@@ -43,7 +43,7 @@ public class Area {
      *
      * INT_MAX (Signed): 2,147,483,647
      */
-    public static enum AreaUnit {
+    public static enum AreaUnit implements Unit{
         /**
          * Square Meter
          */
@@ -90,16 +90,30 @@ public class Area {
         public static double getConversion(AreaUnit from, AreaUnit to) {
             return to.baseunit / from.baseunit;
         }
-
+        
         /**
          * Used for getting the bracketed unit description, i.e. (sq.m.) or
          * (sq.km).
          *
+         * @return bracketed descriptor
+         */
+        @Override
+        public String getBracketedDesciptor() {
+            return "("+desc+")";
+        }
+
+        /**
+         * Used for getting the non bracketed unit description, i.e. sq.m. or
+         * sq.km.
+         *
          * @return
          */
+        @Override
         public String getDesciptor() {
             return desc;
         }
+        
+        
 
         /**
          * same as valueOf with relaxed inputs ignores the case, note values are
@@ -112,7 +126,8 @@ public class Area {
         public static AreaUnit valueOfIngoreCase(String depthunit) {
             for (AreaUnit au : AreaUnit.values()) {
                 if (au.name().equalsIgnoreCase(depthunit)
-                        || au.getDesciptor().equalsIgnoreCase(depthunit)) {
+                        || au.getDesciptor().equalsIgnoreCase(depthunit)
+                        || au.getBracketedDesciptor().equalsIgnoreCase(depthunit)) {
                     return au;
                 }
             }

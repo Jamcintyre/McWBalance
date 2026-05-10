@@ -118,11 +118,13 @@ public class CalcBasics {
      * Method for identifying which month given a numerical day value. Method
      * assumes Day 1 is Jan 1. Method also assumes all years are 365 days, Feb
      * 29 does not exist
+     * 
+     * @deprecated replaced with Time class
      *
      * @param day any positive day integer greater then 0;
      * @return a value between 1 through 12 representing month
      */
-    public static int getMonth(int day) {
+    private static int getMonth(int day) {
         int month;
         int dayofyear = day - 365 * (int) (day / 365); // this should take say 1.1 change it to 1 and them multiply back in.
         if (dayofyear <= 31) {
@@ -168,12 +170,14 @@ public class CalcBasics {
     /**
      * Provides the number of days in a month, month 1 is January, ignores leap
      * years
+     * 
+     * @deprecated replaced with Time class
      *
      * @param month
      * @return number of days in a month, will always return 28days for feb, if
      * month is not valid 30 is returned
      */
-    public static int getDaysInMonth(int month) {
+    private static int getDaysInMonth(int month) {
         month = month - (int) (month / 12);
         return switch (month) {
             case 1 ->

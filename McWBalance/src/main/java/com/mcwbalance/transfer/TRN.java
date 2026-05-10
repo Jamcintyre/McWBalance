@@ -32,8 +32,10 @@ package com.mcwbalance.transfer;
 
 
 import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.measure.Time;
+import com.mcwbalance.measure.Volume;
 import com.mcwbalance.project.ProjSetting;
-import com.mcwbalance.result.ResultFlow;
+import com.mcwbalance.result.Result;
 import com.mcwbalance.settings.Limit;
 import com.mcwbalance.util.Direction;
 import com.mcwbalance.util.Direction.Side;
@@ -131,7 +133,11 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
     public String state[] = new String[Limit.MAX_STATES];
     public int stateCount;
     
-    public ResultFlow result; 
+    /**
+     * Used for storing result
+     * TODO expand to allow result from multiple scenarios
+     */
+    public Result result; 
     
     /**
      * Used for generating blank transfers to initialize an array 
@@ -458,7 +464,12 @@ public class TRN {// class to catalog properties of a Pipe or other water transf
      * @param projSetting
      */
     public void initResults(ProjSetting projSetting) {
-        result = new ResultFlow(projSetting.getDuration(), objname);
+        
+        int timeSteps = projSetting.getDuration();
+        Time.TimeUnit tu = projSetting.getTimeStep();
+        Volume.VolumeUnit vu = projSetting.getVolumeUnit();
+
+        result = new Result(objname, timeSteps, tu, vu, true);
     }
     
     /**

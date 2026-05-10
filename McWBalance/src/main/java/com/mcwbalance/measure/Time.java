@@ -39,32 +39,35 @@ public class Time {
     /**
      * Units of time measure allowed in this model
      */
-    public static enum TimeUnit{
+    public static enum TimeUnit implements Unit{
         /**
          * 1 hour
          */
-        Hour(1),
+        Hour("Hour",1),
         /**
          * 24 hour day
          */
-        Day(24),
+        Day("Day",24),
         /**
          * 7 day week
          */
-        Week(168),
+        Week("Week",168),
         /**
          * 1/12 of a 365 day year;
          */
-        Month(730),
+        Month("Month",730),
         /**
          * non leap year 365 days
          */
-        Year(8760);
+        Year("Year",8760);
         
+        private final String desc;
         private final int hours;
         
-        private TimeUnit(int hours){
+        private TimeUnit(String desc, int hours){
+            this.desc = desc;
             this.hours = hours;
+            
         }
  
         /**
@@ -81,6 +84,31 @@ public class Time {
         public static double getConversion(TimeUnit from, TimeUnit to) {
             return to.hours / from.hours;
         }
+        
+        /**
+         * Used for getting the bracketed unit description, i.e. (days) or
+         * (hr).
+         *
+         * @return bracketed descriptor
+         */
+        @Override
+        public String getBracketedDesciptor() {
+            return "("+desc+")";
+        }
+
+        /**
+         * Used for getting the non bracketed unit description, i.e. days or
+         * hrs
+         *
+         * @return
+         */
+        @Override
+        public String getDesciptor() {
+            return desc;
+        }
+        
+        
+        
 
         /**
          * Used for scaling time steps, assumes 1 year = 365 days and that 1

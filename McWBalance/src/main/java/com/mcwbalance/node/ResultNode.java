@@ -31,10 +31,11 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.mcwbalance.node;
 
 import com.mcwbalance.McWBalance;
+import com.mcwbalance.measure.Depth;
+import com.mcwbalance.measure.Time;
+import com.mcwbalance.measure.Volume;
 import com.mcwbalance.project.Project;
-import com.mcwbalance.result.ResultFlow;
-import com.mcwbalance.result.ResultLevel;
-import com.mcwbalance.result.ResultStorageVolume;
+import com.mcwbalance.result.Result;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -45,23 +46,23 @@ import org.w3c.dom.Element;
  */
 public class ResultNode {
     
-    ResultLevel lvlPond;
-    ResultLevel lvlSolids;
+    Result lvlPond;
+    Result lvlSolids;
     
-    ResultStorageVolume volPond;
-    ResultStorageVolume volSolids;
+    Result volPond;
+    Result volSolids;
     
-    ResultFlow inSolids;
+    Result inSolids;
     
-    ResultFlow inDirectPrecip;
-    ResultFlow inRunoffandMeltbyLC[];
-    ResultFlow inRunoffandMelt;
+    Result inDirectPrecip;
+    Result inRunoffandMeltbyLC[];
+    Result inRunoffandMelt;
     
     
     
-    ResultFlow outEvaporation;
-    ResultFlow outSeepage;
-    ResultFlow outVoidloss;
+    Result outEvaporation;
+    Result outSeepage;
+    Result outVoidloss;
     
 
     private final int nodeIndex;
@@ -87,25 +88,31 @@ public class ResultNode {
      * @param aP 
      */
     final void initResults(Project aP){
+        
+        int timeSteps = aP.getProjectSetting().getDuration();
+        Time.TimeUnit tu = aP.getProjectSetting().getTimeStep();
+        Depth.DepthUnit lu = aP.getProjectSetting().getLevelUnit();
+        Volume.VolumeUnit vu = aP.getProjectSetting().getVolumeUnit();
 
-        inDirectPrecip = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("DIRECT_PRECIP"));
-        inRunoffandMelt = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"));
-        inRunoffandMeltbyLC = new ResultFlow[aP.runoffCoeffs.getLength()];
+        inDirectPrecip = new Result(name + " " + McWBalance.langRB.getString("DIRECT_PRECIP"),timeSteps, tu, vu, true);
+        inRunoffandMelt = new Result(name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"),timeSteps, tu, vu, true);
+        inRunoffandMeltbyLC = new Result[aP.runoffCoeffs.getLength()];
         for (int i = 0; i < inRunoffandMeltbyLC.length; i++) {
-            inRunoffandMeltbyLC[i] = new ResultFlow(aP.getProjectSetting().getDuration(),
+            inRunoffandMeltbyLC[i] = new Result(
                     name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT")
-                    + " " + aP.climateTable.getValueAt(i, 0).toString());
+                    + " " + aP.climateTable.getValueAt(i, 0).toString(),
+                    timeSteps, tu, vu, true);
         }
         
-        lvlSolids = new ResultLevel(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("SOLIDS_EL"));
-        lvlPond = new ResultLevel(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("POND_EL"));
+        lvlSolids = new Result(name + " " + McWBalance.langRB.getString("SOLIDS_EL"),timeSteps, tu, lu, false);
+        lvlPond = new Result(name + " " + McWBalance.langRB.getString("POND_EL"),timeSteps, tu, lu, false);
         
-        volPond = new ResultStorageVolume(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("POND_VOLUME"));
-        volSolids = new ResultStorageVolume(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("SOLIDS_VOLUME"));
+        volPond = new Result(name + " " + McWBalance.langRB.getString("POND_VOLUME"),timeSteps, tu, vu, false);
+        volSolids = new Result(name + " " + McWBalance.langRB.getString("SOLIDS_VOLUME"),timeSteps, tu, vu, false);
         
-        outEvaporation = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("EVAPORATION"));
-        outSeepage = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("SEEPAGE"));
-        outVoidloss = new ResultFlow(aP.getProjectSetting().getDuration(), name + " " + McWBalance.langRB.getString("VOID_LOSS"));
+        outEvaporation = new Result(name + " " + McWBalance.langRB.getString("EVAPORATION"),timeSteps, tu, vu, true);
+        outSeepage = new Result(name + " " + McWBalance.langRB.getString("SEEPAGE"),timeSteps, tu, vu, true);
+        outVoidloss = new Result(name + " " + McWBalance.langRB.getString("VOID_LOSS"),timeSteps, tu, vu, true);
         
         
     }

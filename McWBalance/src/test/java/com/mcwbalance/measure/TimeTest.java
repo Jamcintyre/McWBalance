@@ -64,7 +64,7 @@ public class TimeTest {
     public void testGetJulianDayFromDay() {
         System.out.println("getJulianDayFromDay");
         
-        int day[] = {0, 1, 45, 366, 367, };
+        int day[] = {0, 1, 45, 366, 367};
         int expResult[] = {0, 1, 45, 1, 2};
         
         for (int i = 0; i < day.length; i++){

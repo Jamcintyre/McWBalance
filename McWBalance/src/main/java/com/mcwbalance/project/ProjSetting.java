@@ -30,7 +30,9 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.mcwbalance.project;
 
 import com.mcwbalance.flowchart.ImageLib;
+import com.mcwbalance.measure.Depth;
 import com.mcwbalance.measure.Time;
+import com.mcwbalance.measure.Volume;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -120,7 +122,19 @@ public class ProjSetting {
      * Tracks what timestep the model is set to
      */
     Time.TimeUnit timestep;
-
+    /**
+     * unit for measuring precipitation / climate inputs
+     */
+    Depth.DepthUnit precipUnit;
+    /**
+     * unit for measuring pond levels
+     */
+    Depth.DepthUnit levelUnit;
+    /**
+     * unit for measuring pond volume and flows
+     */
+    Volume.VolumeUnit volumeUnit;
+    
     /**
      * Number of decimals to be used in calculations
      */
@@ -194,6 +208,9 @@ public class ProjSetting {
         startday = 1;
         titleBlockPath = prop.getProperty("TITLEBLOCKPATH", "/TitleBlock_Default.svg");
         timestep = Time.TimeUnit.Day;
+        precipUnit = Depth.DepthUnit.mm; 
+        levelUnit = Depth.DepthUnit.m; 
+        volumeUnit = Volume.VolumeUnit.m3; 
 
         imageLib = new ImageLib();
 
@@ -266,6 +283,42 @@ public class ProjSetting {
     }
 
     /**
+     * Unit for measuring levels and elevations
+     *
+     * @return currently set unit of measure for levels
+     */
+    public Depth.DepthUnit getLevelUnit() {
+        return this.levelUnit;
+    }
+
+    /**
+     * Model save folder
+     *
+     * @return Model save folder
+     */
+    public File getPathFolder() {
+        return new File(savepathfolder);
+    }
+
+    /**
+     * Unit for measuring precipitation and snow water equivalent
+     *
+     * @return currently set unit of measure for precip and climate input
+     */
+    public Depth.DepthUnit getPrecipUnit() {
+        return this.precipUnit;
+    }
+
+    /**
+     * Used for rounding and display
+     *
+     * @return number of decimals to display for day results
+     */
+    public int getPrecisionDay() {
+        return precisionDay;
+    }
+
+    /**
      * Project reference name for use in title block
      *
      * @return string containing the project name
@@ -281,24 +334,6 @@ public class ProjSetting {
      */
     public String getProjectNumber() {
         return projectnumber;
-    }
-
-    /**
-     * Used for rounding and display
-     *
-     * @return number of decimals to display for day results
-     */
-    public int getPrecisionDay() {
-        return precisionDay;
-    }
-
-    /**
-     * Model save folder
-     *
-     * @return Model save folder
-     */
-    public File getPathFolder() {
-        return new File(savepathfolder);
     }
 
     /**
@@ -335,6 +370,14 @@ public class ProjSetting {
      */
     public String getTitleBlockPath() {
         return titleBlockPath;
+    }
+    
+    /**
+     * Active unit of volume measure
+     * @return currently set unit of measure for volumes and flows
+     */
+    public Volume.VolumeUnit getVolumeUnit(){
+        return this.volumeUnit;
     }
 
     /**
