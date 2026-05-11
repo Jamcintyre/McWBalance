@@ -29,7 +29,6 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.mcwbalance.node;
 
-import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import javax.xml.parsers.DocumentBuilder;
@@ -199,7 +198,6 @@ public class NodList {
      * NodeList
      * @param overWrite if true data NodeList will be overwritten with loaded
      * data. if false Nodes will be appended without links transfers
-     * @see getSaveString
      */
     public void setFromString(String loadFile, Boolean overWrite) {
 

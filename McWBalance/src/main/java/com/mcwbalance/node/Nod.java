@@ -34,10 +34,7 @@ import com.mcwbalance.dacapacity.DAC;
 import com.mcwbalance.landcover.DataCatchment;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
-import com.mcwbalance.measure.Time;
-import com.mcwbalance.measure.Volume;
 import com.mcwbalance.project.Project;
-import com.mcwbalance.result.Result;
 import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -52,7 +49,6 @@ import org.w3c.dom.Element;
  * vs Node this class should not be called Node as that class is already used by
  * the XML Parser and could cause confusion
  *
- * @see NODEList
  * @author amcintyre
  */
 public class Nod {
