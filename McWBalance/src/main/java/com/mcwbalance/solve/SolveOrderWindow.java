@@ -5,8 +5,6 @@
 package com.mcwbalance.solve;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.project.ProjSetting;
-import com.mcwbalance.flowchart.FlowChartCAD;
 import com.mcwbalance.project.Project;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -28,6 +26,11 @@ public class SolveOrderWindow extends JFrame{
     private final int TABLE_ROW_HEIGHT = 20;
     private final Dimension TABLE_PREF_DIMENSION = new Dimension(360,TABLE_ROW_HEIGHT*20);
     
+    /**
+     * generates a GUI for editing the solve order 
+     * @param owner
+     * @param prj 
+     */
     public SolveOrderWindow(JFrame owner, Project prj){
         super(McWBalance.langRB.getString("SOLVE_ORDER"));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

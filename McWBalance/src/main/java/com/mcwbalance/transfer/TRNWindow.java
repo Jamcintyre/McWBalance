@@ -1,4 +1,32 @@
+/*
+Copyright (c) 2026, Alex McIntyre
+All rights reserved.
 
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by Alex McIntyre.
+4. Neither the name of the organization nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE 
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.mcwbalance.transfer;
 
 import com.mcwbalance.McWBalance;
@@ -6,7 +34,6 @@ import static com.mcwbalance.McWBalance.langRB;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Limit;
-import com.mcwbalance.util.Direction.Side;
 import java.awt.Color;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -29,18 +56,32 @@ import javax.swing.SpringLayout;
 import javax.swing.table.TableColumn;
 
 /**
- * This window dialog class is for user editing of the active objTRNList 
- * 
+ * This window dialog class is for user editing of the active objTRNList
+ *
  * @author Alex
  */
 public class TRNWindow extends JDialog {
+
     private TRN trn;
     private int closeAction = 1;
-    
+
+    /**
+     * Message for passing save request on close
+     */
     public static final int CLOSE_ACTION_SAVE = 1;
+    /**
+     * Message for passing no save on close request
+     */
     public static final int CLOSE_ACTION_DISCARD = 2;
-        
-    public TRNWindow(JFrame owner, TRN inObjTRN, String[] eLMList){ // requires object number to edit
+
+    /**
+     * Generates a transfer window for getting user input on a transfer
+     *
+     * @param owner
+     * @param inObjTRN
+     * @param eLMList
+     */
+    public TRNWindow(JFrame owner, TRN inObjTRN, String[] eLMList) { // requires object number to edit
         super(owner, McWBalance.langRB.getString("TRANSFER_PROPERTIES"), true); // was orginally a frame but changed to dialog
         ProjSetting.hasChangedSinceSave = true; // assumes if this dialog is called then a change has been made
         trn = inObjTRN; // sets buffered object to in object
@@ -48,45 +89,40 @@ public class TRNWindow extends JDialog {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(400, 300);
         this.setLocationRelativeTo(null);
-        
-        
+
         /**
          * Load localized phrases
          */
         String p_DELETE_SELECTION = McWBalance.langRB.getString("DELETE_SELECTION");
         String p_GENERAL = McWBalance.langRB.getString("GENERAL");
         String p_MAXIMUM_TRANSFER_RATE = McWBalance.langRB.getString("MAXIMUM_TRANSFER_RATE");
-        String p_OBJECT_STATE = McWBalance.langRB.getString("OBJECT_STATE"); 
+        String p_OBJECT_STATE = McWBalance.langRB.getString("OBJECT_STATE");
         String p_PASTE = McWBalance.langRB.getString("PASTE");
         String p_SELECT_ALL = McWBalance.langRB.getString("SELECT_ALL");
-        
-        
+
         String p_DELIVERS_WATER_TO = McWBalance.langRB.getString("DELIVERS_WATER_TO");
         String p_FROM = McWBalance.langRB.getString("FROM");
         String p_LINE_OFFSET = McWBalance.langRB.getString("LINE_OFFSET");
-        String p_SAVE =  McWBalance.langRB.getString("SAVE");
+        String p_SAVE = McWBalance.langRB.getString("SAVE");
         String p_TAKES_WATER_FROM = McWBalance.langRB.getString("TAKES_WATER_FROM");
         String p_TO = McWBalance.langRB.getString("TO");
         String p_TRANSFER_NAME = McWBalance.langRB.getString("TRANSFER_NAME");
         String p_TRANSFER_TYPE = McWBalance.langRB.getString("TRANSFER_TYPE");
-        
-        
-        
-        
+
         JTabbedPane tabPane = new JTabbedPane();
-        
+
         //TAB 2
         JPanel tab2 = new JPanel();
         TableTRNRate tab2TableModelRate = new TableTRNRate();
         tab2TableModelRate.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
-        
-        for(int i = 0; i < TRN.MAX_PUMP_RATES; i++){
-            tab2TableModelRate.setValueAt((int)trn.pumpTime[i], i, 0);
-            tab2TableModelRate.setValueAt((double)trn.pumpRateDay[i], i, 1);
+
+        for (int i = 0; i < TRN.MAX_PUMP_RATES; i++) {
+            tab2TableModelRate.setValueAt((int) trn.pumpTime[i], i, 0);
+            tab2TableModelRate.setValueAt((double) trn.pumpRateDay[i], i, 1);
         }
 
         JTable tab2TableRate = new JTable(tab2TableModelRate);
-        
+
         JPopupMenu popupMenuRateTable = new JPopupMenu();
         JMenuItem popupMenuItemRateSelectAll = new JMenuItem(p_SELECT_ALL);
         popupMenuItemRateSelectAll.addActionListener(e -> {
@@ -108,7 +144,7 @@ public class TRNWindow extends JDialog {
         popupMenuItemRatePaste.addActionListener(e -> {
             tab2TableModelRate.pasteFromClipboard(tab2TableRate.getSelectedRows(), tab2TableRate.getSelectedColumns());
         });
-        
+
         popupMenuRateTable.add(popupMenuItemRateSelectAll);
         popupMenuRateTable.add(popupMenuItemRateDelete);
         popupMenuRateTable.add(popupMenuItemRateCopy);
@@ -119,131 +155,129 @@ public class TRNWindow extends JDialog {
         JScrollPane tab2ScrollRate = new JScrollPane(tab2TableRate);
         tab2.add(tab2ScrollRate);
         // End of Tab 2
-        
+
         // Tab 3
         JPanel tab3 = new JPanel();
         ObjStateTableModel tab3TableModelState = new ObjStateTableModel();
         JTable tab3TableState = new JTable(tab3TableModelState);
-        
-        for(int i = 0; i < Limit.MAX_STATES; i++){
-            tab3TableModelState.setValueAt((int)trn.stateTime[i], i, 0);
-            tab3TableModelState.setValueAt((String)trn.state[i], i, 1);
+
+        for (int i = 0; i < Limit.MAX_STATES; i++) {
+            tab3TableModelState.setValueAt((int) trn.stateTime[i], i, 0);
+            tab3TableModelState.setValueAt((String) trn.state[i], i, 1);
         }
-        
+
         JPopupMenu popupMenuStateTable = new JPopupMenu();
         JMenuItem popupMenuItemStateSelectAll = new JMenuItem(p_SELECT_ALL);
-        popupMenuItemStateSelectAll.addActionListener( e-> {
+        popupMenuItemStateSelectAll.addActionListener(e -> {
             tab3TableState.setColumnSelectionInterval(0, 1);
-            tab3TableState.setRowSelectionInterval(0, tab3TableState.getRowCount()-1);
+            tab3TableState.setRowSelectionInterval(0, tab3TableState.getRowCount() - 1);
         });
-        
+
         JMenuItem popupMenuItemStateDelete = new JMenuItem(p_DELETE_SELECTION);
-        popupMenuItemStateDelete.addActionListener(e ->{
-            tab3TableModelState.removeData(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());    
+        popupMenuItemStateDelete.addActionListener(e -> {
+            tab3TableModelState.removeData(tab3TableState.getSelectedRows(), tab3TableState.getSelectedColumns());
         });
-        
+
         JMenuItem popupMenuItemStateCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemStateCopy.addActionListener(e ->{
+        popupMenuItemStateCopy.addActionListener(e -> {
             System.out.println("popup menu Copy button hit");
         });
 
         JMenuItem popupMenuItemStatePaste = new JMenuItem(p_PASTE);
-        popupMenuItemStatePaste.addActionListener(e ->{
-                tab3TableModelState.pasteFromClipboard(tab3TableState.getSelectedRows(),tab3TableState.getSelectedColumns());
+        popupMenuItemStatePaste.addActionListener(e -> {
+            tab3TableModelState.pasteFromClipboard(tab3TableState.getSelectedRows(), tab3TableState.getSelectedColumns());
         });
-        
+
         popupMenuStateTable.add(popupMenuItemStateSelectAll);
         popupMenuStateTable.add(popupMenuItemStateDelete);
         popupMenuStateTable.add(popupMenuItemStateCopy);
         popupMenuStateTable.add(popupMenuItemStatePaste);
         tab3TableState.setComponentPopupMenu(popupMenuStateTable);
         tab3TableState.setCellSelectionEnabled(true);
-        
+
         JComboBox cBoxTRNState = new JComboBox(TRN.tRNStatesAllowed);
         TableColumn stateColumn = tab3TableState.getColumnModel().getColumn(1);
         stateColumn.setCellEditor(new DefaultCellEditor(cBoxTRNState));
-        
+
         JScrollPane tab3ScrollState = new JScrollPane(tab3TableState);
         tab3.add(tab3ScrollState);
-        
+
         // End of Tab 3
-        
         //TAB 1 Handelling the general conneciton and naming - Moved to end to allow Save Button to collect from Tables
         JPanel tab1 = new JPanel();
         SpringLayout tab1layout = new SpringLayout();
         tab1.setLayout(tab1layout);
-        
+
         // Name and Type
         JLabel ltfobjName = new JLabel(p_TRANSFER_NAME);
         JTextField tfobjName = new JTextField(trn.objname);
         tfobjName.setColumns(fmtTFColumnsDEF);
-        JLabel lcbobjType = new JLabel (p_TRANSFER_TYPE);
+        JLabel lcbobjType = new JLabel(p_TRANSFER_TYPE);
         JComboBox cbobjType = new JComboBox(TRN.Type.values()); // Pulls options list from ObjELM static
         cbobjType.setSelectedItem(trn.subType);
-        
+
         // Transfer from Location
-        JLabel lcbInObj = new JLabel (p_TAKES_WATER_FROM);
+        JLabel lcbInObj = new JLabel(p_TAKES_WATER_FROM);
         JComboBox cbInObj = new JComboBox(eLMList); // Pulls from provided list of Elements
         cbInObj.setSelectedIndex(trn.inObjNumber + 1); // adds 1 since first value is null -1
-        JLabel lcbInSideFrom = new JLabel (p_FROM + " ");
+        JLabel lcbInSideFrom = new JLabel(p_FROM + " ");
         JComboBox cbInSideFrom = new JComboBox(trn.getSidesAllowed());
-        cbInSideFrom.setSelectedItem(langRB.getString(trn.inSideFrom.toString()));        
-        JLabel lcbInSideTo = new JLabel (p_TO + " ");
+        cbInSideFrom.setSelectedItem(langRB.getString(trn.inSideFrom.toString()));
+        JLabel lcbInSideTo = new JLabel(p_TO + " ");
         JComboBox cbInSideTo = new JComboBox(trn.getSidesAllowed());
         cbInSideTo.setSelectedItem(langRB.getString(trn.inSideTo.toString()));
-        JLabel ltfinSideFromOset = new JLabel (p_LINE_OFFSET);
-        SpinnerModel mspinSideFromOset = new SpinnerNumberModel(trn.inSideFromOset,-200,200,5);
+        JLabel ltfinSideFromOset = new JLabel(p_LINE_OFFSET);
+        SpinnerModel mspinSideFromOset = new SpinnerNumberModel(trn.inSideFromOset, -200, 200, 5);
         JSpinner spinSideFromOset = new JSpinner(mspinSideFromOset);
-        
+
         // Transfer to Location
-        JLabel lcbOutObj = new JLabel (p_DELIVERS_WATER_TO);
+        JLabel lcbOutObj = new JLabel(p_DELIVERS_WATER_TO);
         JComboBox cbOutObj = new JComboBox(eLMList); // Pulls from provided list of Elements
         cbOutObj.setSelectedIndex(trn.outObjNumber + 1);  // adds 1 since first value is null -1
-        JLabel lcbOutSideFrom = new JLabel (p_FROM + " ");
+        JLabel lcbOutSideFrom = new JLabel(p_FROM + " ");
         JComboBox cbOutSideFrom = new JComboBox(trn.getSidesAllowed());
         cbOutSideFrom.setSelectedItem(langRB.getString(trn.outSideFrom.toString()));
-        
-        
-        JLabel lcbOutSideTo = new JLabel (p_TO + " ");
+
+        JLabel lcbOutSideTo = new JLabel(p_TO + " ");
         JComboBox cbOutSideTo = new JComboBox(trn.getSidesAllowed());
         cbOutSideTo.setSelectedItem(langRB.getString(trn.outSideTo.toString()));
-        JLabel ltfOutSideToOset = new JLabel (p_LINE_OFFSET);
+        JLabel ltfOutSideToOset = new JLabel(p_LINE_OFFSET);
         JFormattedTextField tfOutSideToOset = new JFormattedTextField(trn.outSideToOset);
-        SpinnerModel mspoutSideToOset = new SpinnerNumberModel(trn.outSideToOset,-200,200,5);
+        SpinnerModel mspoutSideToOset = new SpinnerNumberModel(trn.outSideToOset, -200, 200, 5);
         JSpinner spOutSideToOset = new JSpinner(mspoutSideToOset);
-                
+
         JButton bSave = new JButton(p_SAVE);
         //Tab 1 Save Button listener moved to end to allow saving variables from all tabs
-        bSave.addActionListener(e ->{ 
+        bSave.addActionListener(e -> {
             closeAction = CLOSE_ACTION_SAVE;
 
             trn.objname = tfobjName.getText();
             trn.subType = String.valueOf(cbobjType.getSelectedItem());
-            
-            trn.inObjNumber = cbInObj.getSelectedIndex() -1; // assumes 1 nullValue
-            trn.inSideFrom = trn.sides.getSideFromLocal(String.valueOf(cbInSideFrom.getSelectedItem()));            
-            trn.inSideFromOset = (Integer)spinSideFromOset.getValue();
+
+            trn.inObjNumber = cbInObj.getSelectedIndex() - 1; // assumes 1 nullValue
+            trn.inSideFrom = trn.sides.getSideFromLocal(String.valueOf(cbInSideFrom.getSelectedItem()));
+            trn.inSideFromOset = (Integer) spinSideFromOset.getValue();
             trn.inSideTo = trn.sides.getSideFromLocal(String.valueOf(cbInSideTo.getSelectedItem()));
-            
-            trn.outObjNumber = cbOutObj.getSelectedIndex() -1; // assumes 1 nullValue
+
+            trn.outObjNumber = cbOutObj.getSelectedIndex() - 1; // assumes 1 nullValue
             trn.outSideFrom = trn.sides.getSideFromLocal(String.valueOf(cbOutSideFrom.getSelectedItem()));
-            
-            trn.outSideToOset = (Integer)spOutSideToOset.getValue();
-            trn.outSideTo = trn.sides.getSideFromLocal(String.valueOf(cbOutSideTo.getSelectedItem())); 
-            
-            for(int i = 0; i < TRN.MAX_PUMP_RATES; i++){ // Copy even if null, otherwise no mechnism for deleting values    
-                trn.pumpTime[i] = (int)tab2TableModelRate.getValueAt(i, 0);   
-                trn.pumpRateDay[i] = (double)tab2TableModelRate.getValueAt(i, 1);                    
+
+            trn.outSideToOset = (Integer) spOutSideToOset.getValue();
+            trn.outSideTo = trn.sides.getSideFromLocal(String.valueOf(cbOutSideTo.getSelectedItem()));
+
+            for (int i = 0; i < TRN.MAX_PUMP_RATES; i++) { // Copy even if null, otherwise no mechnism for deleting values    
+                trn.pumpTime[i] = (int) tab2TableModelRate.getValueAt(i, 0);
+                trn.pumpRateDay[i] = (double) tab2TableModelRate.getValueAt(i, 1);
             }
-            for(int i = 0; i < Limit.MAX_STATES; i++){
-                trn.stateTime[i] = (int)tab3TableModelState.getValueAt(i, 0);
-                trn.state[i] = (String)tab3TableModelState.getValueAt(i, 1);
+            for (int i = 0; i < Limit.MAX_STATES; i++) {
+                trn.stateTime[i] = (int) tab3TableModelState.getValueAt(i, 0);
+                trn.state[i] = (String) tab3TableModelState.getValueAt(i, 1);
             }
-            
+
         });
 
         tfobjName.getText();
-        
+
         tab1.add(ltfobjName);
         tab1.add(tfobjName);
         tab1.add(lcbobjType);
@@ -256,7 +290,7 @@ public class TRNWindow extends JDialog {
         tab1.add(cbInSideTo);
         tab1.add(ltfinSideFromOset);
         tab1.add(spinSideFromOset);
-        
+
         tab1.add(lcbOutObj);
         tab1.add(cbOutObj);
         tab1.add(lcbOutSideFrom);
@@ -267,12 +301,12 @@ public class TRNWindow extends JDialog {
         tab1.add(spOutSideToOset);
 
         tab1.add(bSave);
-        
+
         int hPadLabels = 10; // padding relative to left side of window
         int hPadBoxes = 120; // padding relative to left side of window
         int vPadFirstRow = 10; // sets padding for initial row relative top of window
         int vPadSpacing = 20; // sets spacing between rows
-        
+
         // Name Box
         tab1layout.putConstraint(SpringLayout.WEST, ltfobjName, hPadLabels, SpringLayout.WEST, this);
         tab1layout.putConstraint(SpringLayout.NORTH, ltfobjName, vPadFirstRow, SpringLayout.NORTH, this);
@@ -284,73 +318,76 @@ public class TRNWindow extends JDialog {
         tab1layout.putConstraint(SpringLayout.WEST, cbobjType, hPadBoxes, SpringLayout.WEST, this);
         tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbobjType, 0, SpringLayout.VERTICAL_CENTER, lcbobjType);
         // Inflow From what Element
-        tab1layout.putConstraint(SpringLayout.WEST,lcbInObj, hPadLabels, SpringLayout.WEST, this); // Aligns Left
-        tab1layout.putConstraint(SpringLayout.NORTH,lcbInObj, vPadSpacing, SpringLayout.SOUTH, lcbobjType); // below Subtype Title
+        tab1layout.putConstraint(SpringLayout.WEST, lcbInObj, hPadLabels, SpringLayout.WEST, this); // Aligns Left
+        tab1layout.putConstraint(SpringLayout.NORTH, lcbInObj, vPadSpacing, SpringLayout.SOUTH, lcbobjType); // below Subtype Title
         tab1layout.putConstraint(SpringLayout.WEST, cbInObj, hPadBoxes, SpringLayout.WEST, this); // Aligns from Left 100 or so
         tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbInObj, 0, SpringLayout.VERTICAL_CENTER, lcbInObj); // Aligns with its label
-        
-        tab1layout.putConstraint(SpringLayout.WEST,lcbInSideFrom, hPadLabels, SpringLayout.WEST, this); // Aligns Left
-        tab1layout.putConstraint(SpringLayout.NORTH,lcbInSideFrom, vPadSpacing, SpringLayout.SOUTH, lcbInObj); // below Subtype Title
-        tab1layout.putConstraint(SpringLayout.WEST,cbInSideFrom, hPadLabels, SpringLayout.EAST, lcbInSideFrom); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,cbInSideFrom, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST,lcbInSideTo, hPadLabels, SpringLayout.EAST, cbInSideFrom); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,lcbInSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST,cbInSideTo, hPadLabels, SpringLayout.EAST, lcbInSideTo); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,cbInSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST, ltfinSideFromOset, hPadLabels, SpringLayout.EAST, cbInSideTo); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,ltfinSideFromOset, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST,spinSideFromOset, hPadLabels, SpringLayout.EAST, ltfinSideFromOset); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,spinSideFromOset, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom);
+
+        tab1layout.putConstraint(SpringLayout.WEST, lcbInSideFrom, hPadLabels, SpringLayout.WEST, this); // Aligns Left
+        tab1layout.putConstraint(SpringLayout.NORTH, lcbInSideFrom, vPadSpacing, SpringLayout.SOUTH, lcbInObj); // below Subtype Title
+        tab1layout.putConstraint(SpringLayout.WEST, cbInSideFrom, hPadLabels, SpringLayout.EAST, lcbInSideFrom);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbInSideFrom, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, lcbInSideTo, hPadLabels, SpringLayout.EAST, cbInSideFrom);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, lcbInSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, cbInSideTo, hPadLabels, SpringLayout.EAST, lcbInSideTo);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbInSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, ltfinSideFromOset, hPadLabels, SpringLayout.EAST, cbInSideTo);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, ltfinSideFromOset, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, spinSideFromOset, hPadLabels, SpringLayout.EAST, ltfinSideFromOset);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, spinSideFromOset, 0, SpringLayout.VERTICAL_CENTER, lcbInSideFrom);
         // Outflow to...
-        tab1layout.putConstraint(SpringLayout.WEST,lcbOutObj, hPadLabels, SpringLayout.WEST, this); // Aligns Left
-        tab1layout.putConstraint(SpringLayout.NORTH,lcbOutObj, vPadSpacing, SpringLayout.SOUTH, lcbInSideFrom); // below Subtype Title
+        tab1layout.putConstraint(SpringLayout.WEST, lcbOutObj, hPadLabels, SpringLayout.WEST, this); // Aligns Left
+        tab1layout.putConstraint(SpringLayout.NORTH, lcbOutObj, vPadSpacing, SpringLayout.SOUTH, lcbInSideFrom); // below Subtype Title
         tab1layout.putConstraint(SpringLayout.WEST, cbOutObj, hPadBoxes, SpringLayout.WEST, this); // Aligns from Left 100 or so
         tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbOutObj, 0, SpringLayout.VERTICAL_CENTER, lcbOutObj); // Aligns with its label
-        
-        tab1layout.putConstraint(SpringLayout.WEST,lcbOutSideFrom, hPadLabels, SpringLayout.WEST, this); // Aligns Left
-        tab1layout.putConstraint(SpringLayout.NORTH,lcbOutSideFrom, vPadSpacing, SpringLayout.SOUTH, lcbOutObj); // below Subtype Title
-        tab1layout.putConstraint(SpringLayout.WEST,cbOutSideFrom, hPadLabels, SpringLayout.EAST, lcbOutSideFrom); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,cbOutSideFrom, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST,lcbOutSideTo, hPadLabels, SpringLayout.EAST, cbOutSideFrom); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,lcbOutSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST,cbOutSideTo, hPadLabels, SpringLayout.EAST, lcbOutSideTo); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,cbOutSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST, ltfOutSideToOset, hPadLabels, SpringLayout.EAST, cbOutSideTo); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,ltfOutSideToOset, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom); 
-        tab1layout.putConstraint(SpringLayout.WEST,spOutSideToOset, hPadLabels, SpringLayout.EAST, ltfOutSideToOset); 
-        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER,spOutSideToOset, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom);
-        
+
+        tab1layout.putConstraint(SpringLayout.WEST, lcbOutSideFrom, hPadLabels, SpringLayout.WEST, this); // Aligns Left
+        tab1layout.putConstraint(SpringLayout.NORTH, lcbOutSideFrom, vPadSpacing, SpringLayout.SOUTH, lcbOutObj); // below Subtype Title
+        tab1layout.putConstraint(SpringLayout.WEST, cbOutSideFrom, hPadLabels, SpringLayout.EAST, lcbOutSideFrom);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbOutSideFrom, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, lcbOutSideTo, hPadLabels, SpringLayout.EAST, cbOutSideFrom);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, lcbOutSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, cbOutSideTo, hPadLabels, SpringLayout.EAST, lcbOutSideTo);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, cbOutSideTo, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, ltfOutSideToOset, hPadLabels, SpringLayout.EAST, cbOutSideTo);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, ltfOutSideToOset, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom);
+        tab1layout.putConstraint(SpringLayout.WEST, spOutSideToOset, hPadLabels, SpringLayout.EAST, ltfOutSideToOset);
+        tab1layout.putConstraint(SpringLayout.VERTICAL_CENTER, spOutSideToOset, 0, SpringLayout.VERTICAL_CENTER, lcbOutSideFrom);
+
         // Will need to move the Save Button
         tab1layout.putConstraint(SpringLayout.WEST, bSave, hPadLabels, SpringLayout.WEST, this);
         tab1layout.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, lcbOutSideFrom);
-        
+
         //END OF TAB 1
         tabPane.addTab(p_GENERAL, tab1);
-        tabPane.addTab(p_MAXIMUM_TRANSFER_RATE,tab2);
-        tabPane.addTab(p_OBJECT_STATE,tab3);
+        tabPane.addTab(p_MAXIMUM_TRANSFER_RATE, tab2);
+        tabPane.addTab(p_OBJECT_STATE, tab3);
 
         this.add(tabPane);
-        
+
         this.setBackground(Color.GRAY);
         this.pack();
         this.setVisible(true);
-        
+
     }
+
     /**
      * Object used to return input from the window
-     * @return objTRN containing all data pertaining to the modified transfer 
+     *
+     * @return objTRN containing all data pertaining to the modified transfer
      */
-    public TRN getObjTRN(){
+    public TRN getObjTRN() {
         return trn;
-    } 
+    }
+
     /**
-     * Provide int to communicate whether the user intends to save changes or discard
-     * @return 1 - Save requested, 2 - cancel requested 
+     * Provide int to communicate whether the user intends to save changes or
+     * discard
+     *
+     * @return 1 - Save requested, 2 - cancel requested
      */
-    public int getCloseAction(){
+    public int getCloseAction() {
         return closeAction;
     }
 
-    
-    
 }

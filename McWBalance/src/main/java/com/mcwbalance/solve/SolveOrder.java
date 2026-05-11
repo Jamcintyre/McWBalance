@@ -13,30 +13,55 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * Supersedes Balance Run Settings
+ *
  * @author Alex
  */
-public class SolveOrder extends AbstractTableModel{
-    
-    public int[] tRNIndex; //index for whichever TRN or ELM is being solved
+public class SolveOrder extends AbstractTableModel {
+
+    /**
+     * index for whichever TRN or ELM is being solved
+     */
+    public int[] tRNIndex;
+    /**
+     * Name of transfer
+     */
     public String[] tRNName;
+    /**
+     * Type of transfer
+     */
     public String[] tRNType;
+    /**
+     * heading names
+     */
     public String[] columnNames;
 
     Project prj;
-    
-    
+
+    /**
+     * Rough work, not implemented or tested intended to be a way of ordering
+     * which transfer to solve first, however this will likely get replaced with
+     * a self ordering system based on priorities
+     *
+     * @param prj
+     */
     public SolveOrder(Project prj) {
         this.prj = prj;
         columnNames = McWBalance.langRB.getString("SOLVE_ORDER_TABLE_HEADINGS").split(",");
-        
+
         tRNIndex = new int[1];
         tRNIndex[0] = -1;
-        
+
         tRNType = new String[1];
         tRNType[0] = "Not Initialized";
     }
-    
-    
+
+    /**
+     * Table get value
+     *
+     * @param row to pull value from
+     * @param col to pull value from
+     * @return trn index, transfer name or tranfer type
+     */
     @Override
     public Object getValueAt(int row, int col) {
         switch (col) {
@@ -47,11 +72,10 @@ public class SolveOrder extends AbstractTableModel{
                 return tRNIndex[row];
             }
             case 2 -> {
-                if (tRNIndex[row] >=0){
+                if (tRNIndex[row] >= 0) {
 
                     return prj.getTransferList().tRNs[tRNIndex[row]].objname;
-                }
-                else {
+                } else {
                     return "None";
                 }
             }
@@ -61,20 +85,46 @@ public class SolveOrder extends AbstractTableModel{
         }
         return 0;
     }
+
+    /**
+     * number of columns in table
+     *
+     * @return 4 for 4 columns
+     */
     @Override
-    public int getColumnCount(){
+    public int getColumnCount() {
         return 4;
     }
-    @Override 
-    public String getColumnName(int col){
+
+    /**
+     * for getting column header names
+     *
+     * @param col
+     * @return
+     */
+    @Override
+    public String getColumnName(int col) {
         return columnNames[col];
     }
+
+    /**
+     * for getting length of table
+     *
+     * @return
+     */
     @Override
-    public int getRowCount(){
+    public int getRowCount() {
         return tRNIndex.length;
     }
-    @Override 
-    public Class getColumnClass(int col){        
+
+    /**
+     * for getting class of data,
+     *
+     * @param col
+     * @return
+     */
+    @Override
+    public Class getColumnClass(int col) {
         switch (col) {
             case 0 -> {
                 return Integer.class;
@@ -87,27 +137,44 @@ public class SolveOrder extends AbstractTableModel{
             }
         }
     }
-    @Override 
-    public boolean isCellEditable(int rowIndex, int columnIndex){
+
+    /**
+     * no data is editable
+     *
+     * @param rowIndex
+     * @param columnIndex
+     * @return false
+     */
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false; // sets all data to editable
     }
 
-    
-    public void moveUp(int row){
-        if (row != 0){
-            int btRNIndex = tRNIndex[row - 1]; 
+    /**
+     * for moving a transfer up in priority
+     *
+     * @param row
+     */
+    public void moveUp(int row) {
+        if (row != 0) {
+            int btRNIndex = tRNIndex[row - 1];
             String btRNType = tRNType[row - 1];
             tRNIndex[row - 1] = tRNIndex[row];
             tRNType[row - 1] = tRNType[row];
             tRNIndex[row] = btRNIndex;
             tRNType[row] = btRNType;
         }
-        fireTableRowsUpdated(row-1, row);
+        fireTableRowsUpdated(row - 1, row);
     }
-    
-    public void moveDown(int row){
-        if (row != tRNIndex.length - 1 && row >= 0){
-            int btRNIndex = tRNIndex[row + 1]; 
+
+    /**
+     * for moving a transfer down in priority
+     *
+     * @param row
+     */
+    public void moveDown(int row) {
+        if (row != tRNIndex.length - 1 && row >= 0) {
+            int btRNIndex = tRNIndex[row + 1];
             String btRNType = tRNType[row + 1];
             tRNIndex[row + 1] = tRNIndex[row];
             tRNType[row + 1] = tRNType[row];
@@ -116,36 +183,38 @@ public class SolveOrder extends AbstractTableModel{
         }
         fireTableRowsUpdated(row, +1);
     }
-    
+
     /**
-     * Pulled from Balance Run Settings, takes an initial pass at determining solve order
+     * Pulled from Balance Run Settings, takes an initial pass at determining
+     * solve order
+     *
      * @param tRNList
-     * @param eLMList 
+     * @param eLMList
      */
-    public void setAutoOrder(TRNList tRNList, NodList eLMList){
+    public void setAutoOrder(TRNList tRNList, NodList eLMList) {
         int initSolveIndex[] = new int[Limit.MAX_TRNS];
-        String initSolveType[] = new String[Limit.MAX_TRNS]; 
+        String initSolveType[] = new String[Limit.MAX_TRNS];
         int c = 0;
         int tr, el;
-        
+
         boolean tRNCounted[] = new boolean[tRNList.count];
-        for (int i = 0; i < tRNCounted.length; i++){
+        for (int i = 0; i < tRNCounted.length; i++) {
             tRNCounted[i] = false;
         }
         boolean eLMCounted[] = new boolean[eLMList.count];
-        for (int i = 0; i < eLMCounted.length; i++){
+        for (int i = 0; i < eLMCounted.length; i++) {
             eLMCounted[i] = false;
         }
         // first pass sets any fixed flow rates
-        for (int i = 0; i < eLMList.count; i ++){
-            if(eLMList.nodes[i].tailsTRN != -1){ // sets any tailings deposition to first solve order as it will be fixed
+        for (int i = 0; i < eLMList.count; i++) {
+            if (eLMList.nodes[i].tailsTRN != -1) { // sets any tailings deposition to first solve order as it will be fixed
                 tr = eLMList.nodes[i].tailsTRN;
                 initSolveIndex[c] = tr;
                 initSolveType[c] = "SOLIDS";
                 tRNCounted[tr] = true;
-                c ++;
+                c++;
             }
-            for(int j = 0; j < eLMList.nodes[i].inflowFixedTRN.count; j++){ //loops through the fixed inflows
+            for (int j = 0; j < eLMList.nodes[i].inflowFixedTRN.count; j++) { //loops through the fixed inflows
                 // need to check if it has no output or is not a demand then can solve
                 tr = eLMList.nodes[i].inflowFixedTRN.getObjIndex(j);
                 if (!tRNCounted[tr]) {
@@ -158,7 +227,7 @@ public class SolveOrder extends AbstractTableModel{
                     }
                 }
             }
-            for(int j = 0; j < eLMList.nodes[i].outflowFixedTRN.count; j++){ //loops through the fixed outflows
+            for (int j = 0; j < eLMList.nodes[i].outflowFixedTRN.count; j++) { //loops through the fixed outflows
                 // need to check if it has no output or is not a demand then can solve
                 tr = eLMList.nodes[i].outflowFixedTRN.getObjIndex(j);
                 if (!tRNCounted[tr]) {
@@ -196,23 +265,22 @@ public class SolveOrder extends AbstractTableModel{
                 }
             }
             tr = eLMList.nodes[i].overflowTRN;
-            if(tr != -1 && !tRNCounted[tr]){
+            if (tr != -1 && !tRNCounted[tr]) {
                 initSolveIndex[c] = tr;
                 initSolveType[c] = "ON_DEMAND";
                 tRNCounted[tr] = true;
                 c++;
             }
-            
+
         }
-        
+
         tRNIndex = new int[c];
         tRNType = new String[c];
-        for (int i = 0; i < c; i++){
+        for (int i = 0; i < c; i++) {
             tRNIndex[i] = initSolveIndex[i];
             tRNType[i] = initSolveType[i];
         }
         fireTableDataChanged();
     }
-
 
 }
