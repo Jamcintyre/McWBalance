@@ -31,6 +31,7 @@ package com.mcwbalance.result;
 
 import com.mcwbalance.measure.Time;
 import com.mcwbalance.measure.Unit;
+import com.mcwbalance.settings.Limit;
 
 /**
  * Class used to store a time series result in multiple time step options, i.e.
@@ -71,7 +72,8 @@ public class Result {
      * explicitly
      *
      * @param name name of result
-     * @param timesteps number of time steps
+     * @param timesteps number of time steps, limited to 0 - Limit.MAX_DURATION; out of 
+     * bounds will be adjusted without warning
      * @param timeUnit time step unit such as hour, day, week, month, year
      * @param unit result unit of measure
      * @param isFlow Sets if values should be calculated as flows, or as levels
@@ -83,35 +85,43 @@ public class Result {
         this.timeUnit = timeUnit;
         this.unit = unit;
         this.isflow = isFlow;
+        
+        if(timesteps > Limit.MAX_DURATION){
+            timesteps = Limit.MAX_DURATION;
+        } else if (timesteps < 0) {
+            timesteps = 0;
+        }
+        
 
         switch (this.timeUnit) {
             case Time.TimeUnit.Hour -> {
                 hours = timesteps;
-                days = hours / 24;
-                weeks = days / 7;
-                years = days / 365;
-                months = Time.Month.valueOfDay(days).getNumber() + years;
+                days = hours / 24 + 1;
+                weeks = days / 7 + 1;
+                years = days / 365 + 1;
+                months = years*12; // Cannot test Enum in method so switched to this             
             }
             case Time.TimeUnit.Day -> {
                 hours = 0;
                 days = timesteps;
-                weeks = days / 7;
-                years = timesteps / 365;
-                months = Time.Month.valueOfDay(timesteps).getNumber() + years;
+                weeks = days / 7 + 1;
+                years = timesteps / 365 + 1;
+                months = years*12; // Cannot test Enum in method so switched to this
+                
             }
             case Time.TimeUnit.Week -> {
                 hours = 0;
                 days = 0;
                 weeks = timesteps;
                 years = timesteps * 7 / 365;
-                months = Time.Month.valueOfDay(timesteps * 7).getNumber() + years;
+                months = years*12; // Cannot test Enum in method so switched to this
             }
             case Time.TimeUnit.Month -> {
                 hours = 0;
                 days = 0;
                 weeks = 0;
                 months = timesteps;
-                years = months / 12;
+                years = months / 12 + 1;
             }
             case Time.TimeUnit.Year -> {
                 hours = 0;
@@ -151,6 +161,7 @@ public class Result {
      * @param result value to add
      * @param timestep to add result to, note that time step can be in hours
      * days, months, years etc.. should check units if needed before adding
+     * Method adds +1 to timestep for the 0 (initial) conditions;
      */
     public void add(double result, int timestep) {
         switch (this.timeUnit) {
@@ -165,40 +176,99 @@ public class Result {
             case Time.TimeUnit.Year ->
                 annual[timestep] = result;
         }
+        if(calculated){
+            calculated = false;
+        }
     }
 
     /**
      * used to calculate summary results of different time steps from result
      * needs to check if flow
+     * Might be able to increase performance by getting weekly from daily etc.. 
+     * TODO - Not completed
      */
     public void calculate() {
-
         if (isflow) { // if flow then sum the value to get year and day
             switch (timeUnit) {
-                case Time.TimeUnit.Day -> {
-
+                case Time.TimeUnit.Hour -> {
+                    int day = 0;
+                    int week = 1;
+                    int month = 0;
+                    Time.Month curMonth = Time.Month.Jan;
+                    int year = 0;
+                    for (int hour = 1; hour < hourly.length; hour++) {              
+                        if ((float)hour / 24 > day) {
+                            day++;
+                        }
+                        if ((float)hour / 168 > week) {
+                            week++;
+                        }
+                        if (Time.Month.valueOfDay(day) != curMonth) {
+                            month++;
+                            curMonth = Time.Month.valueOfDay(day);
+                        }
+                        if ((float)hour/8760> year) {
+                            year++;
+                        }
+                        daily[day] += hourly[hour];
+                        weekly[week] += hourly[hour];
+                        monthly[month] += hourly[hour];
+                        annual[year] += hourly[hour];
+                    }
                 }
+                case Time.TimeUnit.Day -> {
+                    int week = 1;
+                    int month = 0;
+                    Time.Month curMonth = Time.Month.Jan;
+                    int year = 0;
+                    for (int day = 1; day < daily.length; day++) {
+                        if ((float)day / 7 > week) {
+                            week++;
+                        }
+                        if (Time.Month.valueOfDay(day) != curMonth) {
+                            month++;
+                            curMonth = Time.Month.valueOfDay(day);
+                        }
+                        if ((float)day/365 > year) {
+                            year++;
+                        }
+                        weekly[week] += daily[day];
+                        monthly[month] += daily[day];
+                        annual[year] += daily[day];
+                    }
+                }
+                case Time.TimeUnit.Week -> {
+                    int month = 0;
+                    Time.Month curMonth = Time.Month.Jan;
+                    int year = 0;
+                    for (int week = 1; week < weekly.length; week++) {
+                        if (Time.Month.valueOfDay(week*7) != curMonth) {
+                            month++;
+                            curMonth = Time.Month.valueOfDay(week*7);
+                        }
+                        if ((float)week*7/365 > year) {
+                            year++;
+                        }
+                        monthly[month] += weekly[week];
+                        annual[year] += weekly[week];
+                    }
+                }
+                
+                case Time.TimeUnit.Month -> {
+                    int year = 0;
+                    for (int month = 1; month < monthly.length; month++) {
 
-                default -> {
-
+                        if ((float)month/12 > year) {
+                            year++;
+                        }
+                        annual[year] += monthly[month];
+                    }
                 }
             }
         } else { // if not just pick last value
 
         }
-        /*
-        int d;
-        int m;
-        int y;
-        for (d = 1; d < daily.length; d ++){ // day 0 is left out of sums
-            m = CalcBasics.getMonth(d);
-            y = CalcBasics.getYear(d);
-            
-            monthly[m] = (int)daily[d]; // ensures the last day for each month gets written
-            annual[y] = (int)daily[d]; // ensures the last day for each year gets written
-        }
-        calculated = true;
-         */
+
         calculated = true;
     }
 
@@ -271,7 +341,7 @@ public class Result {
         }
         return switch (this.timeUnit) {
             case Time.TimeUnit.Hour ->
-                getDaily()[timestep * (int) (Time.TimeUnit.getConversion(Time.TimeUnit.Hour, Time.TimeUnit.Day))];
+                getDaily()[(int)(timestep * Time.TimeUnit.getConversion(Time.TimeUnit.Hour, Time.TimeUnit.Day))];
             case Time.TimeUnit.Day ->
                 getDaily()[timestep];
             case Time.TimeUnit.Week ->
@@ -293,10 +363,10 @@ public class Result {
      */
     public double[] getHourly() {
         if (calculated) {
-            return daily;
+            return hourly;
         }
         calculate();
-        return daily;
+        return hourly;
     }
 
     /**

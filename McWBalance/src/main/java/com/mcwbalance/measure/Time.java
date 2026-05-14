@@ -82,7 +82,7 @@ public class Time {
          * @return value to multiply the from value to get the to value
          */
         public static double getConversion(TimeUnit from, TimeUnit to) {
-            return to.hours / from.hours;
+            return (double)from.hours / to.hours;
         }
         
         /**
@@ -106,9 +106,7 @@ public class Time {
         public String getDesciptor() {
             return desc;
         }
-        
-        
-        
+
 
         /**
          * Used for scaling time steps, assumes 1 year = 365 days and that 1
@@ -202,7 +200,7 @@ public class Time {
          * @param month int value of month from 1 through 12; month 13 should act as 1, 14 as 2 etc.. 
          * @return the first Julian Day of a month ignoring leap years
          */
-        public static int toJulianDay(int month){
+        public final static int toJulianDay(int month){
             int day = 1;
             month -= 12*(int)(month/12);
             
@@ -218,9 +216,9 @@ public class Time {
          * @param month name of month i.e. JAN, jan, Jan, January all accepted
          * @return 
          */
-        public static Month valueOfIgnoreCase(String month){
+        public final static Month valueOfIgnoreCase(String month){
             for (Month m : Month.values()) {
-                if (m.name().equalsIgnoreCase(month.substring(0, 2))) {
+                if (m.name().equalsIgnoreCase(month.substring(0, 3))) {
                     return m;
                 }
             }
@@ -233,7 +231,7 @@ public class Time {
          * @param month months assuming month 1 is January;
          * @return returns a month value or null if value below 1 is provided
          */
-        public static Month valueOf(int month){
+        public final static Month valueOf(int month){
             if(month > 12){
                 month = month - 12*(int)(month/12);
             }
@@ -252,7 +250,7 @@ public class Time {
          * @param day int value of 1 or above
          * @return month between Jan and Dec or null if month is not matched (i.e. 0 value or day 366
          */
-        public static Month valueOfDay(int day){
+        public final static Month valueOfDay(int day){
             if(day > 365){
                 day = day - 365*(int)(day/365);
             }
@@ -263,14 +261,14 @@ public class Time {
                 }
                 day += m.days;
             }
-            return null;
+            return Month.Jan;
         }
         
         /**
          * converts month to int value
          * @return value from 1 to 12 representing the month 
          */
-        public int getNumber(){
+        public final int getNumber(){
             return number;
         }
         
@@ -278,7 +276,7 @@ public class Time {
          * converts month to int value of days
          * @return number of days in month, ignores leap years
          */
-        public int getDays(){
+        public final int getDays(){
             return days;
         }
         
@@ -313,4 +311,20 @@ public class Time {
         }
         return day/365 + 1; 
     }
+    
+    /**
+     * Method for determining which year an input day is from
+     * assumes 12 months per year. Method is here for consistency in calcs
+     * it is understood this could be in line elsewhere
+     * @param month number above 1
+     * @return year starting at 1 and counting up, returns 0 for invalid entry 
+     * below 1;
+     */
+    public static int getYearFromMonth(int month){
+        if(month < 1){
+            return 0;
+        }
+        return month/12 + 1; 
+    }
+    
 }

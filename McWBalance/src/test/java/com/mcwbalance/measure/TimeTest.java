@@ -31,6 +31,8 @@ package com.mcwbalance.measure;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  *
@@ -57,6 +59,17 @@ public class TimeTest {
     public void tearDown() throws Exception {
     }
 
+    @org.junit.jupiter.api.Test
+    public void testTimeUnit_getConversion(){
+        System.out.println("TimeUnit.getConversion");
+        
+        Time.TimeUnit from = Time.TimeUnit.Hour;
+        Time.TimeUnit to = Time.TimeUnit.Day;
+        
+        System.out.println("from: " + from + " to: "+ to + " Factor " + Time.TimeUnit.getConversion(from, to));
+        
+    }
+    
     /**
      * Test of getJulianDayFromDay method, of class Time.
      */
@@ -102,5 +115,30 @@ public class TimeTest {
             assertEquals(expResult[i], res);
         }
     }
+
+    /**
+     * test of Month.valueOfIgnoreCase
+     *
+     * @param month
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"jan", "JAN", "january", "Jan"})
+    public void testMonth_valueOfIgnoreCase_Jan(String month) {
+        assertEquals(Time.Month.valueOfIgnoreCase(month),
+                Time.Month.Jan);
+    }
+    
+    /**
+     * test of Month.valueOfIgnoreCase
+     *
+     * @param month
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"Mar", "MAR", "march", "mARCh", "MARCH"})
+    public void testMonth_valueOfIgnoreCase_Mar(String month) {
+        assertEquals(Time.Month.valueOfIgnoreCase(month),
+                Time.Month.Mar);
+    }
+    
     
 }

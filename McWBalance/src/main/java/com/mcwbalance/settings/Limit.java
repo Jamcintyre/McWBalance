@@ -17,9 +17,9 @@ public class Limit {
      */
     public static final int MAX_DEPO_RATES = 50;
     /**
-     * Max model duration set to 3650 time steps
+     * Max model duration set to 365000 time steps
      */
-    public static final int MAX_DURATION = 365 * 10;
+    public static final int MAX_DURATION = 365 * 1000;
     /**
      * Max number of nodes
      */
