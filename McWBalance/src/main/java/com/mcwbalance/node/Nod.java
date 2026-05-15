@@ -31,7 +31,6 @@ package com.mcwbalance.node;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.dacapacity.DAC;
-import com.mcwbalance.landcover.DataCatchment;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
 import com.mcwbalance.project.Project;
@@ -95,15 +94,21 @@ public class Nod {
      * result
      */
     public Boolean hasCatchment;
+    
     /**
-     * number of non null catchments
+     * Table model for holding basin catchment areas, separate from upstream
+     * catch since pond area needs to be subtracted from this when managing
+     * direct precipitation
      */
-    public int nCatchments;
-    /**
-     * array holding catchment values
-     */
-    public DataCatchment[] Catchment = new DataCatchment[Limit.MAX_LAND_COVERS + 1]; // needs a totalizer value.
+    public TableCatchment catchmentBasin;
 
+    /**
+     * Table model for holding basin catchment areas, separate from upstream
+     * catch since pond area needs to be subtracted from this when managing
+     * direct precipitation
+     */
+    public TableCatchment catchmentUpstream;
+    
     /**
      * used for determining if the node will have an input of tailings or waste
      * solids
@@ -142,6 +147,7 @@ public class Nod {
      * used to indicate storage is exposed (as opposed to a closed top tank)
      */
     public Boolean hasStorageEvapandPrecip;
+    
     /**
      * Depth Area Capacity Curve for attached storage note will only be
      * constructed if boolean hasStorage is selected;
@@ -333,8 +339,10 @@ public class Nod {
         updateHitbox();
 
         hasCatchment = false;
-        nCatchments = 0;
-
+        
+        catchmentBasin = new TableCatchment();
+        catchmentUpstream = new TableCatchment();
+        
         hasStorageEvapandPrecip = false;
         hasSolids = false;
         oSetXVoids = 0;
@@ -485,6 +493,7 @@ public class Nod {
         nXML.setAttribute("showStorage", String.valueOf(showStorage));
         nXML.setAttribute("tailsTRN", String.valueOf(tailsTRN));
 
+        /**
         if (hasCatchment) {
             Element catchmentsXML = xMLDoc.createElement("Catchments");
             for (int i = 0; i < nCatchments; i++) {
@@ -500,6 +509,7 @@ public class Nod {
             }
             nXML.appendChild(catchmentsXML);
         }
+        */
 
         // DAC is only saved if the basin is flagged as having storage
         if (hasStorage) {
@@ -602,8 +612,8 @@ public class Nod {
         // need to calc upstream catch first, then evap,, 
         if (hasStorageEvapandPrecip && hasStorage) {
             int pondarea = getPondArea(step - 1);
-            double precip = pondarea * aP.climateTable.getClimates()[cs].precip[step] / 1000;
-            double evap = pondarea * aP.climateTable.getClimates()[cs].evap[step] / 1000;
+            float precip = pondarea * aP.climateTable.getClimates()[cs].precip[step] / 1000;
+            float evap = pondarea * aP.climateTable.getClimates()[cs].evap[step] / 1000;
 
             //TODO Limit evap 
             res[cs].inDirectPrecip.add(precip, step);
@@ -613,17 +623,16 @@ public class Nod {
 
         if (hasCatchment) {
 
-            double rainandmelt = (aP.climateTable.getClimates()[cs].rain[step]
-                    + aP.climateTable.getClimates()[cs].melt[step]) / 1000;
-
+            float rainandmelt = (aP.climateTable.getClimates()[cs].rain[step]
+                    + aP.climateTable.getClimates()[cs].melt[step]);
+            
             for (int i = 0; i < res[cs].inRunoffandMeltbyLC.length; i++) {
-                int area = Catchment[i].getTimeAtIndex(step);
-
+                int area = catchmentUpstream.getArea(step, aP.runoffCoeffs.getLandRunoffName(i));
                 if (area <= 0) {
                     res[cs].inRunoffandMeltbyLC[i].add(0, step);
 
                 } else {
-                    double rC = aP.runoffCoeffs.getCoefficient(Catchment[i].getLandCover(), aP.stepToMonth(step));
+                    //double rC = aP.runoffCoeffs.getCoefficient(Catchment[i].getLandCover(), aP.stepToMonth(step));
                 }
                 
 

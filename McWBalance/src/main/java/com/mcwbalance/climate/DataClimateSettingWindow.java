@@ -92,7 +92,7 @@ public class DataClimateSettingWindow extends JFrame{
                     && scenario < aP.climateTable.climates.length
                     && !aP.climateTable.climates[scenario].equals(DataClimate.NULL_DESCRIP.toString())) {
 
-                double[][] results = new double[4][];
+                float[][] results = new float[4][];
                 String[] resultnames = new String[4];
                 Color[] rescolors = new Color[4];
                 

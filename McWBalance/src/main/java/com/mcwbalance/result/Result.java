@@ -48,11 +48,11 @@ import com.mcwbalance.settings.Limit;
  */
 public class Result {
 
-    private final double[] hourly;
-    private final double[] daily; // this will be a memory hog, may switch to storing as int or shifted int if memory becomes a limitation
-    private final double[] weekly;
-    private final double[] monthly; // Any value more then daily is stored as int to save memory
-    private final double[] annual;
+    private final float[] hourly;
+    private final float[] daily; // this will be a memory hog, may switch to storing as int or shifted int if memory becomes a limitation
+    private final float[] weekly;
+    private final float[] monthly; // Any value more then daily is stored as int to save memory
+    private final float[] annual;
     private String name;
     private Unit unit;
     private Time.TimeUnit timeUnit;
@@ -139,11 +139,11 @@ public class Result {
                 years = 0;
             }
         }
-        hourly = new double[hours + 1];
-        daily = new double[days + 1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
-        weekly = new double[weeks + 1];
-        monthly = new double[months + 1];
-        annual = new double[years + 1];
+        hourly = new float[hours + 1];
+        daily = new float[days + 1]; //Timestep 0 will be used to hold initialiation values so + 1 is needed to get to end;
+        weekly = new float[weeks + 1];
+        monthly = new float[months + 1];
+        annual = new float[years + 1];
         hourly[0] = 0;
         weekly[0] = 0;
         daily[0] = 0;
@@ -163,7 +163,7 @@ public class Result {
      * days, months, years etc.. should check units if needed before adding
      * Method adds +1 to timestep for the 0 (initial) conditions;
      */
-    public void add(double result, int timestep) {
+    public void add(float result, int timestep) {
         switch (this.timeUnit) {
             case Time.TimeUnit.Hour ->
                 hourly[timestep] = result;
@@ -265,8 +265,85 @@ public class Result {
                     }
                 }
             }
-        } else { // if not just pick last value
+        } else { // if level get the first possible value for timesept
+            switch (timeUnit) {
 
+                case Time.TimeUnit.Hour -> {
+                    int day = 0;
+                    int week = 1;
+                    int month = 0;
+                    Time.Month curMonth = Time.Month.Jan;
+                    int year = 0;
+                    monthly[1] = hourly[1];
+                    for (int hour = 1; hour < hourly.length; hour++) {              
+                        if ((float)hour / 24 > day) {
+                            day++;
+                            daily[day] = hourly[hour];
+                        }
+                        if ((float)hour / 168 > week) {
+                            week++;
+                            weekly[week] = hourly[hour];
+                        }
+                        if (Time.Month.valueOfDay(day) != curMonth) {
+                            month++;
+                            curMonth = Time.Month.valueOfDay(day);
+                            monthly[month] = hourly[hour];
+                        }
+                        if ((float)hour/8760> year) {
+                            year++;
+                            annual[year] = hourly[hour];
+                        }
+                    }
+                }
+                case Time.TimeUnit.Day -> {
+                    int week = 1;
+                    int month = 0;
+                    monthly[1] = daily[1];
+                    Time.Month curMonth = Time.Month.Jan;
+                    int year = 0;
+                    for (int day = 1; day < daily.length; day++) {
+                        if ((float)day / 7 > week) {
+                            week++;
+                            weekly[week] = daily[day];
+                        }
+                        if (Time.Month.valueOfDay(day) != curMonth) {
+                            month++;
+                            curMonth = Time.Month.valueOfDay(day);
+                            monthly[month] = daily[day];         
+                        }
+                        if ((float)day/365 > year) {
+                            year++;
+                            annual[year] = daily[day];
+                        }
+                    }
+                }
+                case Time.TimeUnit.Week -> {
+                    int month = 0;
+                    monthly[1] = weekly[1];
+                    Time.Month curMonth = Time.Month.Jan;
+                    int year = 0;
+                    for (int week = 1; week < weekly.length; week++) {
+                        if (Time.Month.valueOfDay(week*7) != curMonth) {
+                            month++;
+                            curMonth = Time.Month.valueOfDay(week*7);
+                            monthly[month] = weekly[week];
+                        }
+                        if ((float)week*7/365 > year) {
+                            year++;
+                            annual[year] = weekly[week];
+                        }
+                    }
+                }
+                case Time.TimeUnit.Month -> {
+                    int year = 0;
+                    for (int month = 1; month < monthly.length; month++) {
+                        if ((float)month/12 > year) {
+                            year++;
+                            annual[year] = monthly[month];
+                        }
+                    }
+                }
+            }
         }
 
         calculated = true;
@@ -278,7 +355,7 @@ public class Result {
      *
      * @return array containing years + 1, year 0 being initial conditions
      */
-    public double[] getAnnual() {
+    public float[] getAnnual() {
         if (calculated) {
             return this.annual;
         }
@@ -293,7 +370,7 @@ public class Result {
      * @param timestep to retrieve, year 0 for initial conditions
      * @return value out of array representing day
      */
-    public double getAnnual(int timestep) {
+    public float getAnnual(int timestep) {
              if (timestep == 0) {
             return getAnnual()[timestep];
         }
@@ -319,7 +396,7 @@ public class Result {
      *
      * @return array containing days + 1, day 0 being initial conditions
      */
-    public double[] getDaily() {
+    public float[] getDaily() {
         if (calculated) {
             return daily;
         }
@@ -335,7 +412,7 @@ public class Result {
      * @return daily data based on daily data if available or factored down
      * from next smallest time step
      */
-    public double getDaily(int timestep) {
+    public float getDaily(int timestep) {
         if (timestep == 0) {
             return getDaily()[timestep];
         }
@@ -345,11 +422,11 @@ public class Result {
             case Time.TimeUnit.Day ->
                 getDaily()[timestep];
             case Time.TimeUnit.Week ->
-                getWeekly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Day);
+                getWeekly()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Day);
             case Time.TimeUnit.Month ->
-                getMonthly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Day);
+                getMonthly()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Day);
             case Time.TimeUnit.Year ->
-                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Day);
+                getAnnual()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Day);
             default ->
                 0;
         };
@@ -361,7 +438,7 @@ public class Result {
      *
      * @return array containing hours + 1, day 0 being initial conditions
      */
-    public double[] getHourly() {
+    public float[] getHourly() {
         if (calculated) {
             return hourly;
         }
@@ -378,7 +455,7 @@ public class Result {
      * from next smallest timestep will return 0 if timeunit isnt recognized
      *
      */
-    public double getHourly(int timestep) {
+    public float getHourly(int timestep) {
         if (timestep == 0) {
             return getHourly()[timestep];
         }
@@ -386,13 +463,13 @@ public class Result {
             case Time.TimeUnit.Hour ->
                 getHourly()[timestep];
             case Time.TimeUnit.Day ->
-                getDaily()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Day, Time.TimeUnit.Hour);
+                getDaily()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Day, Time.TimeUnit.Hour);
             case Time.TimeUnit.Week ->
-                getWeekly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Hour);
+                getWeekly()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Week, Time.TimeUnit.Hour);
             case Time.TimeUnit.Month ->
-                getMonthly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Hour);
+                getMonthly()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Hour);
             case Time.TimeUnit.Year ->
-                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Hour);
+                getAnnual()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Hour);
             default ->
                 0;
         };
@@ -404,7 +481,7 @@ public class Result {
      *
      * @return array containing months + 1, month 0 being initial conditions
      */
-    public double[] getMonthly() {
+    public float[] getMonthly() {
         if (calculated) {
             return monthly;
         }
@@ -421,7 +498,7 @@ public class Result {
      * from next smallest time step unless time step is annual in which case a
      * conversion will be used
      */
-    public double getMonthly(int timestep) {
+    public float getMonthly(int timestep) {
         if (timestep == 0) {
             return getMonthly()[timestep];
         }
@@ -435,7 +512,7 @@ public class Result {
             case Time.TimeUnit.Month ->
                 getMonthly()[timestep];
             case Time.TimeUnit.Year ->
-                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Month);
+                getAnnual()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Month);
             default ->
                 0;
         };
@@ -448,7 +525,7 @@ public class Result {
      * @return array containing weeks + 1, week 0 being initial conditions Array
      * length will be 1 if time unit is larger then weekly
      */
-    public double[] getWeekly() {
+    public float[] getWeekly() {
         if (calculated) {
             return weekly;
         }
@@ -463,7 +540,7 @@ public class Result {
      * @param timestep to retrieve, step 0 for initial conditions
      * @return value out of array representing weekly result
      */
-    public double getWeekly(int timestep) {
+    public float getWeekly(int timestep) {
         if (timestep == 0) {
             return getWeekly()[timestep];
         }
@@ -475,9 +552,9 @@ public class Result {
             case Time.TimeUnit.Week ->
                 getWeekly()[timestep];
             case Time.TimeUnit.Month ->
-                getMonthly()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Week);
+                getMonthly()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Month, Time.TimeUnit.Week);
             case Time.TimeUnit.Year ->
-                getAnnual()[timestep] * Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Week);
+                getAnnual()[timestep] * (float)Time.TimeUnit.getConversion(Time.TimeUnit.Year, Time.TimeUnit.Week);
             default ->
                 0;
         };

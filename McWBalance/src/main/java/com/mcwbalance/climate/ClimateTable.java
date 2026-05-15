@@ -29,6 +29,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.mcwbalance.climate;
 
+import com.mcwbalance.measure.Depth;
+import com.mcwbalance.measure.Time;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -43,11 +45,12 @@ public class ClimateTable extends AbstractTableModel {
      */
     public static final String[] columnNames = {"Scenario", "Description", "Length", "Avg Ann Precip", "Min Ann Precip", "Max Ann Precip", "Yr 1 Precip"};
 
-    double[] aaprecip;
-    double[] minprecip;
-    double[] maxprecip;
-    double[] yr1precip;
+    float[] aaprecip;
+    float[] minprecip;
+    float[] maxprecip;
+    float[] yr1precip;
     DataClimate[] climates;
+    private final Depth.DepthUnit depthUnit;
 
     /**
      * Generates a null list of climates
@@ -55,10 +58,13 @@ public class ClimateTable extends AbstractTableModel {
      * @param size
      */
     public ClimateTable(int size) {
-        aaprecip = new double[size];
-        minprecip = new double[size];
-        maxprecip = new double[size];
-        yr1precip = new double[size];
+        
+        
+        depthUnit= Depth.DepthUnit.mm; // TODO - Remove Default value 
+        aaprecip = new float[size];
+        minprecip = new float[size];
+        maxprecip = new float[size];
+        yr1precip = new float[size];
         climates = new DataClimate[size];
         for (int i = 0; i < size; i++) {
             climates[i] = new DataClimate(1);
@@ -113,6 +119,14 @@ public class ClimateTable extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return columnNames.length;
+    }
+    
+    /**
+     * Used for getting unit of measure for the climate set
+     * @return currently unit of measure
+     */
+    public Depth.DepthUnit getDepthUnit(){
+        return depthUnit;
     }
 
     /**
@@ -191,10 +205,10 @@ public class ClimateTable extends AbstractTableModel {
             }
         } else {
             int size = climates.length - 1;
-            double[] aaprecipBuff = new double[size];
-            double[] minprecipBuff = new double[size];
-            double[] maxprecipBuff = new double[size];
-            double[] yr1precipBuff = new double[size];
+            float[] aaprecipBuff = new float[size];
+            float[] minprecipBuff = new float[size];
+            float[] maxprecipBuff = new float[size];
+            float[] yr1precipBuff = new float[size];
             DataClimate[] climateScenariosBuff = new DataClimate[size];
 
             for (int i = 0; i < rowIndex; i++) {
@@ -231,10 +245,10 @@ public class ClimateTable extends AbstractTableModel {
         int size = climates.length;
         if (climates[0].getDescription() != DataClimate.NULL_DESCRIP) {
             size++;
-            double[] aaprecipBuff = new double[size];
-            double[] minprecipBuff = new double[size];
-            double[] maxprecipBuff = new double[size];
-            double[] yr1precipBuff = new double[size];
+            float[] aaprecipBuff = new float[size];
+            float[] minprecipBuff = new float[size];
+            float[] maxprecipBuff = new float[size];
+            float[] yr1precipBuff = new float[size];
             DataClimate[] climateScenariosBuff = new DataClimate[size];
 
             for (int i = 0; i < size - 1; i++) {

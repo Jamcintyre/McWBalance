@@ -37,8 +37,8 @@ public class CalcBasics {
     /**
      * Finds the maximum value in an array of doubles
      *
-     * @param array
-     * @return
+     * @param array input values
+     * @return max value of inputs
      */
     public static double findMaxDouble(double[] array) {
         double max = array[0];
@@ -53,11 +53,27 @@ public class CalcBasics {
     /**
      * Finds the maximum value in an array of integers
      *
-     * @param array
-     * @return
+     * @param array input values
+     * @return max value of inputs
      */
     public static int findMaxInteger(int[] array) {
         int max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (max < array[i]) {
+                max = array[i];
+            }
+        }
+        return max;
+    }
+    
+        /**
+     * Finds the maximum value in an array of doubles
+     *
+     * @param array input values
+     * @return max value of inputs
+     */
+    public static float findMaxFloat(float[] array) {
+        float max = array[0];
         for (int i = 1; i < array.length; i++) {
             if (max < array[i]) {
                 max = array[i];
@@ -69,8 +85,8 @@ public class CalcBasics {
     /**
      * Finds the minimum value in an array of doubles
      *
-     * @param array
-     * @return
+     * @param array input values
+     * @return min value of inputs
      */
     public static double findMinDouble(double[] array) {
         double min = array[0];
@@ -85,8 +101,8 @@ public class CalcBasics {
     /**
      * Finds the minimum value in an array of integers
      *
-     * @param array
-     * @return
+     * @param array input values
+     * @return min value of inputs
      */
     public static int findMinInteger(int[] array) {
         int min = array[0];
@@ -97,6 +113,24 @@ public class CalcBasics {
         }
         return min;
     }
+    
+        /**
+     * Finds the minimum value in an array of float
+     *
+     * @param array input values
+     * @return min value of inputs
+     */
+    public static float findMinFloat(float[] array) {
+        float min = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (min > array[i]) {
+                min = array[i];
+            }
+        }
+        return min;
+    }
+    
+    
 
     /**
      * Finds a matching string index value in a given array of strings

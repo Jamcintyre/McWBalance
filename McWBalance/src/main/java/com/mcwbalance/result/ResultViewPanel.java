@@ -47,7 +47,7 @@ import javax.swing.JComponent;
  */
 public class ResultViewPanel extends JComponent {
 
-    double[][] results;
+    float[][] results;
     Color[] rescolors;
     String[] resNames;
     int minX, minX_Day;
@@ -160,7 +160,7 @@ public class ResultViewPanel extends JComponent {
      * @param maxY
      * @param verTitle
      */
-    public ResultViewPanel(double[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String verTitle) {
+    public ResultViewPanel(float[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String verTitle) {
         // all of the work is done in the paint component method
         this.results = results;
         this.rescolors = rescolors;

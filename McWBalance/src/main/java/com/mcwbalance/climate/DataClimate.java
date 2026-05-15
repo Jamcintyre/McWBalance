@@ -48,44 +48,44 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      * Total precipitation rain and snow over the time step
      * Unit and time step based on set time unit
      */
-    public double[] precip;
+    public float[] precip;
     
     /**
      * Total precipitation rain only over the time step
      * Unit and time step based on set time unit
      */
-    public double[] rain;
+    public float[] rain;
     
     /**
      * average temperature over the time step
      * Unit and time step based on set time unit
      */
-    public double[] temp;
+    public float[] temp;
     
     /**
      * Total potential pan evaporation over the time step
      * Unit and time step based on set time unit
      */
-    public double[] evap; 
+    public float[] evap; 
     
     /**
      * Total accumulated snow pack over the time step
      * calculated from precipitation minus rain and melt plus previous snow pack
      * Unit and time step based on set time unit
      */
-    public double[] snowpack;
+    public float[] snowpack;
     
     /**
      * Total potential melt  over the time step
      * calculated from precipitation rain temperature, previous month 
      * Unit and time step based on set time unit
      */
-    public double[] melt;
+    public float[] melt;
     
     /**
      * Calculated from cumulative freezing index
      */
-    public double[] iceThickness;
+    public float[] iceThickness;
     
     
     private int size;
@@ -121,10 +121,10 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      */
     public static final int MAX_SIZE = 36500;
     
-    double aaprecip;
-    double minaprecip;
-    double maxaprecip;
-    double yr1precip;
+    float aaprecip;
+    float minaprecip;
+    float maxaprecip;
+    float yr1precip;
     
     
     private Time.TimeUnit timeunit;
@@ -142,13 +142,13 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     DataClimate(){
         description = NULL_DESCRIP;
         size = 1;
-        precip = new double[size];
-        rain = new double[size];
-        temp = new double[size];
-        evap = new double[size];
-        snowpack = new double[size];
-        melt = new double[size];
-        iceThickness = new double[size];
+        precip = new float[size];
+        rain = new float[size];
+        temp = new float[size];
+        evap = new float[size];
+        snowpack = new float[size];
+        melt = new float[size];
+        iceThickness = new float[size];
         calcsRun = false;
         calcStats();
         calcsRun = true;
@@ -201,12 +201,12 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
                 System.err.print("input datafile does not contain enough columns, must contain " + DATA_COLUMNS);
                 break;
             }
-            precip[i-2] = Double.parseDouble(sLine[4]);
-            rain[i-2] = Double.parseDouble(sLine[5]);
-            temp[i-2] = Double.parseDouble(sLine[6]);
-            evap[i-2] = Double.parseDouble(sLine[7]);
-            snowpack[i-2] = Double.parseDouble(sLine[8]);
-            iceThickness[i-2] = Double.parseDouble(sLine[9]);
+            precip[i-2] = Float.parseFloat(sLine[4]);
+            rain[i-2] = Float.parseFloat(sLine[5]);
+            temp[i-2] = Float.parseFloat(sLine[6]);
+            evap[i-2] = Float.parseFloat(sLine[7]);
+            snowpack[i-2] = Float.parseFloat(sLine[8]);
+            iceThickness[i-2] = Float.parseFloat(sLine[9]);
         }
         calcSnowMelt();
         calcStats();
@@ -289,13 +289,13 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
             size = setsize;
         }
         size = setsize;
-        precip = new double[size];
-        rain = new double[size];
-        temp = new double[size];
-        evap = new double[size];
-        snowpack = new double[size];
-        melt = new double[size];
-        iceThickness = new double[size];
+        precip = new float[size];
+        rain = new float[size];
+        temp = new float[size];
+        evap = new float[size];
+        snowpack = new float[size];
+        melt = new float[size];
+        iceThickness = new float[size];
         
     }
 
@@ -313,9 +313,9 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      * to be called to calculate averages and maximums
      */
     private void calcStats() {
-        double sum = 0;
-        double min;
-        double max;
+        float sum = 0;
+        float min;
+        float max;
         int d = 1;
         if (description.contentEquals(NULL_DESCRIP)) {
             aaprecip = 0;
@@ -372,7 +372,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      * summed annual precipitation over the length of the data set
      * @return value in base units of data set, i.e. mm or inches 
      */
-    public double getAnnualAvgPrecip() {
+    public float getAnnualAvgPrecip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
@@ -386,7 +386,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      * summed annual precipitation over the length of the data set
      * @return value in base units of data set, i.e. mm or inches 
      */
-    public double getMinimumAnnualPrecip() {
+    public float getMinimumAnnualPrecip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
@@ -400,7 +400,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      * summed annual precipitation over the length of the data set
      * @return value in base units of data set, i.e. mm or inches 
      */
-    public double getMaximumAnnualPrecip() {
+    public float getMaximumAnnualPrecip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();
@@ -415,7 +415,7 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
      * this is used for visual identification of a data set
      * @return value in base units of data set, i.e. mm or inches 
      */
-    public double getyr1Precip() {
+    public float getyr1Precip() {
         if(!calcsRun){
             calcSnowMelt();
             calcStats();

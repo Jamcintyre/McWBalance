@@ -85,7 +85,7 @@ public class ResultViewer extends JFrame {
      * @param rescolors
      * @param verTitle
      */
-    public ResultViewer(String title, double[][] results, String[] resultnames, Color[] rescolors, String verTitle) {
+    public ResultViewer(String title, float[][] results, String[] resultnames, Color[] rescolors, String verTitle) {
         super(title);
         pageWidth = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_PAGE_WIDTH", "50"));
         pageHeight = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_PAGE_HEIGHT", "50"));
@@ -98,13 +98,13 @@ public class ResultViewer extends JFrame {
         maxY = (int) results[0][0];
 
         for (int i = 0; i < results.length; i++) {
-            r = (int) CalcBasics.findMinDouble(results[i]);
+            r = (int) CalcBasics.findMinFloat(results[i]);
             if (r < minY) {
                 minY = r;
             }
         }
         for (int i = 0; i < results.length; i++) {
-            r = (int) CalcBasics.findMaxDouble(results[i]);
+            r = (int) CalcBasics.findMaxFloat(results[i]);
             if (r > maxY) {
                 maxY = r;
             }
