@@ -412,6 +412,24 @@ public class Nod {
             res[cs].initResults(aP);
         }
     }
+    
+    /**
+     * Used to determine if a land cover has an area assigned to it
+     * @param name of landcover to check
+     * @return 1 if basin area, 2 if upstream 3 if both, 0 if no use
+     */
+    public int getLandCoverUsed(String name){
+        int use = 0;
+        
+        if(catchmentBasin.getAreaMax(name) > 0){
+            use++;
+        }
+        if(catchmentUpstream.getAreaMax(name) > 0){
+            use++;
+            use++;
+        }
+        return use;
+    }
 
     /**
      * method used to determine the state of the object for any given day

@@ -33,6 +33,7 @@ package com.mcwbalance.node;
 import com.mcwbalance.generics.DataComboBoxModel;
 import com.mcwbalance.generics.DataNameListModel;
 import com.mcwbalance.MainWindow;
+import com.mcwbalance.McWBalance;
 import com.mcwbalance.generics.ObjStateTableModel;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.project.ProjSetting;
@@ -46,6 +47,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -71,7 +73,7 @@ import javax.swing.table.TableColumn;
  * all information needed to populate an ELM with exception of location.
  * 
  * TODO - remove the buffernode and allow popups to directly update data. end goal is to allow 
- * on the fly adjusments ot the balance for trial and error of pumping rates etc.. no need to
+ * on the fly adjusments to the balance for trial and error of pumping rates etc.. no need to
  * save and fire a change
  * @author amcintyre
  */
@@ -83,7 +85,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
      */
     //static Node returnedObjELM = new Node();
     
-    
+    private Project aP; 
     
     private JFrame subframe;
     private JTabbedPane tabPane;
@@ -123,7 +125,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
      */
     public void ObjELMWindowFunct(Nod node, int nodeNumber, TRNList ctRNList, Project aP){ // requires object number to edit
         
-        //buffNode = new Nod(projSetting);
+        this.aP = aP;
         
         ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
         
@@ -482,90 +484,9 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
 
         
        
-        
-        // TAB 5 for handelling Tailings Deposition
-        JPanel tab5 = new JPanel();
 
-        JTable tab5TableTails = new JTable(node.depositionRates);
         
-        JPopupMenu popupMenuTailsTable = new JPopupMenu();
-        JMenuItem popupMenuItemTailsSelectAll = new JMenuItem("Select All");
-        popupMenuItemTailsSelectAll.addActionListener(e->{
-                tab5TableTails.setColumnSelectionInterval(0, 8);
-                tab5TableTails.setRowSelectionInterval(0, tab5TableTails.getRowCount()-1);
-        });
-        JMenuItem popupMenuItemTailsDelete = new JMenuItem("Delete Selection");
-        popupMenuItemTailsDelete.addActionListener(e->{
-                node.depositionRates.removeData(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
-        });
-        JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy All");
-        popupMenuItemTailsCopy.addActionListener(e->{
-                node.depositionRates.copyToClipBoard();
-        });
-
-        JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste All");
-        popupMenuItemTailsPaste.addActionListener(e->{
-                node.depositionRates.pasteFromClipboard(tab5TableTails.getSelectedRows(),tab5TableTails.getSelectedColumns());
-        });
         
-        popupMenuTailsTable.add(popupMenuItemTailsSelectAll);
-        popupMenuTailsTable.add(popupMenuItemTailsDelete);
-        popupMenuTailsTable.add(popupMenuItemTailsCopy);
-        popupMenuTailsTable.add(popupMenuItemTailsPaste);
-        tab5TableTails.setComponentPopupMenu(popupMenuTailsTable);
-        tab5TableTails.setCellSelectionEnabled(true);
-        
-
-        JScrollPane tab5ScrollTails = new JScrollPane(tab5TableTails);
-        tab5ScrollTails.setPreferredSize(new Dimension(800,190));
-        tab5.add(tab5ScrollTails);
-
-        // End of Tab 5
-        
-        // Tab 6
-        JPanel tab6 = new JPanel();
-        ObjStateTableModel tab6TableModelState = new ObjStateTableModel();
-        //tab6TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
-        JTable tab6TableState = new JTable(tab6TableModelState);      
-        for(int i = 0; i < Limit.MAX_STATES; i++){
-            tab6TableModelState.setValueAt((int)node.stateTime[i], i, 0);
-            tab6TableModelState.setValueAt((String)node.state[i], i, 1);
-        }
-
-        JPopupMenu popupMenuStateTable = new JPopupMenu();
-        JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
-        popupMenuItemStateSelectAll.addActionListener(e->{
-                tab6TableState.setColumnSelectionInterval(0, 1);
-                tab6TableState.setRowSelectionInterval(0, tab6TableState.getRowCount()-1);
-        });
-        JMenuItem popupMenuItemStateDelete = new JMenuItem("Delete Selection");
-        popupMenuItemStateDelete.addActionListener(e->{
-                tab6TableModelState.removeData(tab6TableState.getSelectedRows(),tab6TableState.getSelectedColumns());
-        });
-        JMenuItem popupMenuItemStateCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
-        popupMenuItemStateCopy.addActionListener(e ->{
-                System.out.println("popup menu Copy button hit");
-        });
-        JMenuItem popupMenuItemStatePaste = new JMenuItem("Paste");
-        popupMenuItemStatePaste.addActionListener(e -> {
-            tab6TableModelState.pasteFromClipboard(tab6TableState.getSelectedRows(), tab6TableState.getSelectedColumns());
-        });
-        
-        popupMenuStateTable.add(popupMenuItemStateSelectAll);
-        popupMenuStateTable.add(popupMenuItemStateDelete);
-        popupMenuStateTable.add(popupMenuItemStateCopy);
-        popupMenuStateTable.add(popupMenuItemStatePaste);
-        tab6TableState.setComponentPopupMenu(popupMenuStateTable);
-        tab6TableState.setCellSelectionEnabled(true);
-        
-        JComboBox cBoxTRNState = new JComboBox(Nod.StatesAllowed);
-        TableColumn stateColumn = tab6TableState.getColumnModel().getColumn(1);
-        stateColumn.setCellEditor(new DefaultCellEditor(cBoxTRNState));
-        
-        JScrollPane tab6ScrollState = new JScrollPane(tab6TableState);
-        tab6.add(tab6ScrollState);
-        
-        // End of Tab 6
         
         
         // Table models needed before save action butten is called        
@@ -679,14 +600,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
   */          
             
 
-            for (int i = 0; i < tab6TableModelState.getRowCount(); i++){
-                if (i >= node.stateTime.length){
-                    break;
-                }
-                node.stateTime[i] = (int)tab6TableModelState.getValueAt(i, 0);
-                node.state[i] = (String)tab6TableModelState.getValueAt(i, 1);
-            }
-            
+
 
             
             //returnedObjELM = node; // sets returned value to 
@@ -792,37 +706,53 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         layoutTab1.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorageEvapandPrecip);
         
         
+        // Tab 6 // All of this should go away and Node just carry an instance of the table model
+        JPanel tab6 = new JPanel();
+        ObjStateTableModel tmState = new ObjStateTableModel();
+        //tab6TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
+        JTable tState = new JTable(tmState);
+        for (int i = 0; i < Limit.MAX_STATES; i++) {
+            tState.setValueAt((int) node.stateTime[i], i, 0);
+            tmState.setValueAt((String) node.state[i], i, 1);
+        }
+        for (int i = 0; i < tmState.getRowCount(); i++) {
+            if (i >= node.stateTime.length) {
+                break;
+            }
+            node.stateTime[i] = (int) tmState.getValueAt(i, 0);
+            node.state[i] = (String) tmState.getValueAt(i, 1);
+        }
+
+
+        tabPane.addTab("State", makeTabTableState(tState));
+        
         tabPane.addTab("General",tab1);
         tabPane.addTab("FlowSettings",tab2);
-        
-        JTable tTargetVol = new JTable(node.targetOperatingVol);
-        JTable tMinDepth = new JTable(node.minDepth);
-        JTable tMaxOpLevel = new JTable(node.maxOpLevel);
-        JTable tOverflowLevel = new JTable(node.overflowLevel);
-        JTable tCrestLevel = new JTable(node.crestLevel);
-        
-        tabPane.addTab("T.O.V.",makeTableTab(new JLabel("Target Operating Volume"), tTargetVol));
-        tabPane.addTab("M.W.D.",makeTableTab(new JLabel("Minimum Water Depth"), tMinDepth));
-        tabPane.addTab("M.O.L.",makeTableTab(new JLabel("Maximum Operating Level"), tMaxOpLevel));
-        tabPane.addTab("Spill",makeTableTab(new JLabel("Overflow Level"), tOverflowLevel));
-        tabPane.addTab("Crest",makeTableTab(new JLabel("Crest Level"), tCrestLevel));
-        
-        tabPane.addTab("Tailings Solids Deposition",tab5);
-        tabPane.addTab("Object State",tab6);
+
+        tabPane.addTab("T.O.V.", makeTabLevelTable("Target Operating Volume", node.targetOperatingVol));
+        tabPane.addTab("M.W.D.", makeTabLevelTable("Minimum Water Depth", node.minDepth));
+        tabPane.addTab("M.O.L.", makeTabLevelTable("Maximum Operating Level", node.maxOpLevel));
+        tabPane.addTab("Spill", makeTabLevelTable("Overflow Level", node.overflowLevel));
+        tabPane.addTab("Crest", makeTabLevelTable("Crest Level", node.crestLevel));
+
+        tabPane.addTab("Basin Catch", makeTabTableCatchment(new JLabel("Basin Catchment Area"), node.catchmentBasin));
+        tabPane.addTab("Upstream Catch", makeTabTableCatchment(new JLabel("Upstream Catchment Area"), node.catchmentUpstream));
+
+        tabPane.addTab("Tailings Solids Deposition", makeTabTailingsDeposition(node.depositionRates));
+        tabPane.addTab("Object State", tab6);
 
         subframe.add(tabPane);
-        
+
         subframe.pack();
         subframe.setBackground(Color.GRAY);
         subframe.setVisible(true);
 
-        
-        
     }
-
     
     
-    private JPanel makeTableTab(JLabel label, JTable table){
+    private JPanel makeTabLevelTable(String label, TableNodeLevel tableModel){
+        
+        JTable table = new JTable(tableModel);
         
         GridBagLayout layout = new GridBagLayout(); // sets up a layout manager for the tab
         JPanel tab = new JPanel(layout);
@@ -848,14 +778,177 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         //table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
         JScrollPane sp = new JScrollPane(table);
         sp.setPreferredSize(tableDims);
-        tab.add (label, gbcLabel);
+        
+        
+        tab.add (new JLabel(label), gbcLabel);
         tab.add(sp, gbcTable);
         
         
         return tab;
     }
     
+    private JPanel makeTabTableCatchment(JLabel label, TableCatchment tableModel) {
+        
+        JTable table = new JTable(tableModel);
+        
+        JPopupMenu popupMenu = new JPopupMenu();
+        
+        ArrayList<JMenuItem> popupMenuItems = new ArrayList<>();
+        popupMenuItems.add(new JMenuItem(McWBalance.langRB.getString("ADD_ROW")));
+        popupMenuItems.get(0).addActionListener(e -> {
+            tableModel.addRow();
+        });
+        popupMenuItems.add(new JMenuItem(McWBalance.langRB.getString("DELETE_ROW")));
+        popupMenuItems.get(1).addActionListener(e -> {
+            tableModel.deleteRow(table.getSelectedRow());
+        });
+        popupMenuItems.add(new JMenuItem(McWBalance.langRB.getString("DELETE_UNUSED_LAND_COVER")));
+        popupMenuItems.get(2).addActionListener(e -> {
+            tableModel.deleteUnusedLandCovers();
+        });
+        
+        String addL = McWBalance.langRB.getString("ADD_LAND_COVER") + ": ";
+        for (int lc = 0; lc < aP.runoffCoeffs.getRowCount(); ++lc){
+            String name = String.valueOf(aP.runoffCoeffs.getValueAt(lc, 0));
+            JMenuItem menuItem = new JMenuItem(addL+name);
+            menuItem.addActionListener(e ->{
+                tableModel.addLandCover(name);
+            });
+            popupMenuItems.add(menuItem);
+        }
+        
+        for (int mi = 0; mi < popupMenuItems.size(); ++mi){
+            popupMenu.add(popupMenuItems.get(mi));
+        }
+
+        table.setComponentPopupMenu(popupMenu);
+
+
+        JButton buttonAdd = new JButton(McWBalance.langRB.getString("ADD_ROW"));
+        buttonAdd.addActionListener(e -> {
+            tableModel.addRow();
+        }); 
+        
+        JButton buttonDelete = new JButton(McWBalance.langRB.getString("DELETE_ROW"));
+        buttonDelete.addActionListener(e -> {
+            tableModel.deleteRow(table.getSelectedRow());
+        }); 
+        
+        //Layout 
+        GridBagLayout layout = new GridBagLayout(); // sets up a layout manager for the tab
+        JPanel tab = new JPanel(layout);
+        GridBagConstraints gbcLabel = new GridBagConstraints();
+        gbcLabel.gridx = 1;
+        gbcLabel.gridy = 0;
+        GridBagConstraints gbcTable = new GridBagConstraints();
+        gbcTable.gridx = 1;
+        gbcTable.gridy = 1;
+        gbcTable.insets = new Insets(0, 10, 0, 10); // Padding around Tables;
+        GridBagConstraints gbcButtonAdd = new GridBagConstraints();
+        gbcButtonAdd.gridx = 0;
+        gbcButtonAdd.gridy = 1;
+        GridBagConstraints gbcButtonDelete = new GridBagConstraints();
+        gbcButtonDelete.gridx = 0;
+        gbcButtonDelete.gridy = 2;
+
+        JScrollPane sp = new JScrollPane(table);
+        sp.setPreferredSize(new Dimension(650, 200));
+
+        tab.add(label, gbcLabel);
+        tab.add(sp, gbcTable);
+        tab.add(buttonAdd, gbcButtonAdd);
+        tab.add(buttonDelete, gbcButtonDelete);
+
+        return tab;
+    }
     
+    
+    private JPanel makeTabTailingsDeposition(TableTailingsDepositionRates tableModel){
+        GridBagLayout layout = new GridBagLayout(); // sets up a layout manager for the tab
+        JPanel tab = new JPanel(layout);
+        
+        JTable table = new JTable(tableModel);
+        
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem popupMenuItemTailsSelectAll = new JMenuItem("Select All");
+        popupMenuItemTailsSelectAll.addActionListener(e->{
+                table.setColumnSelectionInterval(0, 8);
+                table.setRowSelectionInterval(0, table.getRowCount()-1);
+        });
+        JMenuItem popupMenuItemTailsDelete = new JMenuItem("Delete Selection");
+        popupMenuItemTailsDelete.addActionListener(e->{
+                tableModel.removeData(table.getSelectedRows(),table.getSelectedColumns());
+        });
+        JMenuItem popupMenuItemTailsCopy = new JMenuItem("Copy All");
+        popupMenuItemTailsCopy.addActionListener(e->{
+                tableModel.copyToClipBoard();
+        });
+
+        JMenuItem popupMenuItemTailsPaste = new JMenuItem("Paste All");
+        popupMenuItemTailsPaste.addActionListener(e->{
+                tableModel.pasteFromClipboard(table.getSelectedRows(),table.getSelectedColumns());
+        });
+        
+        popupMenu.add(popupMenuItemTailsSelectAll);
+        popupMenu.add(popupMenuItemTailsDelete);
+        popupMenu.add(popupMenuItemTailsCopy);
+        popupMenu.add(popupMenuItemTailsPaste);
+        table.setComponentPopupMenu(popupMenu);
+        table.setCellSelectionEnabled(true);
+        
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(800,190));
+        tab.add(scrollPane);
+        return tab;
+    }
+    
+    /**
+     * Used for handellign the Object State Table (i.e. under construction
+     * half filled, filled) 
+     * @param label
+     * @param table Model must be castable to ObjStateTableModel
+     * @return 
+     */
+    private JPanel makeTabTableState(JTable table){
+        JPanel tab = new JPanel();
+
+        JPopupMenu popupMenuStateTable = new JPopupMenu();
+        JMenuItem popupMenuItemStateSelectAll = new JMenuItem("Select All");
+        popupMenuItemStateSelectAll.addActionListener(e->{
+                table.setColumnSelectionInterval(0, 1);
+                table.setRowSelectionInterval(0, table.getRowCount()-1);
+        });
+        JMenuItem popupMenuItemStateDelete = new JMenuItem("Delete Selection");
+        popupMenuItemStateDelete.addActionListener(e->{
+                ((ObjStateTableModel)table.getModel()).removeData(table.getSelectedRows(),table.getSelectedColumns());
+        });
+        JMenuItem popupMenuItemStateCopy = new JMenuItem("Copy (Not yet working use ctrl+C");
+        popupMenuItemStateCopy.addActionListener(e ->{
+                System.out.println("popup menu Copy button hit");
+        });
+        JMenuItem popupMenuItemStatePaste = new JMenuItem("Paste");
+        popupMenuItemStatePaste.addActionListener(e -> {
+            ((ObjStateTableModel)table.getModel()).pasteFromClipboard(table.getSelectedRows(), table.getSelectedColumns());
+        });
+        
+        popupMenuStateTable.add(popupMenuItemStateSelectAll);
+        popupMenuStateTable.add(popupMenuItemStateDelete);
+        popupMenuStateTable.add(popupMenuItemStateCopy);
+        popupMenuStateTable.add(popupMenuItemStatePaste);
+        table.setComponentPopupMenu(popupMenuStateTable);
+        table.setCellSelectionEnabled(true);
+        
+        JComboBox cBoxTRNState = new JComboBox(Nod.StatesAllowed);
+        TableColumn stateColumn = table.getColumnModel().getColumn(1);
+        stateColumn.setCellEditor(new DefaultCellEditor(cBoxTRNState));
+        
+        JScrollPane tab6ScrollState = new JScrollPane(table);
+        tab.add(tab6ScrollState);
+        return tab;
+        
+    }
+
 
  
     

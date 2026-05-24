@@ -79,16 +79,15 @@ public class Project {
     public Project(){
         setting = new ProjSetting();
         
-        
-        
-        
         nSheetsHorz = 2;
         nSheetsVert = 3;
         tRNList = new TRNList();
         climateTable = new ClimateTable(1); 
-        runoffCoeffs = new TableRunoffCoefficients();
+        
         //constructors that rely on this go last
         nODEList = new NodList(this);
+        //RunoffCoeffs needs to communicate with the nodelist
+        runoffCoeffs = new TableRunoffCoefficients(nODEList);
         solveOrder = new SolveOrder(this);
         
         // TODO CHECK IF Title Block path is .svg or a zip file

@@ -96,7 +96,7 @@ public class ResultNode {
 
         inDirectPrecip = new Result(name + " " + McWBalance.langRB.getString("DIRECT_PRECIP"),timeSteps, tu, vu, true);
         inRunoffandMelt = new Result(name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT"),timeSteps, tu, vu, true);
-        inRunoffandMeltbyLC = new Result[aP.runoffCoeffs.getLength()];
+        inRunoffandMeltbyLC = new Result[aP.runoffCoeffs.getRowCount()];
         for (int i = 0; i < inRunoffandMeltbyLC.length; i++) {
             inRunoffandMeltbyLC[i] = new Result(
                     name + " " + McWBalance.langRB.getString("RUNOFF_AND_MELT")

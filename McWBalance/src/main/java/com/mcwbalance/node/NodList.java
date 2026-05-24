@@ -31,6 +31,7 @@ package com.mcwbalance.node;
 
 import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
+import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -124,6 +125,34 @@ public class NodList {
             nameList[i + 1] = nodes[i].objname;
         }
         return nameList;
+    }
+    
+    /**
+     * used to see if a land cover name has an area assigned to it
+     * intended to prevent accidental deletion of landcover
+     * @param name of landcover
+     * @return 2 column array [i][0] = Index of node that uses land cover
+     * [i][1] = use of area, 1 = basin, 2 = upstream, 3 = both
+     */
+    public int[][] getLandCoverUsed(String name){
+        record val(int index, int useage){}
+        ArrayList<val> usage = new ArrayList<>();
+        for(int n = 0; n < this.count; n++){
+            int use = nodes[n].getLandCoverUsed(name);
+            if (use > 0){
+                usage.add(new val(n, use));
+            }
+        }
+        if(usage.isEmpty()){
+            return null;
+        }
+        int usagearr[][] = new int[usage.size()][2];
+        for(int u = 0; u < usage.size(); u++){
+            usagearr[u][0] = usage.get(u).index;
+            usagearr[u][1] = usage.get(u).useage;
+        }
+        return usagearr;
+        
     }
 
     /**

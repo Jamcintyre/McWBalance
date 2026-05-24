@@ -30,11 +30,12 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.mcwbalance.landcover;
 
 import com.mcwbalance.McWBalance;
-import com.mcwbalance.settings.Limit;
+import com.mcwbalance.node.NodList;
 import com.mcwbalance.settings.Preferences;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -43,31 +44,66 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TableRunoffCoefficients extends AbstractTableModel {
 
-    String[] columnNames = McWBalance.langRB.getString("RUNOFF_COEFFICIENTS_TABLE_HEADINGS").split(",");
-    private static final int NUMBER_OF_COLUMNS = 13;
-    private static final int MAX_LAND_COVERS = Limit.MAX_LAND_COVERS;
-    private final Object[][] data;
+    String[] columnNames;
+    
+    /**
+     * DataRow is intended to allow variable table with of ints, with a fixed
+     * descriptor basis column
+     */
+    private class DataRow {
+
+        float rc[];
+        String name;
+        String basis;
+        DataRow(String name){
+            rc = new float[12];
+            this.name = name;
+            this.basis = "";
+        };
+    };
+    
+    ArrayList<DataRow> data;
+    
+    /**
+     * Requires a node list to check against to prevent deletion of in use land 
+     * cover names
+     */
+    private NodList activeNodeList;
+    
+    
     private final int length = 1;
 
-    private static final double COEFF_MIN = 0;
-    private static final double COEFF_MAX = 1;
+    private static final float COEFF_MIN = 0;
+    private static final float COEFF_MAX = 1;
 
     /**
      * Generates a table of runoff coefficients with space for the maximum
      * number of land covers
+     * @param nodeList required for checking usage of a land cover
      */
-    public TableRunoffCoefficients() {
-        data = new Object[MAX_LAND_COVERS][NUMBER_OF_COLUMNS];
-        data[0][0] = "Undisturbed";
-        for (int i = 1; i < 13; i++) {
-            data[0][i] = (double) 1;
-        }
-    }
-
-    /**
-     * used for implementing sorting and null value cleanup
-     */
-    public void cleanUp() {
+    public TableRunoffCoefficients(NodList nodeList) {
+        
+        this.activeNodeList = nodeList;
+        
+        columnNames = new String[14];
+        columnNames[0] = McWBalance.langRB.getString("LAND_COVER");
+        columnNames[1] = McWBalance.langRB.getString("JAN");
+        columnNames[2] = McWBalance.langRB.getString("FEB");
+        columnNames[3] = McWBalance.langRB.getString("MAR");
+        columnNames[4] = McWBalance.langRB.getString("APR");
+        columnNames[5] = McWBalance.langRB.getString("MAY");
+        columnNames[6] = McWBalance.langRB.getString("JUN");
+        columnNames[7] = McWBalance.langRB.getString("JUL");
+        columnNames[8] = McWBalance.langRB.getString("AUG");
+        columnNames[9] = McWBalance.langRB.getString("SEP");
+        columnNames[10] = McWBalance.langRB.getString("OCT");
+        columnNames[11] = McWBalance.langRB.getString("NOV");
+        columnNames[12] = McWBalance.langRB.getString("DEC");
+        columnNames[13] = McWBalance.langRB.getString("BASIS");
+        
+        data = new ArrayList<>();
+        data.add(new DataRow("Undisturbed"));
+        
     }
 
     /**
@@ -89,10 +125,13 @@ public class TableRunoffCoefficients extends AbstractTableModel {
      * @return value generally from 0.00 to 1.00 representing the runoff
      * coefficient
      */
-    public double getCoefficient(String landCover, int month) {
+    public float getCoefficient(String landCover, int month) {
+        if(month < 1 || month > 12){
+            return 0;
+        }
         for (int i = 0; i < length; i++) {
-            if (landCover.equals(data[i][0])) {
-                return (double) data[i][month];
+            if (landCover.equals(data.get(i).name)) {
+                return  data.get(i).rc[month+1];
             }
         }
         return 0;
@@ -103,11 +142,17 @@ public class TableRunoffCoefficients extends AbstractTableModel {
      *
      * @param row to pull data from
      * @param col to pull data from
-     * @return data[row][col]
+     * @return name if col = 0, basis if col = 13, rc if col 1 to 12
      */
     @Override
     public Object getValueAt(int row, int col) {
-        return data[row][col];
+        if(col == 0){
+            return data.get(row).name;
+        }
+        if(col == 13){
+            return data.get(row).basis;
+        }
+        return data.get(row).rc[col-1];
     }
 
     /**
@@ -127,7 +172,7 @@ public class TableRunoffCoefficients extends AbstractTableModel {
      */
     @Override
     public int getRowCount() {
-        return data.length;
+        return data.size();
     }
 
     /**
@@ -162,7 +207,6 @@ public class TableRunoffCoefficients extends AbstractTableModel {
     @Override
     public boolean isCellEditable(int row, int col) {
         return true;
-
     }
 
     /**
@@ -178,21 +222,25 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         if (value == null && row == 0) { // need to prevent user from nulling up the first row to avoid losing the class
             switch (col) {
                 case 0 ->
-                    data[0][0] = "NONE";
+                    data.get(row).name = "NONE";
+                case 13 ->
+                    data.get(row).basis = "";
                 default ->
-                    data[0][col] = (double) 0;
+                    data.get(row).rc[col-1] = (float) 0;
             }
         }
         switch (col) {
             case 0 ->
-                data[row][0] = (String) value;
+                data.get(row).name = (String) value;
+            case 13 ->
+                data.get(row).basis = (String) value;
             default -> {
-                if ((double) value < COEFF_MIN) {
-                    data[row][col] = COEFF_MIN;
-                } else if ((double) value > COEFF_MAX) {
-                    data[row][col] = COEFF_MAX;
+                if ((float) value < COEFF_MIN) {
+                    data.get(row).rc[col-1] = COEFF_MIN;
+                } else if ((float) value > COEFF_MAX) {
+                    data.get(row).rc[col-1] = COEFF_MAX;
                 } else {
-                    data[row][col] = (double) value;
+                    data.get(row).rc[col-1] = (float) value;
                 }
             }
         }
@@ -209,8 +257,6 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         String nextLine = System.getProperty("line.separator");
         StringBuilder saveString = new StringBuilder();
 
-        cleanUp();
-
         saveString.append(columnNames[0]);
         for (int i = 1; i < columnNames.length; i++) {
             saveString.append("\t");
@@ -218,13 +264,14 @@ public class TableRunoffCoefficients extends AbstractTableModel {
 
         }
         saveString.append(nextLine);
-
         for (int i = 0; i < length; i++) {
-            saveString.append(data[i][0]);
-            for (int j = 1; j < NUMBER_OF_COLUMNS; j++) {
+            saveString.append(data.get(i).name);
+            for (int j = 1; j < data.get(i).rc.length; j++) {
                 saveString.append("\t");
-                saveString.append(data[i][j]);
+                saveString.append(data.get(i).rc[j]);
             }
+            saveString.append("\t");
+            saveString.append(data.get(i).basis);
             saveString.append(nextLine);
         }
         saveString.append(Preferences.LIST_TERMINATOR);
@@ -232,22 +279,13 @@ public class TableRunoffCoefficients extends AbstractTableModel {
     }
 
     /**
-     * gets length of valid non null data
-     *
-     * @return lengh of data excluding nulls
-     */
-    public int getLength() {
-        return length;
-    }
-
-    /**
      * for plotting purposes, adds runoff to end of name
      *
-     * @param index
-     * @return
+     * @param row of land cover table
+     * @return name of land cover at row
      */
-    public String getLandRunoffName(int index) {
-        return " " + (String) data[index][0] + " Runoff";
+    public String getLandRunoffName(int row) {
+        return " " + (String) data.get(row).name + " Runoff";
     }
 
     /**
@@ -262,22 +300,57 @@ public class TableRunoffCoefficients extends AbstractTableModel {
     }
 
     /**
-     * not implemented
+     * adds in a new blank land cover row with a unique name
      */
     public void addRow() {
-
-        System.err.println("Method addRow Not Implemented Yet");
-
+        String name = McWBalance.langRB.getString("NEW_LAND_COVER");
+        
+        if (containsLandCover(name) != -1) {
+            int c = 1;
+            String newName = name + "(" + c + ")";
+            while (containsLandCover(newName) != -1 && c < 1000) {
+                newName = name + "(" + c + ")";
+                c++;
+            }
+            name = newName;
+        }
+        data.add(new DataRow(name));
+        this.fireTableDataChanged();
     }
 
     /**
-     * not implemented, intended for clearing a row
+     * Used for checking douplicate land cover names
+     * @param name
+     * @return -1 if no match, or row # of match if found
+     */
+    private int containsLandCover(String name){
+        for (int r = 0; r < data.size(); r++){
+            if (data.get(r).name.equals(name)){
+                return r;
+            }
+        }
+        return -1;
+    }
+    /**
+     * Will delete all but the last row, one land cover must remain
+     * also runs a check on land cover usage and prevents deletion of in use 
+     * land cover
      *
      * @param row
      */
     public void deleteRow(int row) {
-
-        System.err.println("Method deleteRow Not Implemented Yet");
+        if (data.size() < 2 || row < 0 || row >= data.size()){
+            return;
+        }
+        
+        
+        
+        if(activeNodeList.getLandCoverUsed(data.get(row).name) != null){
+            return;
+        }
+        
+        data.remove(row);
+        this.fireTableRowsDeleted(row, row);
     }
 
     /**

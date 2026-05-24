@@ -260,12 +260,12 @@ public class ResultTest {
             instance.add(i * 10, i);
         }
         int ts[] = {0, 1, 45, 366, 1227};
-        double expResult[] = {0, 10, 450, 3660, 12270};
-        double[] hourly = instance.getHourly();
+        float expResult[] = {0, 10, 450, 3660, 12270};
+        float[] hourly = instance.getHourly();
 
         for (int t = 0; t < ts.length; t++) {
-            double res = hourly[ts[t]];
-            double exp = expResult[t];
+            float res = hourly[ts[t]];
+            float exp = expResult[t];
             System.out.println("timestep: " + ts[t] + " Value " + res + " Expected: " + exp);
             assertEquals(res, exp);
         }
@@ -283,12 +283,12 @@ public class ResultTest {
             instance.add(i * 10, i);
         }
         int ts[] = {0, 1, 45, 366, 1227};
-        double expResult[] = {0, 10, 450, 3660, 12270};
-        double[] daily = instance.getDaily();
+        float expResult[] = {0, 10, 450, 3660, 12270};
+        float[] daily = instance.getDaily();
 
         for (int t = 0; t < ts.length; t++) {
-            double res = daily[ts[t]];
-            double exp = expResult[t];
+            float res = daily[ts[t]];
+            float exp = expResult[t];
             System.out.println("timestep: " + ts[t] + " Value " + res + " Expected: " + exp);
             assertEquals(res, exp);
         }
