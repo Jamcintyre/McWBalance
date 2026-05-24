@@ -372,8 +372,27 @@ public class TableCatchment extends AbstractTableModel {
         }
     }
     
- 
-  
+    /**
+     * For renaming of a land cover, does not carry out safety checks
+     *
+     * @param oldName name to replace
+     * @param newName new name
+     */
+    void renameLandCover(String oldName, String newName) {
+        boolean changed = false;
+        for (int col = 2; col < columnNames.size(); ++col) {
+            if (columnNames.get(col).equals(oldName)) {
+                columnNames.set(col, newName);
+                if (!changed) {
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            this.fireTableStructureChanged();
+        }
+    }
+
     /**
      * for setting the value of a specific cell
      *

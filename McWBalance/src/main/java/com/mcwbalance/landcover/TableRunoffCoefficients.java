@@ -105,7 +105,32 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         data.add(new DataRow("Undisturbed"));
         
     }
-
+    
+    /**
+     * adds in a new blank land cover row with a unique name
+     */
+    public void addRow() {
+        String name = McWBalance.langRB.getString("NEW_LAND_COVER");
+        data.add(new DataRow(findUniqueName(name,-1)));
+        this.fireTableDataChanged();
+    }
+    
+    /**
+     * Used for checking duplicate land cover names
+     *
+     * @param name to search for
+     * @param exrow to exclude from search, use -1 for full inclusive
+     * @return -1 if no match, or row # of match if found
+     */
+    private int containsLandCover(String name, int exrow) {
+        for (int r = 0; r < data.size(); r++) {
+            if (!(r == exrow) && data.get(r).name.equals(name)) {
+                return r;
+            }
+        }
+        return -1;
+    }
+    
     /**
      * Copies data to clipboard in string format
      */
@@ -114,6 +139,50 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         StringSelection content = new StringSelection(toString());
         clipboard.setContents(content, content);
 
+    }
+    
+    /**
+     * Will delete all but the last row, one land cover must remain
+     * also runs a check on land cover usage and prevents deletion of in use 
+     * land cover
+     *
+     * @param row to delete, will ignore out of bounds requests or row 0
+     */
+    public void deleteRow(int row) {
+        if (data.size() < 2 || row < 0 || row >= data.size()){
+            return;
+        } 
+        
+        if(activeNodeList.getLandCoverUsed(data.get(row).name) != null){
+            return;
+        }
+        
+        data.remove(row);
+        this.fireTableRowsDeleted(row, row);
+    }
+
+    /**
+     * Use similar to Excel for avoiding duplicate names
+     *
+     * @param name ideal name, will add (#) to end of name if required to be
+     * unique
+     * @param exrow row to exclude from search (in case attempting to overwrite
+     * same name
+     * @return name with (#) added as necessary
+     */
+    private String findUniqueName(String name, int exrow) {
+        String tname = name;
+
+        if (containsLandCover(tname, exrow) != -1) {
+            int c = 1;
+            String newName = tname + " (" + c + ")";
+            while (containsLandCover(newName, exrow) != -1 && c < 1000) {
+                newName = tname + " (" + c + ")";
+                c++;
+            }
+            tname = newName;
+        }
+        return tname;
     }
 
     /**
@@ -208,6 +277,20 @@ public class TableRunoffCoefficients extends AbstractTableModel {
     public boolean isCellEditable(int row, int col) {
         return true;
     }
+    
+    /**
+     * Called internally to apply name rules, and to fire change to Node list
+     * TableCatchment Objects
+     *
+     * @param name desired name, will be appended with (#) for uniqueness
+     * @param row of name to set
+     */
+    private void setName(String name, int row){
+        String oldname = data.get(row).name;
+        String stripped = name.strip();
+        data.get(row).name = findUniqueName(stripped, row);
+        activeNodeList.renameLandCover(oldname, data.get(row).name);
+    }
 
     /**
      * For setting data in a specific cell, enforces limits on value and auto
@@ -222,7 +305,7 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         if (value == null && row == 0) { // need to prevent user from nulling up the first row to avoid losing the class
             switch (col) {
                 case 0 ->
-                    data.get(row).name = "NONE";
+                    setName("None",row);               
                 case 13 ->
                     data.get(row).basis = "";
                 default ->
@@ -231,9 +314,9 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         }
         switch (col) {
             case 0 ->
-                data.get(row).name = (String) value;
+                setName((String) value,row);
             case 13 ->
-                data.get(row).basis = (String) value;
+                data.get(row).basis = ((String) value).strip();
             default -> {
                 if ((float) value < COEFF_MIN) {
                     data.get(row).rc[col-1] = COEFF_MIN;
@@ -247,10 +330,54 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         fireTableCellUpdated(row, col);
     }
 
+
+    /**
+     * for plotting purposes, adds runoff to end of name
+     *
+     * @param row of land cover table
+     * @return name of land cover at row
+     */
+    public String getLandRunoffName(int row) {
+        return " " + (String) data.get(row).name + " Runoff";
+    }
+
+    /**
+     * Not implemented intended for pasting of data
+     *
+     * @param input
+     */
+    public void setFromString(String input) {
+
+        System.err.println("Method setFromString Not Implemented Yet");
+        // Not Implemented yet 
+    }
+
+
+    /**
+     * not implemented intended for re-ordering should stop if already the last
+     * valid row
+     *
+     * @param row to move
+     */
+    public void moveDown(int row) {
+
+        System.err.println("Method MoveUp Not Implemented Yet");
+    }
+    
+    /**
+     * not implemented intended for re-ordering
+     *
+     * @param row to move
+     */
+    public void moveUp(int row) {
+
+        System.err.println("Method MoveDown Not Implemented Yet");
+    }
+
     /**
      * for generating a tab delimited string useful for cut and paste to excel
      *
-     * @return
+     * @return tab delimited string of all contained data
      */
     @Override
     public String toString() {
@@ -276,101 +403,5 @@ public class TableRunoffCoefficients extends AbstractTableModel {
         }
         saveString.append(Preferences.LIST_TERMINATOR);
         return saveString.toString();
-    }
-
-    /**
-     * for plotting purposes, adds runoff to end of name
-     *
-     * @param row of land cover table
-     * @return name of land cover at row
-     */
-    public String getLandRunoffName(int row) {
-        return " " + (String) data.get(row).name + " Runoff";
-    }
-
-    /**
-     * Not implemented intended for pasting of data
-     *
-     * @param input
-     */
-    public void setFromString(String input) {
-
-        System.err.println("Method setFromString Not Implemented Yet");
-        // Not Implemented yet 
-    }
-
-    /**
-     * adds in a new blank land cover row with a unique name
-     */
-    public void addRow() {
-        String name = McWBalance.langRB.getString("NEW_LAND_COVER");
-        
-        if (containsLandCover(name) != -1) {
-            int c = 1;
-            String newName = name + "(" + c + ")";
-            while (containsLandCover(newName) != -1 && c < 1000) {
-                newName = name + "(" + c + ")";
-                c++;
-            }
-            name = newName;
-        }
-        data.add(new DataRow(name));
-        this.fireTableDataChanged();
-    }
-
-    /**
-     * Used for checking douplicate land cover names
-     * @param name
-     * @return -1 if no match, or row # of match if found
-     */
-    private int containsLandCover(String name){
-        for (int r = 0; r < data.size(); r++){
-            if (data.get(r).name.equals(name)){
-                return r;
-            }
-        }
-        return -1;
-    }
-    /**
-     * Will delete all but the last row, one land cover must remain
-     * also runs a check on land cover usage and prevents deletion of in use 
-     * land cover
-     *
-     * @param row
-     */
-    public void deleteRow(int row) {
-        if (data.size() < 2 || row < 0 || row >= data.size()){
-            return;
-        }
-        
-        
-        
-        if(activeNodeList.getLandCoverUsed(data.get(row).name) != null){
-            return;
-        }
-        
-        data.remove(row);
-        this.fireTableRowsDeleted(row, row);
-    }
-
-    /**
-     * not implemented intended for re-ordering
-     *
-     * @param row
-     */
-    public void moveUp(int row) {
-
-        System.err.println("Method MoveDown Not Implemented Yet");
-    }
-
-    /**
-     * not implemented intended for re-ordering should stop if already the last
-     * valid row
-     *
-     * @param row
-     */
-    public void moveDown(int row) {
-
-        System.err.println("Method MoveUp Not Implemented Yet");
     }
 }

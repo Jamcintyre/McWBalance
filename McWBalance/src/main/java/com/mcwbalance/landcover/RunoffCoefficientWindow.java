@@ -104,8 +104,10 @@ public class RunoffCoefficientWindow extends JFrame {
 
         this.add(cpanel, BorderLayout.CENTER);
         this.add(bpanel, BorderLayout.SOUTH);
+        
         this.pack();
         this.setLocationRelativeTo(owner);
+        this.setAlwaysOnTop(true);
         this.setVisible(true);
     }
 

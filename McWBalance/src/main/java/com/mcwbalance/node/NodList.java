@@ -110,6 +110,15 @@ public class NodList {
         count++; // increments to next element, only allowed if not at maximum
         return 0;
     }
+    
+    /**
+     * Returns node at index location 
+     * @param index of node to get
+     * @return node at index location
+     */
+    public Nod get(int index){
+        return this.nodes[index];
+    }
 
     /**
      * Used for picking objects in Transfer
@@ -180,6 +189,18 @@ public class NodList {
             nodes[i].remove(rTRN);
         }
     }
+    
+    /**
+     * Used for replacing a landCover Name, note this assumes that name is correct
+     * and will not confirm if option exists 
+     * @param oldName name to replace
+     * @param newName new name
+     */
+    public void renameLandCover(String oldName, String newName){
+        for (int n = 0; n < this.size(); ++n){
+            this.nodes[n].renameLandCover(oldName, newName);
+        }
+    }
 
     /**
      * Used to set the values of an Node entry, typically with data passed back
@@ -195,6 +216,15 @@ public class NodList {
     public void set(int inNumber, Nod inNode) {
         nodes[inNumber] = inNode;
     }
+    
+    /**
+     * For getting size of the contained data, intention is to replace count 
+     * @return 
+     */
+    public int size(){
+        return count; 
+    }
+    
 
     /**
      * Builds a proprietary XML data set for use in save files This method may

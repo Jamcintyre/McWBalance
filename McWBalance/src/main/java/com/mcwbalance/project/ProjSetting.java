@@ -29,7 +29,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.mcwbalance.project;
 
-import com.mcwbalance.flowchart.ImageLib;
+import com.mcwbalance.project.flowchart.ImageLib;
 import com.mcwbalance.measure.Depth;
 import com.mcwbalance.measure.Time;
 import com.mcwbalance.measure.Volume;

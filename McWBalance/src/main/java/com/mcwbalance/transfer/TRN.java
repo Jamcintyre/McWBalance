@@ -29,7 +29,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package com.mcwbalance.transfer;
 
-import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.project.flowchart.FlowChartCAD;
 import com.mcwbalance.measure.Time;
 import com.mcwbalance.measure.Volume;
 import com.mcwbalance.project.ProjSetting;

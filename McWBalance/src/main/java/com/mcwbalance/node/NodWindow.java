@@ -77,87 +77,406 @@ import javax.swing.table.TableColumn;
  * save and fire a change
  * @author amcintyre
  */
-public class NodWindow extends JFrame { // implements ActionListener not needed if lamba is used
-    //int objELMNumber = -1;
+public class NodWindow extends JFrame {
 
-    /**
-     * Container for allowing mainwindow access to returned value since return doesnt work in Jdialog
-     */
-    //static Node returnedObjELM = new Node();
-    
     private Project aP; 
-    
-    private JFrame subframe;
+    private Nod node;
+    private int nodeIndex;
     private JTabbedPane tabPane;
-    private JPanel tab2;
-    private SpringLayout layoutTab2;
+     
+    //Formatting 
+    /**
+     * padding relative to left side of window
+     */
+    int hPadLabels;
+    /**
+     * padding relative to left side of window
+     */
+    int hPadBoxes;
+    /**
+     * sets default spacing between objects
+     */
+    int hPadSpacing;
+    /**
+     * sets padding for initial row relative top of window
+     */
+    int vPadFirstRow;
+    /**
+     * sets spacing between rows
+     */
+    int vPadSpacing;
+    /**
+     * sets spacing between groups of info
+     */
+    int vPadNextGroup;
 
-    private JLabel tab2lableFixedInputs;
-    private JLabel tab2lableInputs;
-    private JLabel tab2lableDemandInputs;
-    private JLabel tab2lableFixedOutputs;
-    private JLabel tab2lableOutputs;
-    private JLabel tab2lableDemandOutputs;
-    private JLabel tab2lableOverflow;
-    
-    private DataNameListModel tab2LModelFixedInputs;
-    private JList tab2listFixedInputs;
-    private DataNameListModel tab2LModelInputs;
-    private JList tab2listInputs;
-    private DataNameListModel tab2LModelDemandInputs;
-    private JList tab2listDemandInputs;
-    private DataNameListModel tab2LModelFixedOutputs;
-    private JList tab2listFixedOutputs;
-    private DataNameListModel tab2LModelOutputs;
-    private JList tab2listOutputs;
-    private DataNameListModel tab2LModelDemandOutputs;
-    private JList tab2listDemandOutputs;
-    //experementing, may not be able ot use the same type of data model for comboBoxes... 
-    private DataComboBoxModel tab2ComboModelOverflow;
     
     /**
      * This function calls on the JDialog window needed for user input of all information needed to populate an ELM
-     * @param node Specific node to edit
-     * @param nodeNumber Index number of the ELM object so that object can be re-inserted into ELMList
-     * @param ctRNList Current TRN list must be provided to allow user to select from available TRNs for solve order planning
+     * @param owner window called from to allow always on top
+     * @param nodeIndex Index number of the ELM object so that object can be re-inserted into ELMList
      * @param aP used for managing general project details such as save location
      * 
      */
-    public void ObjELMWindowFunct(Nod node, int nodeNumber, TRNList ctRNList, Project aP){ // requires object number to edit
-        
+    public NodWindow(JFrame owner, int nodeIndex, Project aP){ // requires object number to edit
+        super();
         this.aP = aP;
+        this.node = aP.nODEList.get(nodeIndex);
+        this.nodeIndex = nodeIndex;
+        updateTitle();
         
         ProjSetting.hasChangedSinceSave = true; // assumes if this window was opened then a change occured
         
-        //objELMNumber = inNumber; // sets value for save and loads, needs to be called external to this function in action listener
         MainWindow.editorIsActive = true; 
-
-        //returnedObjELM = inNode; // sets default return to whatever was provided
       
-        int hPadLabels = 10; // padding relative to left side of window
-        int hPadBoxes = 100; // padding relative to left side of window
-        int hPadSpacing =10; // sets default spacing between objects 
-        int vPadFirstRow = 10; // sets padding for initial row relative top of window
-        int vPadSpacing = 10; // sets spacing between rows
-        int vPadNextGroup = 20; // sets spacing between grooups of info
+        hPadLabels = 10;
+        hPadBoxes = 100;
+        hPadSpacing =10;
+        vPadFirstRow = 10;
+        vPadSpacing = 10;
+        vPadNextGroup = 20;
         
-        subframe = new JFrame("Node Properties"); // Changed back to frame, as was having problems with not being able to call a second frame
-        subframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        subframe.addWindowListener(new WindowAdapter(){
+        
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent we){
                 MainWindow.editorIsActive = false; // free up the editor flag so that another window can be called
-                subframe.dispose(); // this is the actual closing of the window
             }    
         });
         
-        
-        subframe.setSize(350, 200);
-        subframe.setLocationRelativeTo(null);
-        
-        tabPane = new JTabbedPane();
+        this.setSize(350, 200);
+        this.setLocationRelativeTo(owner);
+                
+        // Tab 6 // All of this should go away and Node just carry an instance of the table model
+        JPanel tab6 = new JPanel();
+        ObjStateTableModel tmState = new ObjStateTableModel();
+        //tab6TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
+        JTable tState = new JTable(tmState);
+        for (int i = 0; i < Limit.MAX_STATES; i++) {
+            tState.setValueAt((int) node.stateTime[i], i, 0);
+            tmState.setValueAt((String) node.state[i], i, 1);
+        }
+        for (int i = 0; i < tmState.getRowCount(); i++) {
+            if (i >= node.stateTime.length) {
+                break;
+            }
+            node.stateTime[i] = (int) tmState.getValueAt(i, 0);
+            node.state[i] = (String) tmState.getValueAt(i, 1);
+        }
 
-        // TAB 2 for handelling Analysis Solve Order
+        tabPane = new JTabbedPane();
+        tabPane.addTab("General",makeTabGeneral());
+        tabPane.addTab("State", makeTabTableState(tState));
+        tabPane.addTab("FlowSettings",makeTabFlowSettings());
+        tabPane.addTab("T.O.V.", makeTabLevelTable("Target Operating Volume", node.targetOperatingVol));
+        tabPane.addTab("M.W.D.", makeTabLevelTable("Minimum Water Depth", node.minDepth));
+        tabPane.addTab("M.O.L.", makeTabLevelTable("Maximum Operating Level", node.maxOpLevel));
+        tabPane.addTab("Spill", makeTabLevelTable("Overflow Level", node.overflowLevel));
+        tabPane.addTab("Crest", makeTabLevelTable("Crest Level", node.crestLevel));
+        tabPane.addTab("Basin Catch", makeTabTableCatchment(new JLabel("Basin Catchment Area"), node.catchmentBasin));
+        tabPane.addTab("Upstream Catch", makeTabTableCatchment(new JLabel("Upstream Catchment Area"), node.catchmentUpstream));
+        tabPane.addTab("Tailings Solids Deposition", makeTabTailingsDeposition(node.depositionRates));
+        tabPane.addTab("Object State", tab6);
+
+        this.add(tabPane);
+
+        this.pack();
+        this.setBackground(Color.GRAY);
+        this.setAlwaysOnTop(true);
+        this.setVisible(true);
+
+    }
+    
+    
+    private JPanel makeTabLevelTable(String label, TableNodeLevel tableModel){
+        
+        JTable table = new JTable(tableModel);
+        
+        GridBagLayout layout = new GridBagLayout(); // sets up a layout manager for the tab
+        JPanel tab = new JPanel(layout);
+        Insets insets = new Insets(0,10,0,10); // Padding around Tables
+        int prefCol0Width = 100; // width of Day column
+        int prefCol1Width = 150; // width of Day column
+        int prefCol2Width = 400; // width of Day column
+        Dimension tableDims = new Dimension(650,400); // Prefered dimension of tables
+        // layout constraints 
+        GridBagConstraints gbcLabel = new GridBagConstraints();
+        gbcLabel.gridx = 0;
+        gbcLabel.gridy = 0;  
+        GridBagConstraints gbcTable = new GridBagConstraints();
+        gbcTable.gridx = 0;
+        gbcTable.gridy = 1;
+        gbcTable.insets = insets;
+       
+        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
+        table.getColumnModel().getColumn(0).setPreferredWidth(prefCol0Width);
+        table.getColumnModel().getColumn(1).setPreferredWidth(prefCol1Width);
+        table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
+        
+        //table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
+        JScrollPane sp = new JScrollPane(table);
+        sp.setPreferredSize(tableDims);
+        
+        
+        tab.add (new JLabel(label), gbcLabel);
+        tab.add(sp, gbcTable);
+        
+        
+        return tab;
+    }
+    
+    /**
+     * TAB 1 USED FOR BASIC ELEMENT INFORMATION 
+     * @return 
+     */
+    private JPanel makeTabGeneral(){
+        
+        JPanel tab1 = new JPanel();
+        SpringLayout layoutTab1 = new SpringLayout(); // sets up a layout manager for the first tab
+        tab1.setLayout(layoutTab1);
+
+        JLabel ltfobjName = new JLabel("Name");
+        JTextField tfobjName = new JTextField(node.objname);
+        tfobjName.setColumns(20); // Sets Width if Name Field
+        
+        JLabel lcbobjType = new JLabel ("Type");
+        JComboBox cbobjType = new JComboBox(Nod.objSubTypesAllowed); // Pulls options list from ObjELM static
+        cbobjType.setSelectedItem(node.objSubType);
+        
+        SpinnerModel tab1scaleXSpinnerModel = new SpinnerNumberModel(node.scaleX,.05,5,.05);
+        JSpinner tab1scaleXSpinner = new JSpinner(tab1scaleXSpinnerModel);
+        tab1scaleXSpinner.setMaximumSize(new Dimension(50, 30));
+        tab1scaleXSpinner.addChangeListener(e->{
+            node.scaleX = (double)tab1scaleXSpinner.getValue();
+        });
+        JLabel tab1scaleXSpinnerLabel = new JLabel("Horizontal Scale");
+        SpinnerModel tab1scaleYSpinnerModel = new SpinnerNumberModel(node.scaleY,.05,5,.05);
+        JSpinner tab1scaleYSpinner = new JSpinner(tab1scaleYSpinnerModel);
+        tab1scaleYSpinner.setMaximumSize(new Dimension(50, 30));
+        tab1scaleYSpinner.addChangeListener(e->{
+            node.scaleY = (double)tab1scaleYSpinner.getValue();
+        });
+        JLabel tab1scaleYSpinnerLabel = new JLabel("Vertical Scale");
+        
+        JCheckBox tab1CheckBoxhasCatchment = new JCheckBox("Include Catchment Area");
+        tab1CheckBoxhasCatchment.setSelected(node.hasCatchment);
+        tab1CheckBoxhasCatchment.addActionListener(e-> {
+            node.hasCatchment = tab1CheckBoxhasCatchment.isSelected();
+        });
+        
+        JCheckBox tab1CheckBoxhasSolids = new JCheckBox("Include Solids Deposition");
+        tab1CheckBoxhasSolids.setSelected(node.hasSolids);
+        tab1CheckBoxhasSolids.addActionListener(e-> {
+            node.hasSolids = tab1CheckBoxhasSolids.isSelected();
+        });
+        JLabel tab1LabelVoidsXoSet = new JLabel("Flowbox Offset Horz:  ");
+        SpinnerModel tab1SpinnerModelVoidsXoSet = new SpinnerNumberModel(node.oSetXVoids, -100, 100, 5);
+        JSpinner tab1SpinnerVoidsXoSet = new JSpinner(tab1SpinnerModelVoidsXoSet);
+        tab1SpinnerVoidsXoSet.addChangeListener(e->{
+            node.oSetXVoids = (int)tab1SpinnerVoidsXoSet.getValue();
+        });
+        JLabel tab1LabelVoidsYoSet = new JLabel("Vert:");
+        SpinnerModel tab1SpinnerModelVoidsYoSet = new SpinnerNumberModel(node.oSetYVoids, -100, 100, 5);
+        JSpinner tab1SpinnerVoidsYoSet = new JSpinner(tab1SpinnerModelVoidsYoSet);
+        tab1SpinnerVoidsYoSet.addChangeListener(e->{
+            node.oSetYVoids = (int)tab1SpinnerVoidsXoSet.getValue();
+        });
+                
+        JCheckBox tab1CheckBoxhasStorage = new JCheckBox("Include Depth Area Capacity");
+        tab1CheckBoxhasStorage.setSelected(node.hasStorage);
+        tab1CheckBoxhasStorage.addActionListener(e-> {
+            node.hasStorage = tab1CheckBoxhasStorage.isSelected();
+        });
+        
+        JButton tab1ButtonDACWindow = new JButton("Show DAC");
+        tab1ButtonDACWindow.addActionListener(e -> {
+            DACWindow dACWindow = new DACWindow(this, node.dAC);
+        });
+
+        
+        
+        JCheckBox tab1CheckBoxshowStorage = new JCheckBox("Show Net Storage on Flowsheet");
+        tab1CheckBoxshowStorage.setSelected(node.showStorage);
+        tab1CheckBoxshowStorage.addActionListener(e-> {
+            node.showStorage = tab1CheckBoxshowStorage.isSelected();
+        });
+        JLabel tab1LabelStorageXoSet = new JLabel("Flowbox Offset Horz:  ");
+        SpinnerModel tab1SpinnerModelStorageXoSet = new SpinnerNumberModel(node.oSetXStorage, -100, 100, 5);
+        JSpinner tab1SpinnerStorageXoSet = new JSpinner(tab1SpinnerModelStorageXoSet);
+        tab1SpinnerStorageXoSet.addChangeListener(e->{
+            node.oSetXStorage = (int)tab1SpinnerStorageXoSet.getValue();
+        });
+        JLabel tab1LabelStorageYoSet = new JLabel("Vert:");
+        SpinnerModel tab1SpinnerModelStorageYoSet = new SpinnerNumberModel(node.oSetYStorage, -100, 100, 5);
+        JSpinner tab1SpinnerStorageYoSet = new JSpinner(tab1SpinnerModelStorageYoSet);
+        tab1SpinnerStorageYoSet.addChangeListener(e->{
+            node.oSetYStorage = (int)tab1SpinnerStorageXoSet.getValue();
+        });
+        
+        JCheckBox tab1CheckBoxhasStorageEvapandPrecip = new JCheckBox("Include Direct Evaporation and Precipitation");
+        tab1CheckBoxhasStorageEvapandPrecip.setSelected(node.hasStorageEvapandPrecip);
+        tab1CheckBoxhasStorageEvapandPrecip.addActionListener(e-> {
+            node.hasStorageEvapandPrecip = tab1CheckBoxhasStorageEvapandPrecip.isSelected();
+        });
+        JButton bSave = new JButton("Save");
+        bSave.addActionListener(e ->{ // uses a lambda instead of needing seperate listener override
+            node.objname = tfobjName.getText();
+            node.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE", aP);
+            
+            this.updateTitle();
+            this.fireChartUpdate();
+
+/*
+            node.targetOperatingVol.setAllData(tmTargetVol.getDayColumn(), tmTargetVol.getVolColumn()); // problem seems to lie here
+            
+            node.minDepth.setAllData(tmMinDepth.getDayColumn(), tmMinDepth.getLevelColumn()); 
+
+            node.minDepth.setAllData(tmMaxOpLevel.getDayColumn(), tmMaxOpLevel.getLevelColumn()); 
+            
+            node.overflowLevel.setAllData(tmOverflowLevel.getDayColumn(), tmOverflowLevel.getLevelColumn());
+            node.crestLevel.setAllData(tmCrestLevel.getDayColumn(), tmCrestLevel.getLevelColumn());
+  */          
+            
+
+
+
+            
+            //returnedObjELM = node; // sets returned value to 
+        });
+        
+        tfobjName.getText(); // not sure what this is doing DELETE? 
+        
+        tab1.add(ltfobjName);
+        tab1.add(tfobjName);
+        tab1.add(lcbobjType);
+        tab1.add(cbobjType);
+        
+        tab1.add(tab1scaleXSpinner);
+        tab1.add(tab1scaleXSpinnerLabel);
+        tab1.add(tab1scaleYSpinner);
+        tab1.add(tab1scaleYSpinnerLabel);
+        
+        
+        tab1.add(tab1CheckBoxhasCatchment);
+        tab1.add(tab1CheckBoxhasSolids);
+
+        tab1.add(tab1LabelVoidsXoSet);
+        tab1.add(tab1SpinnerVoidsXoSet);
+        tab1.add(tab1LabelVoidsYoSet);
+        tab1.add(tab1SpinnerVoidsYoSet);
+        
+        tab1.add(tab1CheckBoxhasStorage);
+        tab1.add(tab1CheckBoxshowStorage);
+        
+        tab1.add(tab1ButtonDACWindow);
+        
+        tab1.add(tab1LabelStorageXoSet);
+        tab1.add(tab1SpinnerStorageXoSet);
+        tab1.add(tab1LabelStorageYoSet);
+        tab1.add(tab1SpinnerStorageYoSet);
+          
+        
+        tab1.add(tab1CheckBoxhasStorageEvapandPrecip);
+        tab1.add(bSave);
+        
+
+        layoutTab1.putConstraint(SpringLayout.WEST, ltfobjName, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, ltfobjName, vPadFirstRow, SpringLayout.NORTH, this);
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tfobjName, hPadBoxes, SpringLayout.WEST, this); // aligns horizontal relative to side of window
+        layoutTab1.putConstraint(SpringLayout.NORTH, tfobjName, 0, SpringLayout.NORTH, ltfobjName); // aligns vertical with lable
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, lcbobjType, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, lcbobjType, vPadSpacing, SpringLayout.SOUTH, ltfobjName);
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, cbobjType, hPadBoxes, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, cbobjType, 0, SpringLayout.NORTH, lcbobjType);
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleXSpinnerLabel, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleXSpinnerLabel, vPadSpacing, SpringLayout.SOUTH, lcbobjType);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleXSpinner, hPadLabels, SpringLayout.EAST, tab1scaleXSpinnerLabel);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleXSpinner, 0, SpringLayout.NORTH, tab1scaleXSpinnerLabel);
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleYSpinnerLabel, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleYSpinnerLabel, vPadSpacing, SpringLayout.SOUTH, tab1scaleXSpinnerLabel);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleYSpinner, hPadLabels, SpringLayout.EAST, tab1scaleYSpinnerLabel);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleYSpinner, 0, SpringLayout.NORTH, tab1scaleYSpinnerLabel);
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasCatchment, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasCatchment, vPadSpacing, SpringLayout.SOUTH, tab1scaleYSpinnerLabel); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasSolids, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasSolids, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasCatchment); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelVoidsXoSet, hPadLabels,SpringLayout.EAST, tab1CheckBoxhasSolids);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelVoidsXoSet, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasSolids);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerVoidsXoSet, hPadLabels,SpringLayout.EAST, tab1LabelVoidsXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsXoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelVoidsXoSet);
+
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelVoidsYoSet, hPadLabels,SpringLayout.EAST, tab1SpinnerVoidsXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelVoidsYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsXoSet);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerVoidsYoSet, hPadLabels,SpringLayout.EAST, tab1LabelVoidsYoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelVoidsYoSet);
+                
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorage, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasSolids); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1ButtonDACWindow, hPadLabels, SpringLayout.EAST, tab1CheckBoxhasStorage);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1ButtonDACWindow, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasStorage); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxshowStorage, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxshowStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorage); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelStorageXoSet, hPadLabels,SpringLayout.EAST, tab1CheckBoxshowStorage);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelStorageXoSet, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxshowStorage);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerStorageXoSet, hPadLabels,SpringLayout.EAST, tab1LabelStorageXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageXoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelStorageXoSet);
+
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelStorageYoSet, hPadLabels,SpringLayout.EAST, tab1SpinnerStorageXoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelStorageYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageXoSet);
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerStorageYoSet, hPadLabels,SpringLayout.EAST, tab1LabelStorageYoSet);
+        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelStorageYoSet);
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorageEvapandPrecip, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorageEvapandPrecip, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxshowStorage); 
+        
+        layoutTab1.putConstraint(SpringLayout.WEST, bSave, hPadLabels, SpringLayout.WEST, this);
+        layoutTab1.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorageEvapandPrecip);
+
+        return tab1;
+    }
+    
+    private JPanel makeTabFlowSettings(){
+       // TAB 2 for handelling Analysis Solve Order
+       JPanel tab2;
+       SpringLayout layoutTab2;
+
+        JLabel tab2lableFixedInputs;
+        JLabel tab2lableInputs;
+        JLabel tab2lableDemandInputs;
+        JLabel tab2lableFixedOutputs;
+        JLabel tab2lableOutputs;
+        JLabel tab2lableDemandOutputs;
+        JLabel tab2lableOverflow;
+    
+        DataNameListModel tab2LModelFixedInputs;
+        JList tab2listFixedInputs;
+        DataNameListModel tab2LModelInputs;
+        JList tab2listInputs;
+        DataNameListModel tab2LModelDemandInputs;
+        JList tab2listDemandInputs;
+        DataNameListModel tab2LModelFixedOutputs;
+        JList tab2listFixedOutputs;
+        DataNameListModel tab2LModelOutputs;
+        JList tab2listOutputs;
+        DataNameListModel tab2LModelDemandOutputs;
+        JList tab2listDemandOutputs;
+    //experementing, may not be able ot use the same type of data model for comboBoxes... 
+        DataComboBoxModel tab2ComboModelOverflow;
+       
+       
+       
         tab2 = new JPanel();
         layoutTab2 = new SpringLayout(); // sets up a layout manager for the tab
         tab2.setLayout(layoutTab2);
@@ -171,19 +490,22 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         tab2lableOverflow = new JLabel("Overflow");
         
         // Sets initial Data; intent s to taeke the full list and trim down every time. 
-        node.inflows.overwriteList(ctRNList.getInflowNameListIndex(nodeNumber,false), ctRNList.getInflowNameList(nodeNumber,false));
+        
+        
+        TRNList ctRNList = aP.tRNList;
+        node.inflows.overwriteList(ctRNList.getInflowNameListIndex(nodeIndex,false), ctRNList.getInflowNameList(nodeIndex,false));
         node.inflows.trimFromList(node.inflowFixedTRN.getShortIndexList());
         node.inflows.trimFromList(node.inflowOnDemandTRN.getShortIndexList());
         node.inflowFixedTRN.setNames(ctRNList.getNameList(node.inflowFixedTRN.getShortIndexList()));
         node.inflowOnDemandTRN.setNames(ctRNList.getNameList(node.inflowOnDemandTRN.getShortIndexList()));
         
-        node.outflows.overwriteList(ctRNList.getOutflowNameListIndex(nodeNumber,false), ctRNList.getOutflowNameList(nodeNumber,false));
+        node.outflows.overwriteList(ctRNList.getOutflowNameListIndex(nodeIndex,false), ctRNList.getOutflowNameList(nodeIndex,false));
         node.outflows.trimFromList(node.outflowFixedTRN.getShortIndexList());
         node.outflows.trimFromList(node.outflowOnDemandTRN.getShortIndexList());
         node.outflows.trimFromList(node.overflowTRN);
         
         // overflow Options built independently from outflows since i believe the actionlistener somehow skips back to be beginning of the class, but debug breaks don't catch it...
-        node.overflowOptions.overwriteList(ctRNList.getOutflowNameListIndex(nodeNumber,false), ctRNList.getOutflowNameList(nodeNumber,false));
+        node.overflowOptions.overwriteList(ctRNList.getOutflowNameListIndex(nodeIndex,false), ctRNList.getOutflowNameList(nodeIndex,false));
         node.overflowOptions.trimFromList(node.outflowFixedTRN.getShortIndexList());
         node.overflowOptions.trimFromList(node.outflowOnDemandTRN.getShortIndexList());     
        
@@ -481,310 +803,7 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         layoutTab2.putConstraint(SpringLayout.WEST, tab2comboOverflow, hPadSpacing, SpringLayout.EAST, tab2lableOverflow);
         layoutTab2.putConstraint(SpringLayout.VERTICAL_CENTER, tab2comboOverflow, 0, SpringLayout.VERTICAL_CENTER, tab2lableOverflow);
         
-
-        
-       
-
-        
-        
-        
-        
-        // Table models needed before save action butten is called        
-        
-
-        
-        
-
-        // TAB 1 USED FOR BASIC ELEMENT INFORMATION 
-        JPanel tab1 = new JPanel();
-        SpringLayout layoutTab1 = new SpringLayout(); // sets up a layout manager for the first tab
-        tab1.setLayout(layoutTab1);
-
-        JLabel ltfobjName = new JLabel("Name");
-        JTextField tfobjName = new JTextField(node.objname);
-        tfobjName.setColumns(20); // Sets Width if Name Field
-        
-        JLabel lcbobjType = new JLabel ("Type");
-        JComboBox cbobjType = new JComboBox(Nod.objSubTypesAllowed); // Pulls options list from ObjELM static
-        cbobjType.setSelectedItem(node.objSubType);
-        
-        SpinnerModel tab1scaleXSpinnerModel = new SpinnerNumberModel(node.scaleX,.05,5,.05);
-        JSpinner tab1scaleXSpinner = new JSpinner(tab1scaleXSpinnerModel);
-        tab1scaleXSpinner.setMaximumSize(new Dimension(50, 30));
-        tab1scaleXSpinner.addChangeListener(e->{
-            node.scaleX = (double)tab1scaleXSpinner.getValue();
-        });
-        JLabel tab1scaleXSpinnerLabel = new JLabel("Horizontal Scale");
-        SpinnerModel tab1scaleYSpinnerModel = new SpinnerNumberModel(node.scaleY,.05,5,.05);
-        JSpinner tab1scaleYSpinner = new JSpinner(tab1scaleYSpinnerModel);
-        tab1scaleYSpinner.setMaximumSize(new Dimension(50, 30));
-        tab1scaleYSpinner.addChangeListener(e->{
-            node.scaleY = (double)tab1scaleYSpinner.getValue();
-        });
-        JLabel tab1scaleYSpinnerLabel = new JLabel("Vertical Scale");
-        
-        JCheckBox tab1CheckBoxhasCatchment = new JCheckBox("Include Catchment Area");
-        tab1CheckBoxhasCatchment.setSelected(node.hasCatchment);
-        tab1CheckBoxhasCatchment.addActionListener(e-> {
-            node.hasCatchment = tab1CheckBoxhasCatchment.isSelected();
-        });
-        
-        JCheckBox tab1CheckBoxhasSolids = new JCheckBox("Include Solids Deposition");
-        tab1CheckBoxhasSolids.setSelected(node.hasSolids);
-        tab1CheckBoxhasSolids.addActionListener(e-> {
-            node.hasSolids = tab1CheckBoxhasSolids.isSelected();
-        });
-        JLabel tab1LabelVoidsXoSet = new JLabel("Flowbox Offset Horz:  ");
-        SpinnerModel tab1SpinnerModelVoidsXoSet = new SpinnerNumberModel(node.oSetXVoids, -100, 100, 5);
-        JSpinner tab1SpinnerVoidsXoSet = new JSpinner(tab1SpinnerModelVoidsXoSet);
-        tab1SpinnerVoidsXoSet.addChangeListener(e->{
-            node.oSetXVoids = (int)tab1SpinnerVoidsXoSet.getValue();
-        });
-        JLabel tab1LabelVoidsYoSet = new JLabel("Vert:");
-        SpinnerModel tab1SpinnerModelVoidsYoSet = new SpinnerNumberModel(node.oSetYVoids, -100, 100, 5);
-        JSpinner tab1SpinnerVoidsYoSet = new JSpinner(tab1SpinnerModelVoidsYoSet);
-        tab1SpinnerVoidsYoSet.addChangeListener(e->{
-            node.oSetYVoids = (int)tab1SpinnerVoidsXoSet.getValue();
-        });
-                
-        JCheckBox tab1CheckBoxhasStorage = new JCheckBox("Include Depth Area Capacity");
-        tab1CheckBoxhasStorage.setSelected(node.hasStorage);
-        tab1CheckBoxhasStorage.addActionListener(e-> {
-            node.hasStorage = tab1CheckBoxhasStorage.isSelected();
-        });
-        
-        JButton tab1ButtonDACWindow = new JButton("Show DAC");
-        tab1ButtonDACWindow.addActionListener(e -> {
-            DACWindow dACWindow = new DACWindow(this, node.dAC);
-        });
-
-        
-        
-        JCheckBox tab1CheckBoxshowStorage = new JCheckBox("Show Net Storage on Flowsheet");
-        tab1CheckBoxshowStorage.setSelected(node.showStorage);
-        tab1CheckBoxshowStorage.addActionListener(e-> {
-            node.showStorage = tab1CheckBoxshowStorage.isSelected();
-        });
-        JLabel tab1LabelStorageXoSet = new JLabel("Flowbox Offset Horz:  ");
-        SpinnerModel tab1SpinnerModelStorageXoSet = new SpinnerNumberModel(node.oSetXStorage, -100, 100, 5);
-        JSpinner tab1SpinnerStorageXoSet = new JSpinner(tab1SpinnerModelStorageXoSet);
-        tab1SpinnerStorageXoSet.addChangeListener(e->{
-            node.oSetXStorage = (int)tab1SpinnerStorageXoSet.getValue();
-        });
-        JLabel tab1LabelStorageYoSet = new JLabel("Vert:");
-        SpinnerModel tab1SpinnerModelStorageYoSet = new SpinnerNumberModel(node.oSetYStorage, -100, 100, 5);
-        JSpinner tab1SpinnerStorageYoSet = new JSpinner(tab1SpinnerModelStorageYoSet);
-        tab1SpinnerStorageYoSet.addChangeListener(e->{
-            node.oSetYStorage = (int)tab1SpinnerStorageXoSet.getValue();
-        });
-        
-        JCheckBox tab1CheckBoxhasStorageEvapandPrecip = new JCheckBox("Include Direct Evaporation and Precipitation");
-        tab1CheckBoxhasStorageEvapandPrecip.setSelected(node.hasStorageEvapandPrecip);
-        tab1CheckBoxhasStorageEvapandPrecip.addActionListener(e-> {
-            node.hasStorageEvapandPrecip = tab1CheckBoxhasStorageEvapandPrecip.isSelected();
-        });
-        JButton bSave = new JButton("Save");
-        bSave.addActionListener(e ->{ // uses a lambda instead of needing seperate listener override
-            node.objname = tfobjName.getText();
-            node.setSubType(String.valueOf(cbobjType.getSelectedItem()), "ACTIVE", aP);
-
-/*
-            node.targetOperatingVol.setAllData(tmTargetVol.getDayColumn(), tmTargetVol.getVolColumn()); // problem seems to lie here
-            
-            node.minDepth.setAllData(tmMinDepth.getDayColumn(), tmMinDepth.getLevelColumn()); 
-
-            node.minDepth.setAllData(tmMaxOpLevel.getDayColumn(), tmMaxOpLevel.getLevelColumn()); 
-            
-            node.overflowLevel.setAllData(tmOverflowLevel.getDayColumn(), tmOverflowLevel.getLevelColumn());
-            node.crestLevel.setAllData(tmCrestLevel.getDayColumn(), tmCrestLevel.getLevelColumn());
-  */          
-            
-
-
-
-            
-            //returnedObjELM = node; // sets returned value to 
-        });
-        
-        tfobjName.getText(); // not sure what this is doing DELETE? 
-        
-        tab1.add(ltfobjName);
-        tab1.add(tfobjName);
-        tab1.add(lcbobjType);
-        tab1.add(cbobjType);
-        
-        tab1.add(tab1scaleXSpinner);
-        tab1.add(tab1scaleXSpinnerLabel);
-        tab1.add(tab1scaleYSpinner);
-        tab1.add(tab1scaleYSpinnerLabel);
-        
-        
-        tab1.add(tab1CheckBoxhasCatchment);
-        tab1.add(tab1CheckBoxhasSolids);
-
-        tab1.add(tab1LabelVoidsXoSet);
-        tab1.add(tab1SpinnerVoidsXoSet);
-        tab1.add(tab1LabelVoidsYoSet);
-        tab1.add(tab1SpinnerVoidsYoSet);
-        
-        tab1.add(tab1CheckBoxhasStorage);
-        tab1.add(tab1CheckBoxshowStorage);
-        
-        tab1.add(tab1ButtonDACWindow);
-        
-        tab1.add(tab1LabelStorageXoSet);
-        tab1.add(tab1SpinnerStorageXoSet);
-        tab1.add(tab1LabelStorageYoSet);
-        tab1.add(tab1SpinnerStorageYoSet);
-          
-        
-        tab1.add(tab1CheckBoxhasStorageEvapandPrecip);
-        tab1.add(bSave);
-        
-
-        layoutTab1.putConstraint(SpringLayout.WEST, ltfobjName, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, ltfobjName, vPadFirstRow, SpringLayout.NORTH, this);
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tfobjName, hPadBoxes, SpringLayout.WEST, this); // aligns horizontal relative to side of window
-        layoutTab1.putConstraint(SpringLayout.NORTH, tfobjName, 0, SpringLayout.NORTH, ltfobjName); // aligns vertical with lable
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, lcbobjType, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, lcbobjType, vPadSpacing, SpringLayout.SOUTH, ltfobjName);
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, cbobjType, hPadBoxes, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, cbobjType, 0, SpringLayout.NORTH, lcbobjType);
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleXSpinnerLabel, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleXSpinnerLabel, vPadSpacing, SpringLayout.SOUTH, lcbobjType);
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleXSpinner, hPadLabels, SpringLayout.EAST, tab1scaleXSpinnerLabel);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleXSpinner, 0, SpringLayout.NORTH, tab1scaleXSpinnerLabel);
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleYSpinnerLabel, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleYSpinnerLabel, vPadSpacing, SpringLayout.SOUTH, tab1scaleXSpinnerLabel);
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1scaleYSpinner, hPadLabels, SpringLayout.EAST, tab1scaleYSpinnerLabel);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1scaleYSpinner, 0, SpringLayout.NORTH, tab1scaleYSpinnerLabel);
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasCatchment, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasCatchment, vPadSpacing, SpringLayout.SOUTH, tab1scaleYSpinnerLabel); 
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasSolids, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasSolids, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasCatchment); 
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelVoidsXoSet, hPadLabels,SpringLayout.EAST, tab1CheckBoxhasSolids);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelVoidsXoSet, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasSolids);
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerVoidsXoSet, hPadLabels,SpringLayout.EAST, tab1LabelVoidsXoSet);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsXoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelVoidsXoSet);
-
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelVoidsYoSet, hPadLabels,SpringLayout.EAST, tab1SpinnerVoidsXoSet);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelVoidsYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsXoSet);
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerVoidsYoSet, hPadLabels,SpringLayout.EAST, tab1LabelVoidsYoSet);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerVoidsYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelVoidsYoSet);
-                
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorage, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasSolids); 
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1ButtonDACWindow, hPadLabels, SpringLayout.EAST, tab1CheckBoxhasStorage);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1ButtonDACWindow, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxhasStorage); 
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxshowStorage, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxshowStorage, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorage); 
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelStorageXoSet, hPadLabels,SpringLayout.EAST, tab1CheckBoxshowStorage);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelStorageXoSet, 0, SpringLayout.VERTICAL_CENTER, tab1CheckBoxshowStorage);
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerStorageXoSet, hPadLabels,SpringLayout.EAST, tab1LabelStorageXoSet);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageXoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelStorageXoSet);
-
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1LabelStorageYoSet, hPadLabels,SpringLayout.EAST, tab1SpinnerStorageXoSet);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1LabelStorageYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageXoSet);
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1SpinnerStorageYoSet, hPadLabels,SpringLayout.EAST, tab1LabelStorageYoSet);
-        layoutTab1.putConstraint(SpringLayout.VERTICAL_CENTER, tab1SpinnerStorageYoSet, 0,SpringLayout.VERTICAL_CENTER, tab1LabelStorageYoSet);
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, tab1CheckBoxhasStorageEvapandPrecip, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, tab1CheckBoxhasStorageEvapandPrecip, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxshowStorage); 
-        
-        layoutTab1.putConstraint(SpringLayout.WEST, bSave, hPadLabels, SpringLayout.WEST, this);
-        layoutTab1.putConstraint(SpringLayout.NORTH, bSave, vPadSpacing, SpringLayout.SOUTH, tab1CheckBoxhasStorageEvapandPrecip);
-        
-        
-        // Tab 6 // All of this should go away and Node just carry an instance of the table model
-        JPanel tab6 = new JPanel();
-        ObjStateTableModel tmState = new ObjStateTableModel();
-        //tab6TableModelState.setBlankFirstRow(); // sets up a blank first row to ensure classes are set properly
-        JTable tState = new JTable(tmState);
-        for (int i = 0; i < Limit.MAX_STATES; i++) {
-            tState.setValueAt((int) node.stateTime[i], i, 0);
-            tmState.setValueAt((String) node.state[i], i, 1);
-        }
-        for (int i = 0; i < tmState.getRowCount(); i++) {
-            if (i >= node.stateTime.length) {
-                break;
-            }
-            node.stateTime[i] = (int) tmState.getValueAt(i, 0);
-            node.state[i] = (String) tmState.getValueAt(i, 1);
-        }
-
-
-        tabPane.addTab("State", makeTabTableState(tState));
-        
-        tabPane.addTab("General",tab1);
-        tabPane.addTab("FlowSettings",tab2);
-
-        tabPane.addTab("T.O.V.", makeTabLevelTable("Target Operating Volume", node.targetOperatingVol));
-        tabPane.addTab("M.W.D.", makeTabLevelTable("Minimum Water Depth", node.minDepth));
-        tabPane.addTab("M.O.L.", makeTabLevelTable("Maximum Operating Level", node.maxOpLevel));
-        tabPane.addTab("Spill", makeTabLevelTable("Overflow Level", node.overflowLevel));
-        tabPane.addTab("Crest", makeTabLevelTable("Crest Level", node.crestLevel));
-
-        tabPane.addTab("Basin Catch", makeTabTableCatchment(new JLabel("Basin Catchment Area"), node.catchmentBasin));
-        tabPane.addTab("Upstream Catch", makeTabTableCatchment(new JLabel("Upstream Catchment Area"), node.catchmentUpstream));
-
-        tabPane.addTab("Tailings Solids Deposition", makeTabTailingsDeposition(node.depositionRates));
-        tabPane.addTab("Object State", tab6);
-
-        subframe.add(tabPane);
-
-        subframe.pack();
-        subframe.setBackground(Color.GRAY);
-        subframe.setVisible(true);
-
-    }
-    
-    
-    private JPanel makeTabLevelTable(String label, TableNodeLevel tableModel){
-        
-        JTable table = new JTable(tableModel);
-        
-        GridBagLayout layout = new GridBagLayout(); // sets up a layout manager for the tab
-        JPanel tab = new JPanel(layout);
-        Insets insets = new Insets(0,10,0,10); // Padding around Tables
-        int prefCol0Width = 100; // width of Day column
-        int prefCol1Width = 150; // width of Day column
-        int prefCol2Width = 400; // width of Day column
-        Dimension tableDims = new Dimension(650,400); // Prefered dimension of tables
-        // layout constraints 
-        GridBagConstraints gbcLabel = new GridBagConstraints();
-        gbcLabel.gridx = 0;
-        gbcLabel.gridy = 0;  
-        GridBagConstraints gbcTable = new GridBagConstraints();
-        gbcTable.gridx = 0;
-        gbcTable.gridy = 1;
-        gbcTable.insets = insets;
-       
-        // TODO ADD POPUP MEMU  -------------------------------------------------------------------------------------!!!
-        table.getColumnModel().getColumn(0).setPreferredWidth(prefCol0Width);
-        table.getColumnModel().getColumn(1).setPreferredWidth(prefCol1Width);
-        table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
-        
-        //table.getColumnModel().getColumn(2).setPreferredWidth(prefCol2Width);
-        JScrollPane sp = new JScrollPane(table);
-        sp.setPreferredSize(tableDims);
-        
-        
-        tab.add (new JLabel(label), gbcLabel);
-        tab.add(sp, gbcTable);
-        
-        
-        return tab;
+        return tab2;
     }
     
     private JPanel makeTabTableCatchment(JLabel label, TableCatchment tableModel) {
@@ -948,13 +967,17 @@ public class NodWindow extends JFrame { // implements ActionListener not needed 
         return tab;
         
     }
+    /**
+     * Used for consistency in title update
+     */
+    private void updateTitle(){
+        this.setTitle(aP.nODEList.get(nodeIndex).objname +" " + McWBalance.langRB.getString("PROPERTIES"));
+    }
+    /**
+     * Used to request the aP to update the flowchart
+     */
+    private void fireChartUpdate(){
+        aP.getFlowChart().repaint();
+    }
 
-
- 
-    
-    
-    
-
-    
-    
 }

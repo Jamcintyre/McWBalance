@@ -1,12 +1,13 @@
 package com.mcwbalance.project;
 
 import com.mcwbalance.climate.ClimateTable;
-import com.mcwbalance.flowchart.TitleBlock;
+import com.mcwbalance.project.flowchart.TitleBlock;
 import com.mcwbalance.landcover.TableRunoffCoefficients;
 import com.mcwbalance.node.NodList;
 import com.mcwbalance.solve.SolveOrder;
 import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.measure.Time;
+import com.mcwbalance.project.flowchart.FlowChartCAD;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,6 +43,11 @@ public class Project {
     public ClimateTable climateTable;
     
     /**
+     * Cad drawing area
+     */
+    private FlowChartCAD flowchart;
+    
+    /**
      * This is the active list of Nodes, i.e. ponds, piles, buildings
      */
     public NodList nODEList;
@@ -59,7 +65,6 @@ public class Project {
      * Runoff Coefficients for use in calculation
      */
     public TableRunoffCoefficients runoffCoeffs;
-    
     
     SolveOrder solveOrder;
     
@@ -89,6 +94,8 @@ public class Project {
         //RunoffCoeffs needs to communicate with the nodelist
         runoffCoeffs = new TableRunoffCoefficients(nODEList);
         solveOrder = new SolveOrder(this);
+        
+        flowchart = new FlowChartCAD(this);
         
         // TODO CHECK IF Title Block path is .svg or a zip file
         
@@ -198,6 +205,9 @@ public class Project {
        return 0; 
     }
     
+    public FlowChartCAD getFlowChart(){
+        return flowchart;
+    }
     
     /**
      * Project settings such as duration, save path, title, project name etc...

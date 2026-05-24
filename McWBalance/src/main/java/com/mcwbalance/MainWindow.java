@@ -38,7 +38,7 @@ import com.mcwbalance.project.ProjOpenExistingWindow;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.settings.Preferences;
 import com.mcwbalance.solve.SolveOrderWindow;
-import com.mcwbalance.flowchart.FlowChartCAD;
+import com.mcwbalance.project.flowchart.FlowChartCAD;
 import com.mcwbalance.util.ConfirmSaveDialog;
 import com.mcwbalance.transfer.TRNWindow;
 import com.mcwbalance.node.NodWindow;
@@ -104,7 +104,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
     /**
      * Cad drawing area
      */
-    FlowChartCAD flowchart;
+    //FlowChartCAD flowchart;
 
     /**
      * Open Icon
@@ -235,7 +235,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         int winx = 1500;
         int winy = 200;
 
-        flowchart = new FlowChartCAD(aP);
+        //flowchart = new FlowChartCAD(aP);
 
         /**
          * loads in config
@@ -378,7 +378,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             case "Open" -> {
                 //TODO would like to add ability to open multiple project instances
                 new ProjOpenExistingWindow(this, aP);
-                flowchart.repaint();
+                aP.getFlowChart().repaint();
                 this.setTitle(aP.getProjectSetting().getSaveFile().toString());
             }
             case "Save" -> {
@@ -434,7 +434,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                 tabloid.setImageableArea(0, 0, 500, 500);
                 pf.setPaper(tabloid);
 
-                job.setPrintable(flowchart, pf);
+                job.setPrintable(aP.getFlowChart(), pf);
 
                 if (job.printDialog()) {
                     try {
@@ -587,7 +587,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         // keyboard binding - Doesn't work yet, suspect because focus isn;t pulled away from jSPinner
 
         flowChartPanel.setPreferredSize(new Dimension((int) (aP.getCadWidth() * FlowChartCAD.zoomscale), (int) (aP.getCadHeight() * FlowChartCAD.zoomscale)));
-        flowChartPanel.add(flowchart); // does not seem to work
+        flowChartPanel.add(aP.getFlowChart()); // does not seem to work
 
         flowChartScPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         flowChartScPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -599,23 +599,23 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         flowChartPanel.getActionMap().put("pressDEL", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                flowchart.deleteSelection();
-                flowchart.repaint();
+                aP.getFlowChart().deleteSelection();
+                aP.getFlowChart().repaint();
             }
         });
         flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(67, 128), "pressCtrlC");
         flowChartPanel.getActionMap().put("pressCtrlC", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                flowchart.copySelectiontoClipboard();
+                aP.getFlowChart().copySelectiontoClipboard();
             }
         });
         flowChartPanel.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(86, 128), "pressCtrlV");
         flowChartPanel.getActionMap().put("pressCtrlV", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                flowchart.pasteFromClipBoard();
-                flowchart.repaint();
+                aP.getFlowChart().pasteFromClipBoard();
+                aP.getFlowChart().repaint();
             }
         });
     }
@@ -680,27 +680,27 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             switch (requestedAction) {
                 case "AddObjELM" -> {
                     requestedAction = "None"; //resets menu selection
-                    flowchart.addObjELM(mx, my);
+                    aP.getFlowChart().addObjELM(mx, my);
                 }
                 case "AddObjTRN" -> {
                     requestedAction = "None"; //resets menu selection
-                    flowchart.addObjTRN(mx, my);
+                    aP.getFlowChart().addObjTRN(mx, my);
                 }
                 case "DeleteObj" -> {
                     requestedAction = "None"; // assumes object hit. on miss will need to re-try
                     // Note TRNS should be first, since they will draw on top. 
-                    mTRNHit = flowchart.checkTRNHit(mx, my);
-                    flowchart.removeTRN(mTRNHit);
+                    mTRNHit = aP.getFlowChart().checkTRNHit(mx, my);
+                    aP.getFlowChart().removeTRN(mTRNHit);
                     if (mTRNHit == -1) {
-                        mELMHit = flowchart.checkELMHit(mx, my);
-                        flowchart.removeELM(mELMHit);
+                        mELMHit = aP.getFlowChart().checkELMHit(mx, my);
+                        aP.getFlowChart().removeELM(mELMHit);
                     }
                 }
                 default -> {
-                    mTRNHit = flowchart.checkTRNHit(mx, my);
-                    mELMHit = flowchart.checkELMHit(mx, my);
+                    mTRNHit = aP.getFlowChart().checkTRNHit(mx, my);
+                    mELMHit = aP.getFlowChart().checkELMHit(mx, my);
                     if (mTRNHit != -1) {
-                        if (flowchart.checkSelectionTRN(mTRNHit)) {
+                        if (aP.getFlowChart().checkSelectionTRN(mTRNHit)) {
                             if (!editorIsActive) {
 
                                 TRNWindow objTRNWindow = new TRNWindow(this, aP.getTransferList().tRNs[mTRNHit],
@@ -715,26 +715,21 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
                             }
                             break;
                         } else {
-                            flowchart.clearSelection();
-                            flowchart.addSelectionTRN(mTRNHit);
+                            aP.getFlowChart().clearSelection();
+                            aP.getFlowChart().addSelectionTRN(mTRNHit);
                         }
                     } else if (mELMHit != -1) {
-                        if (flowchart.checkSelectionELM(mELMHit)) {
+                        if (aP.getFlowChart().checkSelectionELM(mELMHit)) {
                             if (!editorIsActive) {
-                                NodWindow objELMWindow = new NodWindow();
-                                objELMWindow.ObjELMWindowFunct(
-                                        aP.getNodeList().nodes[mELMHit],
-                                        mELMHit,
-                                        aP.getTransferList(),
-                                        aP);
+                                NodWindow objELMWindow = new NodWindow(this, mELMHit, aP);
                             }
                             break;
                         } else {
-                            flowchart.clearSelection(); // should check if keypressed CTRL, requires implmenting a seperate Key listener and flag.. 
-                            flowchart.addSelectionELM(mELMHit);
+                            aP.getFlowChart().clearSelection(); // should check if keypressed CTRL, requires implmenting a seperate Key listener and flag.. 
+                            aP.getFlowChart().addSelectionELM(mELMHit);
                         }
                     } else {
-                        flowchart.clearSelection();
+                        aP.getFlowChart().clearSelection();
                     }
                 }
             }
@@ -757,9 +752,9 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             case MouseEvent.BUTTON1 -> {
                 switch (requestedAction) {
                     case "None" -> { // if no other action is pending then Move is possible
-                        tRNOnTheMove = flowchart.checkTRNHit(mx, my); // Sets the moving object to whatever is hit
+                        tRNOnTheMove = aP.getFlowChart().checkTRNHit(mx, my); // Sets the moving object to whatever is hit
                         if (tRNOnTheMove == -1) {
-                            nodeOnTheMove = flowchart.checkELMHit(mx, my); // Transfers can move if Larger object isn't moving
+                            nodeOnTheMove = aP.getFlowChart().checkELMHit(mx, my); // Transfers can move if Larger object isn't moving
                         }
                     }
 
@@ -837,10 +832,10 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         int mx = (int) (mme.getX() / FlowChartCAD.zoomscale); // re-uses same variable names as above, but varables are not the same..
         int my = (int) (mme.getY() / FlowChartCAD.zoomscale);
         if (nodeOnTheMove > -1) {
-            flowchart.moveObjELM(mx, my, nodeOnTheMove);
+            aP.getFlowChart().moveObjELM(mx, my, nodeOnTheMove);
             flowChartPanel.repaint();
         } else if (tRNOnTheMove > -1) {
-            flowchart.moveObjTRN(mx, my, tRNOnTheMove);
+            aP.getFlowChart().moveObjTRN(mx, my, tRNOnTheMove);
             flowChartPanel.repaint();
         } else if (isViewPanning) {
             int mouseMoveX = mme.getX() - startMouseX;
@@ -885,7 +880,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             }
             zoomSpinnerModel.setValue(FlowChartCAD.zoomscale);
 
-            flowchart.repaint();
+            aP.getFlowChart().repaint();
         }
     }
 
@@ -895,7 +890,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
     public void resetProject() {
 
         aP = new Project();
-        flowchart.repaint();
+        aP.getFlowChart().repaint();
     }
 
 }

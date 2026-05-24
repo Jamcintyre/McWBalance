@@ -590,6 +590,16 @@ public class Nod {
         }
         ProjSetting.hasChangedSinceSave = true;
     }
+    
+    /**
+     * For renaming of a land cover, does not carry out safety checks
+     * @param oldName name to replace
+     * @param newName new name
+     */
+    void renameLandCover(String oldName, String newName){
+        catchmentBasin.renameLandCover(oldName, newName);
+        catchmentUpstream.renameLandCover(oldName, newName);
+    }
 
     /**
      * Used to set sprite and dimensions of object for flowChartCad whenever
