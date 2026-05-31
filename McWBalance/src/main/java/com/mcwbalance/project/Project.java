@@ -241,6 +241,13 @@ public class Project {
     }
     
     /**
+     * TODO - Placeholder, will set up to allow changing of the time unit
+     */
+    public Time.TimeUnit getTimeUnit(){
+        return Time.TimeUnit.Day;
+    }
+    
+    /**
      * Used for sizing cad window based on currently active title block and number of sheets
      * @return Width of titleblock x number vertical
      */
@@ -418,15 +425,29 @@ public class Project {
      * should check for 
      */
     public void solve(){
-        String warnings;;
+        String warnings;
         //check warnings, 
         warnings = verify();
         //IF ALL IS GOOD
         //calc();
         
+        solve(0); // Placeholder 
+
+        
         //for setting.
         
         //Else Throw error
+    }
+    /**
+     * For solving a specific climate scenario
+     * @param cs climate scenario index
+     */
+    private void solve(int cs){
+        System.out.println("DEBUG - Project.java - solve called with cs: " + cs);
+        
+        for (int ts = 1; ts < setting.duration; ++ts){
+            nODEList.solveEnvironmentals(ts, cs, this);
+        }
     }
     
     /**

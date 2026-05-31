@@ -48,7 +48,7 @@ import javax.swing.SpinnerNumberModel;
  *
  * @author Alex McIntyre
  */
-public class ResultViewer extends JFrame {
+public class ResultViewerWindow extends JFrame {
 
     private int pageWidth;
     private int pageHeight;
@@ -85,7 +85,7 @@ public class ResultViewer extends JFrame {
      * @param rescolors
      * @param verTitle
      */
-    public ResultViewer(String title, float[][] results, String[] resultnames, Color[] rescolors, String verTitle) {
+    public ResultViewerWindow(String title, float[][] results, String[] resultnames, Color[] rescolors, String verTitle) {
         super(title);
         pageWidth = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_PAGE_WIDTH", "50"));
         pageHeight = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_PAGE_HEIGHT", "50"));
@@ -113,10 +113,10 @@ public class ResultViewer extends JFrame {
         startDate = 0;
         endDate = results[0].length;
 
-        timeStep = ResultViewPanel.DAILY;
+        timeStep = ResultViewPlot.DAILY;
         timeStepOptions = McWBalance.langRB.getString("TIME_STEP_OPTIONS").split(",");
 
-        ResultViewPanel resultViewPanel = new ResultViewPanel(results, rescolors, resultnames, 0, results[0].length, minY, maxY, verTitle);
+        ResultViewPlot resultViewPanel = new ResultViewPlot(results, rescolors, resultnames, 0, results[0].length, minY, maxY, verTitle);
         JScrollPane scrollpane = new JScrollPane(resultViewPanel);
         resultViewPanel.repaint();
 

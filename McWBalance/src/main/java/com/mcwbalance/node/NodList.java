@@ -163,6 +163,28 @@ public class NodList {
         return usagearr;
         
     }
+    
+        /**
+     * Builds a proprietary XML data set for use in save files This method may
+     * not work for generating xml spreadsheet files
+     *
+     * @return
+     * @throws ParserConfigurationException
+     */
+    public Document getXMLDoc() throws ParserConfigurationException {
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document xMLDoc = builder.newDocument();
+
+        Element root = xMLDoc.createElement("Nodes");
+        xMLDoc.appendChild(root);
+        for (int i = 0; i < count; i++) {
+            root.appendChild(nodes[i].getXMLElement(xMLDoc, i));
+        }
+        return xMLDoc;
+    }
 
     /**
      * Removes the requested Node from the Node list and shifts all following
@@ -218,6 +240,18 @@ public class NodList {
     }
     
     /**
+     * Used for solving environmental inputs that are not depended on other inputs
+     * @param step time step
+     * @param cs Climate Scenario Index 
+     * @param aP active Project
+     */
+    public void solveEnvironmentals(int step, int cs, Project aP){
+        for (int n = 0; n < this.size(); n++){
+            this.get(n).solveEnvironmentals(step, cs, aP);
+        }
+    }
+    
+    /**
      * For getting size of the contained data, intention is to replace count 
      * @return 
      */
@@ -226,27 +260,7 @@ public class NodList {
     }
     
 
-    /**
-     * Builds a proprietary XML data set for use in save files This method may
-     * not work for generating xml spreadsheet files
-     *
-     * @return
-     * @throws ParserConfigurationException
-     */
-    public Document getXMLDoc() throws ParserConfigurationException {
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        builder = factory.newDocumentBuilder();
-        Document xMLDoc = builder.newDocument();
-
-        Element root = xMLDoc.createElement("Nodes");
-        xMLDoc.appendChild(root);
-        for (int i = 0; i < count; i++) {
-            root.appendChild(nodes[i].getXMLElement(xMLDoc, i));
-        }
-        return xMLDoc;
-    }
 
     /**
      * Method not yet complete. This method will take a string representation of

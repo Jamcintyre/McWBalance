@@ -33,6 +33,7 @@ import com.mcwbalance.McWBalance;
 import com.mcwbalance.dacapacity.DAC;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.generics.IndexList;
+import com.mcwbalance.measure.Time;
 import com.mcwbalance.project.Project;
 import com.mcwbalance.settings.Limit;
 import java.awt.Rectangle;
@@ -637,6 +638,7 @@ public class Nod {
      */
     public void solveEnvironmentals(int step, int cs, Project aP) {
         
+        System.out.println("DEBUG - Node.java - solveEnvironmentals called with step =" + step + " cs=" + cs);
         // need to calc upstream catch first, then evap,, 
         if (hasStorageEvapandPrecip && hasStorage) {
             int pondarea = getPondArea(step - 1);
@@ -650,9 +652,8 @@ public class Nod {
         }
 
         if (hasCatchment) {
-
-            float rainandmelt = (aP.climateTable.getClimates()[cs].rain[step]
-                    + aP.climateTable.getClimates()[cs].melt[step]);
+            System.out.println("DEBUG - Node.java - solveEnvironmentals has catchment");
+            float rainandmelt = aP.climateTable.getClimates()[cs].getRainandMelt(step, aP.getTimeUnit());
             
             for (int i = 0; i < res[cs].inRunoffandMeltbyLC.length; i++) {
                 int area = catchmentUpstream.getArea(step, aP.runoffCoeffs.getLandRunoffName(i));

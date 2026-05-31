@@ -235,7 +235,6 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
         int winx = 1500;
         int winy = 200;
 
-        //flowchart = new FlowChartCAD(aP);
 
         /**
          * loads in config
@@ -465,7 +464,7 @@ public final class MainWindow extends JFrame implements MouseListener, ActionLis
             case "RunoffCoefficientsWindow" -> {
                 new RunoffCoefficientWindow(this, aP);
             }
-            case "solve" -> {
+            case "Solve" -> {
                 aP.solve();
             }
 

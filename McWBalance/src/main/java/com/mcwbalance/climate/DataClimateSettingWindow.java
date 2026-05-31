@@ -31,7 +31,7 @@ package com.mcwbalance.climate;
 
 import com.mcwbalance.McWBalance;
 import com.mcwbalance.project.Project;
-import com.mcwbalance.result.ResultViewer;
+import com.mcwbalance.result.ResultViewerWindow;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -119,7 +119,7 @@ public class DataClimateSettingWindow extends JFrame{
                 //rgb = McWBalance.titleBlock.getProperty("PREF_COLOR_SNOWPACK","255,255,255").split(",");
                 //rescolors[4] = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
                 
-                ResultViewer rv = new ResultViewer(aP.climateTable.climates[scenario].getDescription(),
+                ResultViewerWindow rv = new ResultViewerWindow(aP.climateTable.climates[scenario].getDescription(),
                          results,
                          resultnames,
                          rescolors,

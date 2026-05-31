@@ -360,12 +360,30 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
     }
     
     /**
-     * Short descriptive name of this data set, not intended for lookup
-     * @return short name
+     * used for rolling the timestep over, i.e. can project 10 years from 1 year of climate 
+     * data
+     * 
+     * TODO - Timestep scaling for different time units
+     * @param timestep requested timestep
+     * @param timeunit unit of requested timestep
+     * @return applicable step
      */
-    public String getDescription() {   
-        return description;
+    private int factoredTimeStep(int timestep, Time.TimeUnit timeunit){
+        if (timestep < 1){
+            return 0;
+        }
+        
+        if(this.timeunit.equals(timeunit)){ 
+            if(timestep > size){
+                int rf = (int)((float) timestep/size);
+                timestep = timestep - timestep*rf;
+            }
+                return timestep -1;
+        }
+        
+        return 0;
     }
+    
     
     /**
      * Runs internal calculations if not run already then provides average of the 
@@ -380,6 +398,25 @@ public class DataClimate {  // Climate must begin on Jan 1. No Leap years.
         }
         return aaprecip;
     }
+    
+    /**
+     * Short descriptive name of this data set, not intended for lookup
+     * @return short name
+     */
+    public String getDescription() {   
+        return description;
+    }
+    
+    public float getRainandMelt(int timestep, Time.TimeUnit timeunit){
+        if(this.size < 1 || timestep < 1){
+            return 0;
+        }
+        if(this.timeunit.equals(timeunit)){            
+            return rain[factoredTimeStep(timestep, timeunit)] + melt[factoredTimeStep(timestep, timeunit)];
+        }
+        return 0;
+    }
+
 
     /**
      * Runs internal calculations if not run already then provides minimum of the 

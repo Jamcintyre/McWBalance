@@ -39,7 +39,9 @@ import com.mcwbalance.transfer.TRNList;
 import com.mcwbalance.project.ProjSetting;
 import com.mcwbalance.dacapacity.DACWindow;
 import com.mcwbalance.project.Project;
+import com.mcwbalance.result.ResultCollection;
 import com.mcwbalance.settings.Limit;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -177,7 +179,11 @@ public class NodWindow extends JFrame {
         tabPane.addTab("Basin Catch", makeTabTableCatchment(new JLabel("Basin Catchment Area"), node.catchmentBasin));
         tabPane.addTab("Upstream Catch", makeTabTableCatchment(new JLabel("Upstream Catchment Area"), node.catchmentUpstream));
         tabPane.addTab("Tailings Solids Deposition", makeTabTailingsDeposition(node.depositionRates));
+        
+        tabPane.addTab("Results", makeTabResultViewer());
         tabPane.addTab("Object State", tab6);
+        
+        
 
         this.add(tabPane);
 
@@ -806,6 +812,49 @@ public class NodWindow extends JFrame {
         return tab2;
     }
     
+    
+    private JPanel makeTabResultViewer(){
+        
+        ResultCollection resultCollection = new ResultCollection();
+        JPanel tab = new JPanel();
+        
+        JPanel controlPanel = new JPanel();
+        JTabbedPane resultPane = new JTabbedPane();
+        
+        
+        
+        JTable resultTable = new JTable(resultCollection);
+        //resultTable.setPreferredScrollableViewportSize();
+        
+        
+        //JScrollPane resultTableSPane= new JScrollPane();
+        //resultTableSPane.setBackground(Color.GREEN);
+        //resultTableSPane.add(resultTable);
+        
+        JPanel resultTablePanel = new JPanel();
+        resultTablePanel.setBackground(Color.yellow);
+        resultTablePanel.setLayout(new BorderLayout());
+                
+        resultTablePanel.add(resultTable, BorderLayout.CENTER);
+        
+        
+        JButton testbutton = new JButton("test");
+        controlPanel.add(testbutton);
+        
+        JPanel resultPlotPanel = new JPanel();
+        resultPlotPanel.setLayout(new BorderLayout());
+        resultPlotPanel.add(resultCollection.getViewPlot(), BorderLayout.CENTER);
+        resultPlotPanel.setBackground(Color.red);
+        
+        resultPane.addTab("Plot", resultPlotPanel);
+        resultPane.addTab("Table", resultTablePanel);
+        
+        tab.setLayout(new BorderLayout());
+        tab.add(controlPanel, BorderLayout.WEST);
+        tab.add(resultPane, BorderLayout.CENTER);
+        
+        return tab;
+    }
     private JPanel makeTabTableCatchment(JLabel label, TableCatchment tableModel) {
         
         JTable table = new JTable(tableModel);

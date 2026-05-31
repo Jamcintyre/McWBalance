@@ -44,8 +44,9 @@ import javax.swing.JComponent;
  * secondary axis yet
  *
  * @author Alex McIntyre
+ * @deprecated use ResultPlot
  */
-public class ResultViewPanel extends JComponent {
+public class ResultViewPlot extends JComponent {
 
     float[][] results;
     Color[] rescolors;
@@ -57,30 +58,30 @@ public class ResultViewPanel extends JComponent {
     String hozTitle;
     String verTitle;
 
-    private int pageHeight;
-    private int pageWidth;
-    private int marginTop;
-    private int marginBottom;
-    private int marginRight;
-    private int marginLeft;
+    private final int pageHeight;
+    private final int pageWidth;
+    private final int marginTop;
+    private final int marginBottom;
+    private final int marginRight;
+    private final int marginLeft;
 
-    private int plotHeight;
-    private int plotWidth;
+    private final int plotHeight;
+    private final int plotWidth;
 
-    private int plotTickLength;
-    private int plotOffsetLabel;
-    private int plotInsetTitle;
+    private final int plotTickLength;
+    private final int plotOffsetLabel;
+    private final int plotInsetTitle;
 
-    private int maximumVertIncs;
-    private int maximumHorzIncs;
+    private final int maximumVertIncs;
+    private final int maximumHorzIncs;
 
-    private BasicStroke thinLine;
-    private BasicStroke lineSeries;
-    private BasicStroke thickLine;
+    private final BasicStroke thinLine;
+    private final BasicStroke lineSeries;
+    private final BasicStroke thickLine;
 
-    private Color colorBorder;
-    private Color colorGridLine;
-    private Color colorBackground;
+    private final Color colorBorder;
+    private final Color colorGridLine;
+    private final Color colorBackground;
     private String[] rgb;
 
     private static final Font FONT_AXIS_VALUE = new Font("Arial", Font.PLAIN, 18);
@@ -139,12 +140,12 @@ public class ResultViewPanel extends JComponent {
      */
     public boolean legendisVisible = true;
 
-    private int shadowBoxTL;
-    private int shadowBoxBR;
+    private final int shadowBoxTL;
+    private final int shadowBoxBR;
 
-    private int legendSymbol;
-    private int legendPadding;
-    private int legendSpacing;
+    private final int legendSymbol;
+    private final int legendPadding;
+    private final int legendSpacing;
 
     private int timeStep;
 
@@ -160,7 +161,7 @@ public class ResultViewPanel extends JComponent {
      * @param maxY
      * @param verTitle
      */
-    public ResultViewPanel(float[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String verTitle) {
+    public ResultViewPlot(float[][] results, Color[] rescolors, String[] resNames, int minX, int maxX, int minY, int maxY, String verTitle) {
         // all of the work is done in the paint component method
         this.results = results;
         this.rescolors = rescolors;
@@ -179,39 +180,39 @@ public class ResultViewPanel extends JComponent {
         scaledresultsHorz = new int[results[0].length];
 
         rgb = McWBalance.style.getProperty("PREF_COLOR_BORDER", "255,255,255").split(",");
-        colorBorder = new Color(Integer.valueOf(rgb[0]), Integer.valueOf(rgb[1]), Integer.valueOf(rgb[2]));
+        colorBorder = new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
         rgb = McWBalance.style.getProperty("PREF_COLOR_GRIDLINE", "255,255,255").split(",");
-        colorGridLine = new Color(Integer.valueOf(rgb[0]), Integer.valueOf(rgb[1]), Integer.valueOf(rgb[2]));
+        colorGridLine = new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
 
         colorBackground = Color.WHITE;
 
-        pageHeight = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_PAGE_HEIGHT", "800"));
-        pageWidth = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_PAGE_WIDTH", "1400"));
-        marginTop = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_TOP", "50"));
-        marginBottom = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_BOTTOM", "50"));
-        marginLeft = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_LEFT", "50"));
-        marginRight = Integer.valueOf(McWBalance.style.getProperty("EMBEDDED_MARGIN_RIGHT", "50"));
+        pageHeight = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_PAGE_HEIGHT", "800"));
+        pageWidth = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_PAGE_WIDTH", "1400"));
+        marginTop = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_MARGIN_TOP", "50"));
+        marginBottom = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_MARGIN_BOTTOM", "50"));
+        marginLeft = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_MARGIN_LEFT", "50"));
+        marginRight = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_MARGIN_RIGHT", "50"));
 
         plotHeight = pageHeight - marginTop - marginBottom;
         plotWidth = pageWidth - marginLeft - marginRight;
 
-        plotTickLength = Integer.valueOf(McWBalance.style.getProperty("PLOT_TICK_LENGTH", "4"));
-        plotOffsetLabel = Integer.valueOf(McWBalance.style.getProperty("PLOT_LABEL_OFFSET", "5"));
-        plotInsetTitle = Integer.valueOf(McWBalance.style.getProperty("PLOT_INSET_TITLE", "5"));
+        plotTickLength = Integer.parseInt(McWBalance.style.getProperty("PLOT_TICK_LENGTH", "4"));
+        plotOffsetLabel = Integer.parseInt(McWBalance.style.getProperty("PLOT_LABEL_OFFSET", "5"));
+        plotInsetTitle = Integer.parseInt(McWBalance.style.getProperty("PLOT_INSET_TITLE", "5"));
 
-        maximumVertIncs = Integer.valueOf(McWBalance.style.getProperty("PLOT_MAX_VERT_INCREMENTS", "5"));
-        maximumHorzIncs = Integer.valueOf(McWBalance.style.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
+        maximumVertIncs = Integer.parseInt(McWBalance.style.getProperty("PLOT_MAX_VERT_INCREMENTS", "5"));
+        maximumHorzIncs = Integer.parseInt(McWBalance.style.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
 
-        thickLine = new BasicStroke(Integer.valueOf(McWBalance.style.getProperty("LINE_THICK", "3")));
-        lineSeries = new BasicStroke(Integer.valueOf(McWBalance.style.getProperty("PLOT_LINE_SERIES", "2")));
-        thinLine = new BasicStroke(Integer.valueOf(McWBalance.style.getProperty("LINE_THIN", "1")));
+        thickLine = new BasicStroke(Integer.parseInt(McWBalance.style.getProperty("LINE_THICK", "3")));
+        lineSeries = new BasicStroke(Integer.parseInt(McWBalance.style.getProperty("PLOT_LINE_SERIES", "2")));
+        thinLine = new BasicStroke(Integer.parseInt(McWBalance.style.getProperty("LINE_THIN", "1")));
 
-        shadowBoxTL = Integer.valueOf(McWBalance.style.getProperty("LINE_SHADOWBOX_TL", "1"));
-        shadowBoxBR = Integer.valueOf(McWBalance.style.getProperty("LINE_SHADOWBOX_BR", "4"));
+        shadowBoxTL = Integer.parseInt(McWBalance.style.getProperty("LINE_SHADOWBOX_TL", "1"));
+        shadowBoxBR = Integer.parseInt(McWBalance.style.getProperty("LINE_SHADOWBOX_BR", "4"));
 
-        legendSymbol = Integer.valueOf(McWBalance.style.getProperty("PLOT_LEGEND_SYMBOL", "10"));
-        legendPadding = Integer.valueOf(McWBalance.style.getProperty("PLOT_LEGEND_PADDING", "10"));
-        legendSpacing = Integer.valueOf(McWBalance.style.getProperty("PLOT_LEGEND_SPACING", "4"));
+        legendSymbol = Integer.parseInt(McWBalance.style.getProperty("PLOT_LEGEND_SYMBOL", "10"));
+        legendPadding = Integer.parseInt(McWBalance.style.getProperty("PLOT_LEGEND_PADDING", "10"));
+        legendSpacing = Integer.parseInt(McWBalance.style.getProperty("PLOT_LEGEND_SPACING", "4"));
 
         timeStep = 0;
 
@@ -220,11 +221,13 @@ public class ResultViewPanel extends JComponent {
 
         calcScales();
     }
+    
+    
 
     /**
      * Used for re-scaling graph
      */
-    public void calcScales() {
+    public final void calcScales() {
         rangeHorz = maxX - minX;
         rangeVert = maxY - minY;
         // this sets the increments of the Vertical axis to something rounded to the nearest major tick

@@ -595,6 +595,29 @@ public class Result {
     public void setName(String name) {
         this.name = name;
     }
+    
+    /**
+     * Returns size of array based on timeUnit
+     *
+     * @param timeUnit to get size for, if time unit is less then base units 
+     * then size will be 1
+     */
+    public int size(Time.TimeUnit timeUnit) {
+        return switch (this.timeUnit) {
+            case Time.TimeUnit.Hour ->
+                hourly.length;
+            case Time.TimeUnit.Day ->
+                daily.length;
+            case Time.TimeUnit.Week ->
+                weekly.length;
+            case Time.TimeUnit.Month ->
+                monthly.length;
+            case Time.TimeUnit.Year ->
+                annual.length;
+            default ->
+                0;
+        };
+    }
 
 
     
