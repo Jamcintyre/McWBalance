@@ -844,7 +844,7 @@ public class NodWindow extends JFrame {
         JPanel resultPlotPanel = new JPanel();
         resultPlotPanel.setLayout(new BorderLayout());
         resultPlotPanel.add(resultCollection.getViewPlot(), BorderLayout.CENTER);
-        resultPlotPanel.setBackground(Color.red);
+        resultPlotPanel.setBackground(Color.WHITE);
         
         resultPane.addTab("Plot", resultPlotPanel);
         resultPane.addTab("Table", resultTablePanel);

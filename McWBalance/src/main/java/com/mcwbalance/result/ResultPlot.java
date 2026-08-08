@@ -32,9 +32,12 @@ package com.mcwbalance.result;
 import com.mcwbalance.McWBalance;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 
@@ -45,25 +48,23 @@ import javax.swing.JComponent;
  */
 public class ResultPlot extends JComponent{
     
-    private final Color colorBackground;
     private final Color colorBorder;
     private final Color colorGridLine;
+
+    private final Font fontAxisTitle;
+    private final Font fontAxisValue;
+
+    private int incHorz;
+    private int incVert;
+    private int incHorzNoOfMajors;
+    private int incVertNoOfMajors;
+
+    private static final int INC_OPTIONS_VERT[] = {1, 2, 5, 10, 20, 25, 50, 100};
+
+    private static final int INC_OPTIONS_HORZ[] = {
+        1, 2, 7, 14, 21, 30, 60, 90, 182, 365, 730, 1460, 2920
+    };
     
-    private final int marginTop;
-    private final int marginBottom;
-    private final int marginRight;
-    private final int marginLeft;
-    
-    
-    private int maxX;
-    private int maxY;
-    private int minX;
-    private int minY;
-    
-    /**
-     * Area where lines plot on, after margins are applied
-     */
-    private Rectangle plotArea;
     
     private class IntPolyLine{
         private ArrayList<Integer> x;
@@ -96,6 +97,31 @@ public class ResultPlot extends JComponent{
         }
     }
     
+    private final int marginTop;
+    private final int marginBottom;
+    private final int marginRight;
+    private final int marginLeft;
+    
+    private int maxX;
+    private int maxY;
+    private int minX;
+    private int minY;
+    
+    /**
+     * Area where lines plot on, after margins are applied
+     */
+    private Rectangle plotArea;
+    
+    private int plotOffsetLabel;
+    private int plotOffsetTitle;
+    private int plotTickLength;
+
+    private final int maximumVertIncs;
+    private final int maximumHorzIncs;
+    
+    private int rangeHorz;
+    private int rangeVert;
+    
     private ResultCollection results;
     
     private ArrayList<IntPolyLine> scaledresults;
@@ -112,7 +138,7 @@ public class ResultPlot extends JComponent{
     
     
     /**
-     * 
+     * Generates a plot of a given collection of results
      * @param results collection of results to plot
      */
     public ResultPlot(ResultCollection results){
@@ -121,11 +147,10 @@ public class ResultPlot extends JComponent{
         colorBorder = new Color(Integer.parseInt(rgbBorder[0]), Integer.parseInt(rgbBorder[1]), Integer.parseInt(rgbBorder[2]));
         String[] rgbGridline = McWBalance.style.getProperty("PREF_COLOR_GRIDLINE", "255,255,255").split(",");
         colorGridLine = new Color(Integer.parseInt(rgbGridline[0]), Integer.parseInt(rgbGridline[1]), Integer.parseInt(rgbGridline[2]));
+        
+        fontAxisTitle = new Font("Arial", Font.BOLD, 20);
+        fontAxisValue = McWBalance.fontRegular;
 
-        colorBackground = Color.CYAN; // DEBUG to find the window
-        
-        
-        
         this.results = results; 
         scaledresults = new ArrayList();
         
@@ -135,25 +160,80 @@ public class ResultPlot extends JComponent{
         marginRight = Integer.parseInt(McWBalance.style.getProperty("EMBEDDED_MARGIN_RIGHT", "50"));
 
         plotArea = new Rectangle();
-        
-        minX = 0;
-        minY = 0;
+        plotOffsetTitle = Integer.parseInt(McWBalance.style.getProperty("PLOT_OFFSET_TITLE", "5"));
         
         maxX = 50;// DEBUG
         maxY = 50;//DEBUG
-        
+        maximumVertIncs = Integer.parseInt(McWBalance.style.getProperty("PLOT_MAX_VERT_INCREMENTS", "5"));
+        maximumHorzIncs = Integer.parseInt(McWBalance.style.getProperty("PLOT_MAX_HORZ_INCREMENTS", "10"));
+        minX = 0;
+        minY = 0;
+
         strokeThick = new BasicStroke(Integer.parseInt(McWBalance.style.getProperty("LINE_THICK", "3")));
         strokeResult = new BasicStroke(Integer.parseInt(McWBalance.style.getProperty("PLOT_LINE_SERIES", "2")));
         strokeThin = new BasicStroke(Integer.parseInt(McWBalance.style.getProperty("LINE_THIN", "1")));
-        
-
 
         System.out.println("ResultPlot.Java - Constructor getWidth " + this.getWidth() + "getHeight " + this.getHeight());
         
-        this.setBackground(Color.MAGENTA); // DEBUG to confirm component is drawing
         update();
 
     }
+    
+    private void drawAxisTitles(Graphics2D g2){
+        
+        AffineTransform orgAT = g2.getTransform();
+        g2.setFont(fontAxisTitle);
+        
+        int textWidth = (int) g2.getFontMetrics().getStringBounds(titleX, g2).getWidth();
+        g2.drawString(titleX, plotArea.x + plotArea.width / 2 - textWidth / 2, plotArea.y + plotArea.height + plotOffsetTitle);
+        
+        textWidth = (int) g2.getFontMetrics().getStringBounds(titleY, g2).getWidth();
+        int vlx = marginLeft - plotOffsetTitle;
+        int vly = marginTop + plotArea.height / 2 + textWidth / 2;
+        g2.rotate(-1.570795,vlx,vly);    // 1/2 pi = 90 deg
+        g2.drawString(titleY, vlx, vly);
+        g2.setTransform(orgAT); // Resets rotation 
+    }
+    
+    private void drawMajorGridLines(Graphics g2){
+        //g2.setStroke(strokeThin);
+        g2.setColor(colorBorder);
+        g2.setFont(fontAxisValue);
+        int major;
+        double majorLabelValue;
+        String majorLabel;
+        int textWidth;
+        int textHeight;
+
+        String labelFormatVert = "%.1f";
+        if (incVert > 9) {
+            labelFormatVert = "%.0f";
+        }
+        
+        System.out.println("incVertNoOfMajors: "+ incVertNoOfMajors + " incVert: " + incVert); //DEBUG
+        for (int i = 0; i < incVertNoOfMajors + 1; i++) {
+            major = plotArea.height + marginTop - (int) (i * incVert / scaleY);
+            System.out.println("Major Y = "+ major); //DEBUG
+            majorLabelValue = minY + i * incVert;
+            g2.drawLine(plotArea.x - plotTickLength, major, plotArea.x + plotArea.width, major);
+            majorLabel = String.format(labelFormatVert, majorLabelValue);
+            textWidth = (int) g2.getFontMetrics().getStringBounds(majorLabel, g2).getWidth();
+            textHeight = (int) g2.getFontMetrics().getStringBounds(majorLabel, g2).getHeight();
+            g2.drawString(majorLabel, marginLeft - plotTickLength - plotOffsetLabel - textWidth, major + textHeight / 2);
+        }
+        
+        String labelFormatHorz = "%.0f";
+        for (int i = 0; i < incHorzNoOfMajors + 1; i++) {
+            major = marginLeft + (int) (i * incHorz / scaleX);
+            majorLabelValue = (i * incHorz + minX);
+            g2.drawLine(major, plotArea.y + plotArea.height + plotTickLength, major, plotArea.y);
+            majorLabel = String.format(labelFormatHorz, majorLabelValue);
+            textWidth = (int) g2.getFontMetrics().getStringBounds(majorLabel, g2).getWidth();
+            textHeight = (int) g2.getFontMetrics().getStringBounds(majorLabel, g2).getHeight();
+            g2.drawString(majorLabel, major - textWidth / 2, plotArea.y + plotArea.height + plotTickLength + plotOffsetLabel + textHeight);
+        }
+    }
+    
     
     /**
      * This is where the plot is rendered
@@ -166,29 +246,32 @@ public class ResultPlot extends JComponent{
         
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        // This step fixes the font rendering so it doesn't look pixelated
+        g2.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+        );
+
         //AffineTransform at = new AffineTransform();
         //at.setToScale(1, 1);
         //g2.setTransform(at); // in event windows scale is not 100%, then at transform is needed first
-        g2.setColor(colorBackground); 
-        g2.fillRect(0+5, 0+5, this.getWidth()-10, this.getHeight()-10);
-        
-        // draws border
+
         g2.setColor(colorBorder);
         //g2.setStroke(thickLine);
         g2.drawRect(plotArea.x, plotArea.y, plotArea.width, plotArea.height);
         
-        
-        
-        
+        drawMajorGridLines(g2);
+        drawAxisTitles(g2);
     }
     
     
     /**
-     * Used to update all data, indended for use after changing units or scale
+     * Used to update all data, intended for use after changing units or scale
      */
     public final void update(){
         updateTitleX();
         updateTitleY();
+        calcMaxY();
         updatePlotArea();
         updateScales();
     }
@@ -229,11 +312,6 @@ public class ResultPlot extends JComponent{
         }
         plotArea.width = trywidth;
         
-        //SET LOCATION OF AXIS TITLES
-        
-        
-                
-                
     }
     
     public final void updateScales(){
@@ -259,9 +337,104 @@ public class ResultPlot extends JComponent{
                 }
             }
         }
+        updateHorizontalGrid();
+        updateVerticalGrid();
         
     }
     
+    /**
+     * Note this method does not set vertical scale this sets the increment of
+     * the Horizontal axis to something rounded to the nearest major tick
+     */
+    private void updateHorizontalGrid() {
+ 
+        rangeHorz = maxX - minX;
+
+        for (int i = 0; i < INC_OPTIONS_HORZ.length; i++) {
+            incHorzNoOfMajors = (int) (rangeHorz / INC_OPTIONS_HORZ[i]);
+            incHorz = INC_OPTIONS_HORZ[i];
+            if (incHorzNoOfMajors < maximumHorzIncs) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < 100; i++) {
+            if (i * incHorz + minX > maxX) {
+                incHorzNoOfMajors = i;
+                break;
+            }
+        }
+        rangeHorz = incHorzNoOfMajors * incHorz;
+        scaleX = (float) rangeHorz / plotArea.width;
+        
+        //TODO Code for updateing the actual result has horizontal scale has been removed
+        // Plan to use a path or similar scalable polyline instead of previous 
+        // pixel by pixel scale
+
+    }
+
+    /**
+     * resets vertical scale
+     */
+    private void updateVerticalGrid() {
+        rangeVert = maxY - minY;
+        // this sets the increments of the Vertical axis to something rounded to the nearest major tick
+        for (int i = 0; i < INC_OPTIONS_VERT.length; i++) {
+            incVertNoOfMajors = (int) (rangeVert / INC_OPTIONS_VERT[i]);
+            incVert = INC_OPTIONS_VERT[i];
+            if (incVertNoOfMajors < maximumVertIncs) {
+                break;
+            }
+        }
+        if (minY == 0) {
+        } else if (minY < 0) {
+            for (int i = 0; i < 10000; i++) {
+                if (minY > -i * incVert) {
+                    minY = -i * incVert;
+                    break;
+                }
+            }
+        } else if (minY > 0) {
+            for (int i = 0; i < 10000; i++) {
+                if (minY < (i + 1) * incVert) {
+                    minY = i * incVert;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < 100; i++) {
+            if (i * incVert + minY > maxY) {
+                incVertNoOfMajors = i;
+                break;
+            }
+        }
+        rangeVert = incVertNoOfMajors * incVert;
+        scaleY = (float) rangeVert / plotArea.height;
+
+    }
     
+    /**
+     * Method is used to set the Y scale, based on the biggest value in the 
+     * result collection
+     * Intended to only be run when changes are made to the result collection
+     * or requested by user for scale reset
+     */
+    private void calcMaxY(){
+        if (results.getColumnCount() < 2 || results.getRowCount() < 1){
+            maxY = 100;
+            return;
+        }
+        
+        int mY = 0;
+        //First column in results is just the date
+        for (int c = 1; c < results.getColumnCount(); ++c){
+            for (int r = 0; r < results.getRowCount(); ++r){
+                if (mY < (int)results.getValueAt(r, c)){
+                    mY = (int)results.getValueAt(r, c);
+                }
+            }
+        }
+        maxY = mY;
+    }
     
 }

@@ -30,6 +30,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.mcwbalance;
 
 import com.mcwbalance.project.ProjSetting;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +61,10 @@ public class McWBalance {
 
     static final String PROGRAM_NAME = "McBalance";
     static Locale currentLocale;
+    
+    public static Font fontBold;
+    public static Font fontRegular;
+    public static Font fontItalic; 
 
     /**
      * Bin for all short dialogs and words
@@ -82,7 +88,7 @@ public class McWBalance {
      * this time
      */
     public static void main(String[] args) {
-
+        
         //setLocale("es");
         langRB = ResourceBundle.getBundle(LANGUAGE_RESOURCE);
 
@@ -103,7 +109,18 @@ public class McWBalance {
         } catch (IOException e) {
             System.out.println("IconFile Not Found");
         }
-
+        
+        try{
+            String fontpathRegular = "/resources/font/Arimo/static/Arimo-Regular.ttf";
+            String fontpathBold = "/resources/font/Arimo/static/Arimo-Bold.ttf";
+            String fontpathItalic = "/resources/font/Arimo/static/Arimo-Italic.ttf";
+            fontRegular = Font.createFont(Font.TRUETYPE_FONT, McWBalance.class.getResourceAsStream(fontpathRegular));
+            fontBold = Font.createFont(Font.TRUETYPE_FONT, McWBalance.class.getResourceAsStream(fontpathBold));
+            fontItalic = Font.createFont(Font.TRUETYPE_FONT, McWBalance.class.getResourceAsStream(fontpathItalic));
+        } catch (FontFormatException | IOException ex) {
+            System.getLogger(McWBalance.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
         /*
         try {
             // Set System L&F
